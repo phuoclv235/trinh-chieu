@@ -128,16 +128,17 @@ Mọi thư viện khác: phải xin Phuoc (nêu tên, lý do, kích thước, ph
 
 ## 7. Đồng bộ nhiều máy (máy chủ và nút trình chiếu)
 
-Yêu cầu của Phuoc (2026-11-26): thay vì mọi đầu ra đi từ một máy, các máy con nhận tín hiệu từ máy chủ và tự đẩy ra đầu ra của mình, đồng bộ qua mạng, để linh động khi bị giới hạn vị trí hoặc số cổng ra vật lý. **Đang chờ Phuoc chốt phạm vi** (chỉ mạng nội bộ hay cả qua Internet); chưa nằm trong giai đoạn 0, 1.
+Yêu cầu của Phuoc (2026-11-26): thay vì mọi đầu ra đi từ một máy, các máy con nhận tín hiệu từ máy chủ và tự đẩy ra đầu ra của mình, đồng bộ qua mạng, để linh động khi bị giới hạn vị trí hoặc số cổng ra vật lý. **Phuoc chốt (2026-11-26): các máy cùng một mạng nội bộ; media lấy từ NAS qua đường dẫn trực tiếp (direct link) do Slate xuất ra.** Làm ở giai đoạn 2b; chưa nằm trong giai đoạn 0, 1.
 
 Thiết kế dự kiến (phương án lai, khuyến nghị):
 
 - **Máy chủ** chạy `ShowController` như bình thường. **Nút trình chiếu** là cùng ứng dụng chạy ở chế độ nút: không có thư viện để soạn, chỉ có `RenderEngine` và các đầu ra của máy đó.
 - **Đường chính, đồng bộ cảnh:** máy chủ gửi `RenderScene` (đã `Codable`, không chứa đường dẫn) cho từng nút theo vai đầu ra được gán. Nút tự dựng hình bằng Metal ở chất lượng gốc. Băng thông chỉ vài KB mỗi lần đổi trang.
-- **Media đồng bộ trước:** trước buổi nhóm, nút tải các media mà chương trình cần (theo `MediaID`, tức SHA-256) vào bộ đệm cục bộ. Khi lên màn mà media chưa có thì nút giữ khung cũ và báo về máy chủ, không bao giờ hiện màn đen.
+- **Media từ NAS:** media có thể là "media liên kết": không chép vào thư viện mà trỏ tới đường dẫn trực tiếp trên NAS (HTTP hoặc HTTPS). Máy chủ và mọi nút tự tải từ NAS về bộ đệm cục bộ `.cache/media/` trước buổi nhóm, rồi phát từ đĩa cục bộ (không phát thẳng qua mạng khi đang chiếu, để mạng chập chờn không làm giật hình). Media chép vào thư viện thì nút tải từ máy chủ.
+- **Media đồng bộ trước:** trước buổi nhóm, nút tải các media mà chương trình cần (theo `MediaID`) vào bộ đệm cục bộ. Khi lên màn mà media chưa có thì nút giữ khung cũ và báo về máy chủ, không bao giờ hiện màn đen.
 - **Đồng hồ chung:** nút đo lệch đồng hồ với máy chủ liên tục (kiểu NTP, nhiều mẫu, lấy trung vị). Cảnh mang thời điểm áp dụng theo đồng hồ máy chủ, cộng độ trễ an toàn (mặc định 100 ms trong mạng nội bộ) để mọi nút đổi cùng một khung. Video dùng `VideoRef.startedAt` để khớp vị trí phát.
 - **Đường phụ, truyền hình:** nguồn chỉ máy chủ có (camera cắm vào máy chủ, cửa sổ Zoom, lớp web) thì máy chủ mã hoá và gửi dạng video: NDI trong mạng nội bộ, SRT hoặc WebRTC qua Internet.
-- **Mạng:** trong mạng nội bộ, nút tự tìm máy chủ bằng Bonjour, ghép đôi bằng mã 6 số, kênh mã hoá TLS. Qua Internet cần một máy chủ chuyển tiếp nhỏ (dùng chung với trang tương tác hội chúng ở giai đoạn 4).
+- **Mạng:** trong mạng nội bộ, nút tự tìm máy chủ bằng Bonjour, ghép đôi bằng mã 6 số, kênh mã hoá TLS. Qua Internet để sau (không nằm trong phạm vi đã chốt).
 - **Chịu lỗi:** mất kết nối thì nút giữ hình cuối, hiện chấm báo trên màn điều khiển máy chủ; kết nối lại thì nhận ngay trạng thái hiện tại.
 
 Ràng buộc đã áp vào đặc tả giai đoạn 0, 1 để sau này không phải viết lại: `RenderScene` `Codable` có `revision`, `MediaRef` chỉ mang `MediaID`, `RenderEngine` tìm tệp qua `MediaLocator`, `VideoRef` có `startedAt`.
