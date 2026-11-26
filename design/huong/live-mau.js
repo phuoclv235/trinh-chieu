@@ -85,5 +85,12 @@
         <div class="ck-row"><span>Kết thúc dự kiến</span><b>10:05</b></div>
       </div>
     </aside>
+  </div>
+  <div class="dock" role="toolbar" aria-label="Điều khiển nhanh">
+    <span class="dk-count">Trang 03 / 09</span>
+    <button class="dk-btn is-active">Chữ<kbd>F2</kbd></button>
+    <button class="dk-btn is-active">Nền<kbd>F3</kbd></button>
+    <button class="dk-btn">Âm thanh<kbd>F4</kbd></button>
+    <button class="dk-btn dk-all">Xoá tất cả<kbd>F1</kbd></button>
   </div>`;
 })();
