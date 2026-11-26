@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cài đặt đầu ra · Mẫu TrinhChieu</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="ui.css">
+<script>window.MOCK_STATES = [["identify", "Hiện số trên màn"], ["unplugged", "Màn bị rút"]];</script>
+<script src="ui.js"></script>
+<style>
+/* Cửa sổ Cài đặt có kích thước cố định như Cài đặt của macOS, đặt giữa nền mẫu */
+body { display: grid; place-items: center; padding: 24px; min-height: 100%; }
+.settings { width: min(780px, 100%); height: min(720px, calc(100vh - 48px)); border-radius: var(--r-pop); border: 1px solid var(--line-strong); box-shadow: var(--shadow-pop); }
+.settings .toolbar { height: auto; flex-direction: column; align-items: stretch; gap: 0; padding: 10px 14px 0; }
+.settings__top { display: flex; align-items: center; }
+.settings__top .toolbar__title { flex: 1; text-align: center; margin-right: 52px; }
+.settings__tabs { display: flex; justify-content: center; gap: 4px; padding: 8px 0 10px; }
+.settings__tabs button { width: 92px; display: grid; justify-items: center; gap: 3px; padding: 6px 0; border: 1px solid transparent; border-radius: var(--r); background: none; color: var(--text-2); font-size: var(--fs-12); font-weight: var(--fw-semibold); }
+.settings__tabs button:hover { color: var(--text); background: var(--bg-hover); }
+.settings__tabs .is-selected { color: var(--accent); border-color: var(--line-strong); background: var(--bg-raised); }
+.settings__body { flex: 1 1 auto; min-height: 0; overflow: auto; padding: var(--sp-5) var(--sp-6) var(--sp-6); display: grid; gap: var(--sp-5); align-content: start; }
+.map { position: relative; height: 210px; border: 1px solid var(--line-strong); border-radius: var(--r-lg); background: var(--bg-stage); overflow: hidden;
+  background-image: radial-gradient(var(--line) 1px, transparent 1px); background-size: 16px 16px; }
+.disp { position: absolute; display: grid; place-items: center; align-content: center; gap: 2px; border: 1px solid var(--line-strong); border-radius: var(--r); background: var(--bg-raised); text-align: center; font-size: var(--fs-11); color: var(--text-2); }
+.disp b { font-size: var(--fs-12); color: var(--text); }
+.disp .lamp { position: absolute; right: 6px; top: 6px; }
+.disp.is-main { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.disp.is-stage { border-color: var(--text-2); }
+.disp.is-off { border-style: dashed; background: transparent; }
+.disp.is-window { background: var(--bg-hover); }
+.disp__num { position: absolute; inset: 0; display: grid; place-items: center; font: var(--fw-bold) 56px/1 var(--font-display); color: var(--accent); background: rgb(0 0 0 / 0.55); border-radius: var(--r); }
+.disp-row { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: var(--sp-3); align-items: center; }
+.disp-row__n { width: 22px; height: 22px; border-radius: var(--r-xs); border: 1px solid var(--line-strong); display: grid; place-items: center; font: var(--fw-semibold) var(--fs-11) var(--font-num); color: var(--text-2); }
+.note { display: flex; gap: var(--sp-2); align-items: flex-start; font-size: var(--fs-12); color: var(--text-3); padding: 0 var(--sp-1); }
+.note svg { flex: none; margin-top: 1px; }
+.path { font-family: var(--font-num); font-size: var(--fs-12); color: var(--text-2); }
+</style>
+</head>
+<body>
+<div class="win settings">
+  <header class="toolbar">
+    <div class="settings__top"><div class="traffic" aria-hidden="true"><span></span><span></span><span></span></div><span class="toolbar__title" id="win-title">Đầu ra</span></div>
+    <nav class="settings__tabs" aria-label="Nhóm cài đặt" id="tabs">
+      <button class="is-selected" data-tab="outputs" data-icon="display" data-icon-class="i--lg">Đầu ra</button>
+      <button data-tab="audio" data-icon="speaker" data-icon-class="i--lg">Âm thanh</button>
+      <button data-tab="library" data-icon="folder" data-icon-class="i--lg">Thư viện</button>
+      <button data-tab="live" data-icon="live" data-icon-class="i--lg">Trực tiếp</button>
+    </nav>
+  </header>
+  <div class="banner" id="unplugged" hidden>
+    <svg class="i" aria-hidden="true"><use href="#i-warning"/></svg>
+    <span class="banner__text">"Bộ xử lý LED" vừa bị rút. Cắm lại là Hệ thống tự nhận đúng màn và gán lại vai cũ.</span>
+  </div>
+
+  <div class="settings__body" id="tab-outputs">
+    <section>
+      <div class="block__label" style="margin-bottom:var(--sp-2)">Màn hình đang cắm<span>Vị trí theo sắp xếp của macOS</span></div>
+      <div class="map" id="map" aria-label="Sơ đồ màn hình">
+        <div class="disp is-window" style="left:6%;top:38%;width:17%;height:34%"><b>1</b><span>MacBook Pro</span><span>Cửa sổ chính</span></div>
+        <div class="disp is-main" data-n="2" style="left:26%;top:16%;width:26%;height:46%"><i class="lamp is-on"></i><b>2 · Đầu ra chính</b><span>Bộ xử lý LED · HDMI</span></div>
+        <div class="disp is-stage" data-n="3" style="left:55%;top:16%;width:20%;height:36%"><i class="lamp"></i><b>3 · Màn hình nhắc</b><span>Màn bục giảng</span></div>
+        <div class="disp is-off" data-n="4" style="left:78%;top:50%;width:17%;height:30%"><b>4</b><span>Máy chiếu phụ</span><span>Không dùng</span></div>
+      </div>
+    </section>
+
+    <section class="form-group" aria-label="Vai của từng màn">
+      <div class="form-row disp-row"><span class="disp-row__n">1</span>
+        <span class="form-row__label"><b>MacBook Pro, màn tích hợp</b><span>1512 × 982 · 120 Hz · đang chứa cửa sổ Hệ thống</span></span>
+        <span class="form-row__control"><span class="pill pill--neutral" data-tip="Kéo cửa sổ Hệ thống sang màn khác nếu muốn dùng màn này làm đầu ra" data-tip-pos="left"><svg class="i i--sm" aria-hidden="true"><use href="#i-lock"/></svg>Không gán được</span></span></div>
+      <div class="form-row disp-row"><span class="disp-row__n">2</span>
+        <span class="form-row__label"><b>Bộ xử lý LED (HDMI)</b><span>1920 × 1080 · 60 Hz</span></span>
+        <span class="form-row__control"><div class="seg seg--sm" role="radiogroup" aria-label="Vai của màn 2"><button class="is-selected">Đầu ra chính</button><button>Màn hình nhắc</button><button>Không dùng</button></div></span></div>
+      <div class="form-row disp-row"><span class="disp-row__n">3</span>
+        <span class="form-row__label"><b>Màn bục giảng (DisplayPort)</b><span>1920 × 1080 · 60 Hz</span></span>
+        <span class="form-row__control"><div class="seg seg--sm" role="radiogroup" aria-label="Vai của màn 3"><button>Đầu ra chính</button><button class="is-selected">Màn hình nhắc</button><button>Không dùng</button></div></span></div>
+      <div class="form-row disp-row"><span class="disp-row__n">4</span>
+        <span class="form-row__label"><b>Máy chiếu phụ (HDMI qua bộ chia)</b><span>1280 × 800 · 60 Hz</span></span>
+        <span class="form-row__control"><div class="seg seg--sm" role="radiogroup" aria-label="Vai của màn 4"><button>Đầu ra chính</button><button>Màn hình nhắc</button><button class="is-selected">Không dùng</button></div></span></div>
+    </section>
+    <div style="display:flex;gap:var(--sp-3);align-items:center;flex-wrap:wrap">
+      <button class="btn" id="identify" data-icon="number">Hiện số trên từng màn</button>
+      <span class="note">Mỗi màn hiện số lớn trong 3 giây để bạn biết màn nào là màn nào.</span>
+    </div>
+    <p class="note"><svg class="i i--sm" aria-hidden="true"><use href="#i-display"/></svg>Chọn "Đầu ra chính" cho màn khác thì màn đang giữ vai đó tự chuyển sang "Không dùng".</p>
+
+    <section>
+      <h2 class="form-title">Âm thanh của media</h2>
+      <div class="form-group">
+        <div class="form-row"><span class="form-row__label"><b>Thiết bị phát</b><span>Âm thanh của video và nhạc nền trên đầu ra chính</span></span>
+          <span class="form-row__control"><select class="select" style="width:230px" aria-label="Thiết bị phát âm thanh"><option>Theo hệ thống (MacBook Pro)</option><option>Bàn trộn âm thanh · USB</option><option>HDMI · Bộ xử lý LED</option></select></span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="form-title">Thư mục thư viện</h2>
+      <div class="form-group">
+        <div class="form-row"><span class="form-row__label"><b>Vị trí</b><span class="path">~/Documents/TrinhChieu</span></span>
+          <span class="form-row__control"><button class="btn btn--sm" data-icon="folder">Mở trong Finder</button><button class="btn btn--sm">Đổi thư mục…</button></span></div>
+        <div class="form-row"><span class="form-row__label"><b>Chỉ mục tìm kiếm</b><span>1.284 mục · cập nhật 9:40 hôm nay</span></span>
+          <span class="form-row__control"><button class="btn btn--sm">Dựng lại chỉ mục</button></span></div>
+      </div>
+    </section>
+  </div>
+</div>
+<script>
+(function () {
+  const root = document.documentElement, $ = (s) => document.querySelector(s);
+  function apply() {
+    const st = root.getAttribute("data-state") || "";
+    document.querySelectorAll(".disp__num").forEach((n) => n.remove());
+    if (st === "identify") document.querySelectorAll(".disp").forEach((d, i) => d.insertAdjacentHTML("beforeend", `<span class="disp__num">${i + 1}</span>`));
+    $("#unplugged").hidden = st !== "unplugged";
+    const led = document.querySelector(".disp.is-main");
+    if (led) led.style.opacity = st === "unplugged" ? "0.4" : "";
+  }
+  document.addEventListener("mockstate", apply);
+  $("#identify").onclick = () => { root.setAttribute("data-state", "identify"); apply(); setTimeout(() => { root.removeAttribute("data-state"); apply(); }, 3000); };
+  apply();
+})();
+</script>
+</body>
+</html>

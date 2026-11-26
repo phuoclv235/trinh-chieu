@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thư viện · Mẫu TrinhChieu</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="ui.css">
+<script>window.MOCK_STATES = [["search", "Tìm \"binh an\""], ["confirm", "Hộp xoá"], ["undo", "Đã xoá, Hoàn tác"], ["drop", "Kéo tệp vào"], ["empty", "Thư viện rỗng"]];</script>
+<script src="ui.js"></script>
+<style>
+/* Dàn trang riêng của cửa sổ Thư viện: thanh bên 232 px, bảng chiếm phần còn lại */
+.cols { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: 232px minmax(0, 1fr); }
+.side { border-right: 1px solid var(--line); }
+.main { display: flex; flex-direction: column; min-width: 0; min-height: 0; background: var(--bg-window); position: relative; }
+.main__head { display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-4) var(--sp-5) var(--sp-3); flex-wrap: wrap; }
+.main__head h1 { margin: 0; font-family: var(--font-display); font-size: var(--fs-26); font-weight: var(--fw-bold); letter-spacing: -0.025em; }
+.main__head .panel__meta { font-size: var(--fs-12); }
+.filters { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; padding: 0 var(--sp-5) var(--sp-3); }
+.table-wrap { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 0 var(--sp-5) 72px; }
+.table th:first-child, .table td:first-child { padding-left: var(--sp-2); }
+.selbar { position: absolute; left: 50%; bottom: var(--sp-5); transform: translateX(-50%); display: flex; align-items: center; gap: var(--sp-2); padding: 6px 6px 6px var(--sp-4); border: 1px solid var(--line-strong); border-radius: var(--r-pop); background: var(--bg-overlay); box-shadow: var(--shadow-pop); white-space: nowrap; z-index: 20; }
+.selbar b { font-weight: var(--fw-semibold); margin-right: var(--sp-2); }
+.tags { display: flex; gap: 4px; overflow: hidden; }
+.side .row { min-height: 30px; }
+.side .row__trail { font-size: var(--fs-11); }
+.tag-dot { width: 8px; height: 8px; border-radius: 2px; border: 1px solid var(--text-3); flex: none; }
+.empty-host { flex: 1 1 auto; display: grid; place-items: center; }
+</style>
+</head>
+<body>
+<div class="win">
+  <header class="toolbar">
+    <div class="traffic" aria-hidden="true"><span></span><span></span><span></span></div>
+    <span class="toolbar__title">Thư viện</span>
+    <div class="toolbar__spacer"></div>
+    <label class="search search--toolbar"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg><input id="q" placeholder="Tìm tên, lời, tác giả, số thánh ca, không cần dấu" aria-label="Tìm trong thư viện"><span class="kbd">⌘F</span></label>
+    <div class="toolbar__spacer"></div>
+    <div class="toolbar__group">
+      <button class="btn" data-icon="import" data-tip="Nhập tệp, hoặc kéo thả tệp vào cửa sổ" data-kbd="⌘I" data-tip-pos="left">Nhập</button>
+      <button class="btn btn--primary" data-icon="plus">Tạo bài hát<span class="kbd">⌘N</span></button>
+    </div>
+  </header>
+  <div class="cols">
+    <aside class="side panel" aria-label="Loại và thẻ">
+      <div class="panel__body">
+        <div class="list">
+          <div class="row row--heading">Bộ trình chiếu</div>
+          <a class="row is-selected" href="#"><span class="row__icon" data-icon="song"></span><span class="row__main"><span class="row__title">Bài hát</span></span><span class="row__trail">96</span></a>
+          <a class="row" href="#"><span class="row__icon" data-icon="theme"></span><span class="row__main"><span class="row__title">Bài giảng</span></span><span class="row__trail">41</span></a>
+          <a class="row" href="#"><span class="row__icon" data-icon="photo"></span><span class="row__main"><span class="row__title">Thông báo</span></span><span class="row__trail">23</span></a>
+          <a class="row" href="#"><span class="row__icon" data-icon="book"></span><span class="row__main"><span class="row__title">Kinh Thánh đã lưu</span></span><span class="row__trail">18</span></a>
+          <div class="row row--heading">Khác</div>
+          <a class="row" href="#"><span class="row__icon" data-icon="film"></span><span class="row__main"><span class="row__title">Media</span></span><span class="row__trail">214</span></a>
+          <a class="row" href="#"><span class="row__icon" data-icon="layers"></span><span class="row__main"><span class="row__title">Mẫu trình bày</span></span><span class="row__trail">7</span></a>
+          <a class="row" href="#"><span class="row__icon" data-icon="calendar"></span><span class="row__main"><span class="row__title">Chương trình buổi nhóm</span></span><span class="row__trail">52</span></a>
+          <div class="row row--heading">Thẻ</div>
+          <div id="taglist" style="display:contents"></div>
+          <div class="row row--heading"></div>
+          <a class="row" href="#"><span class="row__icon" data-icon="trash"></span><span class="row__main"><span class="row__title">Thùng rác</span><span class="row__sub">Tự dọn sau 30 ngày</span></span><span class="row__trail">3</span></a>
+        </div>
+      </div>
+    </aside>
+    <main class="main" aria-label="Bài hát">
+      <div class="main__head">
+        <h1>Bài hát</h1><span class="panel__meta num" id="meta">96 bài</span>
+        <span style="flex:1"></span>
+        <div class="seg seg--sm seg--icon" role="group" aria-label="Kiểu hiển thị"><button class="is-selected" aria-label="Dạng bảng" data-icon="list"></button><button aria-label="Dạng lưới" data-icon="grid"></button></div>
+      </div>
+      <div class="filters" id="filters">
+        <button class="chip" data-icon="filter" style="box-shadow:none">Lọc</button>
+        <span class="chip chip--tag">Mọi thẻ</span>
+        <span class="chip chip--tag">Mọi sách thánh ca</span>
+      </div>
+      <div class="table-wrap" id="tablewrap">
+        <table class="table" aria-label="Danh sách bài hát">
+          <colgroup><col style="width:40px"><col><col style="width:72px"><col style="width:22%"><col style="width:22%"><col style="width:140px"></colgroup>
+          <thead><tr><th class="col-check"><span class="check" aria-label="Chọn tất cả"></span></th><th class="is-sorted">Tên <svg class="i i--sm" aria-hidden="true"><use href="#i-chevron-down"/></svg></th><th class="col-num">Số</th><th>Tác giả</th><th>Thẻ</th><th>Sửa lần cuối</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <div class="empty-host" id="empty" hidden>
+        <div class="empty">
+          <div class="empty__icon"><svg class="i i--xl" aria-hidden="true"><use href="#i-song"/></svg></div>
+          <h2 class="empty__title">Thư viện chưa có bài hát nào</h2>
+          <p class="empty__body">Nhập tệp OpenLyrics, PDF hoặc văn bản lời bài hát, hoặc gõ lời một bài mới. Kéo thả tệp vào cửa sổ này cũng được.</p>
+          <div class="empty__actions"><button class="btn" data-icon="import">Nhập bài hát</button><button class="btn btn--primary" data-icon="plus">Tạo bài hát</button></div>
+        </div>
+      </div>
+      <div class="selbar" id="selbar"><b>Đã chọn 2 bài</b>
+        <button class="btn btn--sm" data-icon="calendar">Thêm vào chương trình</button>
+        <button class="btn btn--sm" data-icon="tag">Gắn thẻ</button>
+        <button class="btn btn--sm" data-icon="trash" id="del">Xoá…<span class="kbd kbd--bare">⌫</span></button>
+        <button class="ibtn ibtn--sm ibtn--bare" aria-label="Bỏ chọn" data-tip="Bỏ chọn" data-kbd="Esc" data-tip-pos="up" data-icon="x"></button>
+      </div>
+      <div class="dropzone" id="drop" hidden><div class="dropzone__inner"><svg class="i i--xl" aria-hidden="true"><use href="#i-import"/></svg><b>Thả để nhập 3 tệp</b><span class="muted">2 tệp OpenLyrics, 1 tệp PDF · Hệ thống nhận diện loại tự động</span></div></div>
+      <div class="toast-host" id="toast" hidden><div class="toast" role="status">Đã chuyển "Ân Điển Lạ Lùng" và "Vầng Đá Muôn Đời" vào Thùng rác<button class="btn btn--sm">Hoàn tác<span class="kbd kbd--bare">⌘Z</span></button></div></div>
+    </main>
+  </div>
+  <div class="scrim" id="confirm" hidden>
+    <div class="dialog" role="alertdialog" aria-labelledby="dlg">
+      <h2 class="dialog__title" id="dlg">Xoá 2 bài "Ân Điển Lạ Lùng" và "Vầng Đá Muôn Đời"?</h2>
+      <p class="dialog__body">Hai bài được chuyển vào Thùng rác và giữ 30 ngày. "Ân Điển Lạ Lùng" đang nằm trong chương trình Chúa Nhật 30/11/2026; mục đó sẽ hiện "Không tìm thấy" cho tới khi bạn khôi phục.</p>
+      <div class="dialog__actions"><button class="btn" id="keep">Giữ lại</button><button class="btn btn--danger" id="do-del">Chuyển vào Thùng rác</button></div>
+    </div>
+  </div>
+</div>
+<script src="data.js"></script>
+<script>
+(function () {
+  const D = window.TC_DATA, root = document.documentElement, $ = (s) => document.querySelector(s);
+  const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  const tags = {}; D.songs.forEach((s) => s.tags.forEach((t) => (tags[t] = (tags[t] || 0) + 1)));
+  $("#taglist").innerHTML = Object.entries(tags).slice(0, 8).map(([t, n]) => `<a class="row" href="#"><span class="row__icon"><i class="tag-dot"></i></span><span class="row__main"><span class="row__title">${t}</span></span><span class="row__trail">${n * 3}</span></a>`).join("");
+  const fold = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D").toLowerCase();
+  function rows(q) {
+    const list = q ? D.songs.filter((s) => fold(s.title).includes(fold(q))) : D.songs;
+    const hl = (t) => { if (!q) return esc(t); const i = fold(t).indexOf(fold(q)); return i < 0 ? esc(t) : esc(t.slice(0, i)) + "<mark>" + esc(t.slice(i, i + q.length)) + "</mark>" + esc(t.slice(i + q.length)); };
+    $("#rows").innerHTML = list.map((s) => {
+      const sel = !q && (s.title === "Ân Điển Lạ Lùng" || s.title === "Vầng Đá Muôn Đời");
+      return `<tr class="${sel ? "is-selected" : ""}" tabindex="0"><td class="col-check"><span class="check${sel ? " is-on" : ""}">${sel ? '<svg class="i"><use href="#i-check"/></svg>' : ""}</span></td>` +
+        `<td title="${esc(s.title)}">${hl(s.title)}</td><td class="col-num">${s.no ?? "–"}</td><td title="${esc(s.author)}">${esc(s.author)}</td>` +
+        `<td><span class="tags">${s.tags.map((t) => `<span class="chip chip--tag">${t}</span>`).join("")}</span></td><td class="col-date">${s.edited}</td></tr>`;
+    }).join("");
+    $("#meta").textContent = q ? `${list.length} kết quả cho "${q}"` : "96 bài";
+  }
+  function apply() {
+    const st = root.getAttribute("data-state") || "";
+    const empty = st === "empty";
+    $("#tablewrap").hidden = empty; $("#filters").hidden = empty; $("#empty").hidden = !empty;
+    $("#selbar").hidden = empty || st === "search" || st === "undo";
+    $("#confirm").hidden = st !== "confirm";
+    $("#drop").hidden = st !== "drop";
+    $("#toast").hidden = st !== "undo";
+    $("#q").value = st === "search" ? "binh an" : "";
+    rows(st === "search" ? "binh an" : "");
+    TC.fill();
+  }
+  const set = (v) => { if (v) root.setAttribute("data-state", v); else root.removeAttribute("data-state"); apply(); };
+  document.addEventListener("mockstate", apply);
+  $("#q").addEventListener("input", (e) => rows(e.target.value.trim()));
+  $("#del").onclick = () => set("confirm");
+  $("#keep").onclick = () => set("");
+  $("#do-del").onclick = () => set("undo");
+  apply();
+})();
+</script>
+</body>
+</html>
