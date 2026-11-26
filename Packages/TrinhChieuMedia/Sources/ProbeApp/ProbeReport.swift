@@ -41,6 +41,11 @@ struct ProbeReport {
         )
     }
 
+    /// Lần chạy không có khung nào lên màn (thường do màn hình đang khoá hoặc tắt): số đo vô nghĩa.
+    var isInvalid: Bool {
+        outputs.isEmpty || outputs.contains { $0.framesPresented == 0 }
+    }
+
     var allPassed: Bool {
         !outputs.isEmpty
             && outputs.allSatisfy { output in
@@ -55,6 +60,13 @@ struct ProbeReport {
         formatter.timeZone = .current
         lines.append("## Lần chạy \(formatter.string(from: startedAt))")
         lines.append("")
+        if isInvalid {
+            lines.append(
+                "> **Lần chạy không hợp lệ:** có màn không nhận khung nào. "
+                    + "Thường do màn hình đang khoá, tắt hoặc Mac đang ngủ. Mở khoá rồi chạy lại."
+            )
+            lines.append("")
+        }
         lines.append("| Mục | Giá trị |")
         lines.append("| --- | --- |")
         for (name, value) in SystemInfo.summary {

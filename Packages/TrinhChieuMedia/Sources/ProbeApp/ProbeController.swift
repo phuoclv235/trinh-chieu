@@ -178,6 +178,10 @@ final class ProbeController {
         } catch {
             Console.err("Không ghi được báo cáo vào \(reportURL.path): \(error)")
         }
+        if report.isInvalid {
+            Console.err("Lần chạy không hợp lệ: có màn không nhận khung nào (màn hình khoá hoặc tắt?).")
+            return 2
+        }
         return report.allPassed ? 0 : 1
     }
 

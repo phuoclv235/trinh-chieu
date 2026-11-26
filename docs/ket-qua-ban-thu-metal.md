@@ -20,7 +20,9 @@ swift run -c debug --sanitize=thread --package-path Packages/TrinhChieuMedia Pro
 - Lần đầu, bản thử tự tạo hai video mẫu trong `~/Library/Caches/TrinhChieuProbe`: nền 1080p H.264 30 khung/giây và khung phụ 4K HEVC 30 khung/giây, mỗi video 20 giây, lặp. Có video thật thì truyền `--video1` và `--video2`.
 - Bố cục trên khung vẽ 1920x1080: video nền phủ kín, video khung phụ 480x270 góc trên phải, logo 120x120 góc dưới trái, lời 4 dòng cỡ 72 có viền đen ở giữa. Lời đổi mỗi 2 giây với hoà tan 0.35 giây, vòng qua 4 lời có dấu chồng ở dòng đầu ("Ẩn", "Ở", "Người", "Đấng").
 - Có 5 giây khởi động trước khi đo (bỏ các khung giật lúc mở cửa sổ và nạp video). Bấm Esc trên màn đầu ra để dừng sớm; báo cáo vẫn được ghi.
-- Mã thoát: 0 khi cả hai tiêu chí số đo đạt, 1 khi có tiêu chí không đạt, 2 khi lỗi.
+- Mã thoát: 0 khi cả hai tiêu chí số đo đạt, 1 khi có tiêu chí không đạt, 2 khi lỗi hoặc lần chạy không hợp lệ (có màn không nhận khung nào, thường do màn hình đang khoá).
+- Mac phải mở khoá và không tự khoá trong lúc đo: khi màn hình khoá, macOS không trình chiếu drawable nào.
+- Màn 120 Hz (ProMotion) vẫn đo theo chu kỳ 16.67 ms vì display link đặt 60 khung/giây.
 
 ## Cách đo
 

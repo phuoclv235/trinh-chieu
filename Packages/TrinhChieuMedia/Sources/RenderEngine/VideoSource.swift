@@ -44,7 +44,7 @@ public final class VideoSource {
 
     /// Tạo một nguồn khung cho một đầu ra.
     public func makeTap(gpu: GPUContext) -> VideoTap {
-        let attributes: [String: Any] = [
+        let attributes: [String: any Sendable] = [
             kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
             kCVPixelBufferMetalCompatibilityKey as String: true,
         ]
