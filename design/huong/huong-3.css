@@ -1,0 +1,121 @@
+/*
+ * Hướng 3 · Xưởng Mac
+ * Ý tưởng: ứng dụng chuyên nghiệp bản xứ của macOS (gần Final Cut, Logic), ấm và mềm hơn.
+ * Thanh bên dạng khối liền, điều khiển phân đoạn, bo 8 đến 10 px, chiều sâu bằng sắc độ chứ không bằng kính mờ.
+ * Màu chủ đạo mận chín (gợi chén Tiệc Thánh), tách hẳn với hổ phách của Tập dượt và xanh băng của Đóng băng.
+ */
+:root {
+  --g-chorus: #cfa86a; /* mận chín trùng màu Điệp khúc chung, nên đổi Điệp khúc sang màu cát */
+  color-scheme: dark;
+  --bg: #1b1a1c; --side: #232124; --well: #141315; --raise: #2c2a2e; --hover: #322f34;
+  --line: #333036; --line-2: #403c43;
+  --fg: #eeeaee; --fg-2: #b0a9b1; --fg-3: #958e97;
+  --accent: #e08aa2; --accent-fill: #b84d6c; --accent-ink: #ffffff; --accent-soft: rgb(224 138 162 / 0.16);
+  --warn: #f0aa3c; --freeze: #8fd4f4; --ok: #6fcf86;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter Mau", Inter, sans-serif;
+  --left-w: 280px; --right-w: 320px; --card-min: 168px; --at-w: 36px;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f2f0f2; --side: #e9e6ea; --well: #ffffff; --raise: #ffffff; --hover: #e0dce1;
+  --line: #dcd8dd; --line-2: #cbc6cd;
+  --fg: #1d1a1e; --fg-2: #57505a; --fg-3: #6a636d;
+  --accent: #a4405e; --accent-fill: #a4405e; --accent-ink: #ffffff; --accent-soft: rgb(164 64 94 / 0.12);
+  --warn: #9a5800; --freeze: #1b78a3; --ok: #1d7f45;
+}
+@font-face { font-family: "Inter Mau"; font-weight: 400; src: url("../fonts/Inter-Regular.woff2") format("woff2"); }
+@font-face { font-family: "Inter Mau"; font-weight: 500; src: url("../fonts/Inter-Medium.woff2") format("woff2"); }
+@font-face { font-family: "Inter Mau"; font-weight: 600; src: url("../fonts/Inter-SemiBold.woff2") format("woff2"); }
+
+kbd { font-size: 11px; color: var(--fg-3); }
+
+.tb { height: 52px; padding: 0 14px 0 18px; gap: 14px; background: var(--side); border-bottom: 1px solid var(--line); }
+.traffic { margin-right: 10px; }
+.seg { padding: 2px; border-radius: 8px; background: var(--well); gap: 2px; }
+.seg button { height: 24px; padding: 0 12px; border-radius: 6px; font-weight: 500; color: var(--fg-2); font-size: 12.5px; }
+.seg .is-on { background: var(--raise); color: var(--fg); box-shadow: 0 1px 2px rgb(0 0 0 / 0.25); }
+.tb-search { height: 28px; gap: 8px; padding: 0 6px 0 10px; border-radius: 8px; background: var(--well); color: var(--fg-3); margin: 0 auto; }
+.tb-search kbd { background: var(--raise); padding: 1px 5px; border-radius: 4px; }
+.tb-right { gap: 8px; margin-left: 0; }
+.fps { gap: 6px; color: var(--fg-3); font-size: 12px; margin-right: 6px; }
+.fps i { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
+.tgl { height: 28px; padding: 0 10px; gap: 6px; border-radius: 8px; background: var(--raise); color: var(--fg-2); font-weight: 500; font-size: 12.5px; }
+.tgl kbd { display: none; }
+.tgl--reh .ic { color: var(--warn); } .tgl--frz .ic { color: var(--freeze); }
+
+.cols { gap: 0; background: var(--bg); }
+.left { background: var(--side); border-right: 1px solid var(--line); }
+.right { background: var(--side); border-left: 1px solid var(--line); padding: 10px; gap: 10px; }
+.sec-head { padding: 14px 12px 8px 16px; }
+.sec-head h2 { font-size: 15px; font-weight: 600; }
+.sec-head p { font-size: 12px; color: var(--fg-3); margin-top: 1px; }
+.ib { width: 26px; height: 26px; display: grid; place-items: center; color: var(--fg-2); border-radius: 7px; }
+.ib:hover { background: var(--hover); }
+
+.p-list, .l-list { padding: 0 8px 8px; display: grid; gap: 1px; align-content: start; }
+.p-head { padding: 10px 8px 4px; font-size: 12px; font-weight: 600; color: var(--fg-3); }
+.p-row { min-height: 42px; padding: 5px 8px; border-radius: 10px; }
+.p-row:hover { background: var(--hover); }
+.p-row.is-sel { background: var(--accent-soft); }
+.p-at { font-size: 12px; color: var(--fg-2); }
+.p-ic { color: var(--accent); }
+.p-title { font-size: 13px; }
+.p-sub { font-size: 11.5px; color: var(--fg-3); }
+.p-dur { font-size: 11.5px; color: var(--fg-3); }
+.is-missing .p-title { color: var(--fg-3); font-style: italic; }
+.is-missing .p-ic { color: var(--warn); }
+.tally { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); display: inline-block; }
+.tally--idle { background: var(--fg-3); box-shadow: none; }
+.p-now { border-top: 1px dashed var(--warn); margin: 0 8px; }
+.p-now span { position: absolute; right: 0; top: -9px; font-size: 10.5px; font-weight: 600; line-height: 17px; padding: 0 6px; border-radius: 9px; background: var(--warn); color: #1a1100; }
+
+.lib { border-top: 1px solid var(--line); }
+.tabs { margin: 10px 12px 6px; padding: 2px; gap: 2px; border-radius: 8px; background: var(--well); }
+.tabs button { flex: 1; height: 24px; border-radius: 6px; font-size: 12px; font-weight: 500; color: var(--fg-2); }
+.tabs .is-on { background: var(--raise); color: var(--fg); box-shadow: 0 1px 2px rgb(0 0 0 / 0.2); }
+.l-search { height: 28px; margin: 4px 12px 8px; gap: 8px; padding: 0 10px; border-radius: 8px; background: var(--well); color: var(--fg-3); }
+.l-row { padding: 6px 8px; border-radius: 10px; }
+.l-row:hover { background: var(--hover); }
+.l-row.is-sel { background: var(--accent-soft); }
+.l-no { font-size: 11.5px; color: var(--fg-3); text-align: right; }
+.l-meta { font-size: 11.5px; color: var(--fg-3); }
+
+.center { background: var(--bg); }
+.c-head { padding: 16px 20px 12px; }
+.c-titles h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
+.c-titles p { font-size: 12px; color: var(--fg-3); margin-top: 2px; }
+.c-tools { gap: 6px; padding: 3px; border-radius: 10px; background: var(--side); }
+.c-arrlabel { font-size: 12px; color: var(--fg-3); padding: 0 6px; }
+.chip { height: 24px; padding: 0 10px; border-radius: 7px; font-size: 12px; font-weight: 500; color: var(--fg-2); gap: 6px; }
+.chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--c); }
+.chip.is-cur { background: var(--raise); color: var(--fg); }
+.grid { padding: 6px 20px 24px; gap: 16px 14px; }
+.card { gap: 6px; padding: 5px; border-radius: 12px; }
+.card:hover { background: var(--hover); }
+.c-frame { border-radius: 7px; box-shadow: 0 0 0 1px var(--line); }
+.c-frame::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--c); }
+.card.is-next .c-frame { box-shadow: 0 0 0 1.5px var(--accent); }
+.card.is-live { background: var(--accent-soft); }
+.card.is-live .c-frame { box-shadow: 0 0 0 3px var(--accent); }
+.c-tag { right: 6px; bottom: 6px; font-size: 10.5px; font-weight: 600; padding: 1px 7px; border-radius: 9px; background: var(--accent-fill); color: var(--accent-ink); }
+.c-tag--next { background: rgb(0 0 0 / 0.6); color: #fff; }
+.c-cap { gap: 8px; font-size: 12px; color: var(--fg-2); padding: 0 2px; }
+.c-num { color: var(--fg-3); font-size: 11.5px; }
+
+.right > * { padding: 12px; border-radius: 12px; background: var(--bg); }
+.pv { display: grid; gap: 8px; }
+.pv-head { font-size: 12px; }
+.pv-head b { font-weight: 600; }
+.pv-head span { margin-left: auto; color: var(--fg-3); font-size: 11.5px; }
+.pv-frame { border-radius: 6px; }
+.r-label { font-size: 12px; font-weight: 600; color: var(--fg-2); margin-bottom: 8px; }
+.lay-grid { gap: 6px; }
+.lay { height: 46px; padding: 0 10px; border-radius: 9px; flex-direction: column; align-items: flex-start; justify-content: center; gap: 1px; background: transparent; color: var(--fg-3); box-shadow: inset 0 0 0 1px var(--line-2); }
+.lay b { font-size: 12.5px; font-weight: 600; }
+.lay.is-active { background: var(--raise); color: var(--fg); box-shadow: inset 0 0 0 1px var(--line-2), inset 0 -2px 0 var(--accent); }
+.clear-all { width: 100%; height: 32px; margin-top: 8px; padding: 0 12px; border-radius: 9px; background: var(--accent-fill); color: var(--accent-ink); font-weight: 600; }
+.clear-all kbd { color: inherit; opacity: 0.8; }
+.ck-time { font-size: 32px; font-weight: 500; letter-spacing: -0.01em; margin-bottom: 6px; }
+.ck-row { font-size: 12px; color: var(--fg-2); padding: 2px 0; }
+.ck-row b { font-weight: 500; color: var(--fg); }
+.ck-row .late { color: var(--warn); }
