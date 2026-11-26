@@ -94,3 +94,4 @@ html[data-shot] .mockbar { display: none; }
 html[data-shot] *, html[data-shot] *::before, html[data-shot] *::after { animation: none !important; transition: none !important; }
 
 .dock { display: none; }
+.flow { display: none; }

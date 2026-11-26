@@ -77,6 +77,27 @@
         </div>
         <button class="clear-all">Xoá tất cả<kbd>F1</kbd></button>
       </div>
+      <div class="flow">
+        <div class="r-label">Luồng tín hiệu<span>Bấm một lớp để xoá</span></div>
+        <div class="fl-graph">
+          <div class="fl-col">
+            <button class="node is-active" data-tip="Xoá lớp Chữ"><i class="lamp"></i><span class="nd-main"><b>Chữ</b><span>Dù qua trũng bóng tối tăm</span></span><kbd>F2</kbd><i class="port"></i></button>
+            <button class="node is-active"><i class="lamp"></i><span class="nd-main"><b>Nền</b><span>Mẫu Đêm sâu · ảnh tĩnh</span></span><kbd>F3</kbd><i class="port"></i></button>
+            <button class="node"><i class="lamp"></i><span class="nd-main"><b>Âm thanh</b><span>Không phát</span></span><kbd>F4</kbd><i class="port"></i></button>
+          </div>
+          <svg class="wires" viewBox="0 0 46 148" preserveAspectRatio="none" aria-hidden="true">
+            <path class="w on" d="M0 22 C 26 22, 20 40, 46 40"/>
+            <path class="w on" d="M0 74 C 26 74, 20 40, 46 40"/>
+            <path class="w on" d="M0 22 C 26 22, 20 108, 46 108"/>
+            <path class="w off" d="M0 126 C 14 126, 18 126, 24 126"/>
+          </svg>
+          <div class="fl-col fl-outs">
+            <div class="out is-live"><i class="port port--in"></i><i class="lamp"></i><b>Đầu ra chính</b><span>LED · HDMI</span></div>
+            <div class="out"><i class="port port--in"></i><i class="lamp"></i><b>Màn hình nhắc</b><span>Bục giảng</span></div>
+          </div>
+        </div>
+        <button class="clear-all">Xoá tất cả<kbd>F1</kbd></button>
+      </div>
       <div class="clock">
         <div class="r-label">Giờ thật</div>
         <div class="ck-time">9:12:48</div>
