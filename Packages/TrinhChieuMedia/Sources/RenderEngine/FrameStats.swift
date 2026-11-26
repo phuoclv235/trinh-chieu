@@ -28,8 +28,8 @@ public final class FrameStats: Sendable {
         var framesPresented = 0
         var framesNotPresented = 0
         var lateFrames = 0
-        /// Có khung không lên màn kể từ khung lên màn gần nhất: khoảng trống kế tiếp đã được đếm.
-        var gapAlreadyCounted = false
+        /// Số khung không lên màn kể từ khung lên màn gần nhất (đã được đếm là khung rớt).
+        var notPresentedSinceLast = 0
         var dropsPerMinute: [Int] = []
         var presentIntervals: [Double] = []
         var gpuTimes: [Double] = []
@@ -65,30 +65,32 @@ public final class FrameStats: Sendable {
 
     /// Gọi từ `presentedHandler`. `presentedTime == 0` nghĩa là khung không được hiển thị;
     /// khi đó `now` (theo `CACurrentMediaTime`) dùng để xếp khung rớt vào đúng phút.
-    /// Khung không lên màn đã được đếm thì khoảng trống nó để lại không bị đếm thêm lần nữa.
+    /// Khung không lên màn được trừ khỏi số nhịp bỏ lỡ của khoảng trống kế tiếp, để không đếm hai lần.
     public func recordPresented(_ presentedTime: Double, now: Double) {
         let period = nominalPeriod
         state.withLock { state in
             guard state.recording else { return }
             if presentedTime <= 0 {
                 state.framesNotPresented += 1
-                state.gapAlreadyCounted = true
+                state.notPresentedSinceLast += 1
                 Self.addDrop(&state, at: now)
                 return
             }
             if state.lastPresented > 0 {
                 let interval = presentedTime - state.lastPresented
                 state.presentIntervals.append(interval)
-                if period > 0, interval > period * 1.5, !state.gapAlreadyCounted {
-                    // Khoảng trống dài bỏ lỡ nhiều nhịp làm tươi: đếm đủ số nhịp bị bỏ lỡ.
-                    let missed = max(1, Int((interval / period).rounded()) - 1)
+                if period > 0, interval > period * 1.5 {
+                    // Khoảng trống dài bỏ lỡ nhiều nhịp làm tươi: đếm đủ số nhịp bị bỏ lỡ,
+                    // trừ những nhịp đã được đếm qua khung không lên màn.
+                    let slots = max(1, Int((interval / period).rounded()) - 1)
+                    let missed = max(0, slots - state.notPresentedSinceLast)
                     state.lateFrames += missed
                     for _ in 0..<missed {
                         Self.addDrop(&state, at: presentedTime)
                     }
                 }
             }
-            state.gapAlreadyCounted = false
+            state.notPresentedSinceLast = 0
             state.lastPresented = presentedTime
             state.framesPresented += 1
         }

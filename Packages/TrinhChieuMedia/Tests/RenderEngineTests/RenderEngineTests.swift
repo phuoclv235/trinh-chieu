@@ -133,6 +133,20 @@ struct FrameStatsTests {
         #expect(snapshot.droppedFrames == 4)
     }
 
+    @Test("Khung không lên màn giữa khoảng dừng dài: vẫn đếm phần nhịp còn lại")
+    func notPresentedInsideLongPause() {
+        let period = 1.0 / 60
+        let stats = FrameStats(label: "thu", nominalPeriod: period)
+        stats.startRecording(at: 10)
+        stats.recordPresented(10 + period, now: 10 + period)
+        stats.recordPresented(0, now: 10 + period * 2)  // không lên màn
+        stats.recordPresented(10 + period * 6, now: 10 + period * 6)  // tổng cộng bỏ lỡ 4 nhịp
+        let snapshot = stats.snapshot(now: 11)
+        #expect(snapshot.framesNotPresented == 1)
+        #expect(snapshot.lateFrames == 3)
+        #expect(snapshot.droppedFrames == 4)
+    }
+
     @Test("Phân vị theo hạng gần nhất")
     func percentile() {
         let values = (1...100).map(Double.init)
