@@ -83,7 +83,8 @@ Nguyên tắc "không bao giờ đen màn": khi một nguồn lỗi (video hỏn
 `RenderScene` là giá trị thuần, `Sendable`, `Equatable`, nằm ở `CoreModel`. Đây là tệp nguy hiểm: đổi nó là đổi cả hai phía.
 
 ```swift
-public struct RenderScene: Sendable, Equatable {
+public struct RenderScene: Sendable, Equatable, Codable {
+    public var revision: UInt64               // tăng dần mỗi lần xuất
     public var canvasSize: PixelSize          // kích thước khung vẽ của mẫu, ví dụ 1920x1080
     public var layers: [RenderLayer]          // theo thứ tự vẽ, dưới lên trên
     public var transition: TransitionSpec     // cách chuyển từ cảnh trước sang cảnh này
@@ -93,13 +94,13 @@ public enum LayerKind: String, Sendable, Codable, CaseIterable {
     case background, slide, overlay, message, mask   // giai đoạn 1 dùng background, slide
 }
 
-public struct RenderLayer: Sendable, Equatable {
+public struct RenderLayer: Sendable, Equatable, Codable {
     public var kind: LayerKind
     public var contentID: UUID                // đổi khi nội dung đổi; dùng để quyết định chuyển cảnh theo lớp
     public var items: [RenderItem]
 }
 
-public enum RenderItem: Sendable, Equatable {
+public enum RenderItem: Sendable, Equatable, Codable {
     case color(RGBA, frame: PixelRect)
     case image(MediaRef, frame: PixelRect, fit: ContentFit)
     case video(VideoRef, frame: PixelRect, fit: ContentFit)
@@ -107,7 +108,7 @@ public enum RenderItem: Sendable, Equatable {
 }
 ```
 
-`TextBlock` mang chuỗi đã chuẩn hoá NFC, kiểu chữ đã giải xong (không còn tham chiếu tới mẫu), căn lề, quy tắc co chữ. `RenderEngine` chịu trách nhiệm đo và co chữ thật bằng Core Text. Đầy đủ các trường ở đặc tả task T0.5.
+`MediaRef` và `VideoRef` chỉ mang `MediaID`, **không** mang đường dẫn: mỗi máy tự tìm tệp qua `MediaLocator`. Cảnh vì vậy gửi được sang máy khác nguyên vẹn (mục 7). `TextBlock` mang chuỗi đã chuẩn hoá NFC, kiểu chữ đã giải xong (không còn tham chiếu tới mẫu), căn lề, quy tắc co chữ. `RenderEngine` chịu trách nhiệm đo và co chữ thật bằng Core Text. Đầy đủ các trường ở đặc tả task T0.5.
 
 ## 6. Thư viện ngoài đã duyệt
 
@@ -124,3 +125,19 @@ public enum RenderItem: Sendable, Equatable {
 Công cụ phát triển (không đóng gói vào sản phẩm): **XcodeGen** để sinh dự án Xcode từ `App/project.yml`, cài bằng Homebrew trên máy Mac. Nếu Phuoc không cho phép, dùng phương án dự phòng ở T0.1.
 
 Mọi thư viện khác: phải xin Phuoc (nêu tên, lý do, kích thước, phương án thay thế).
+
+## 7. Đồng bộ nhiều máy (máy chủ và nút trình chiếu)
+
+Yêu cầu của Phuoc (2026-11-26): thay vì mọi đầu ra đi từ một máy, các máy con nhận tín hiệu từ máy chủ và tự đẩy ra đầu ra của mình, đồng bộ qua mạng, để linh động khi bị giới hạn vị trí hoặc số cổng ra vật lý. **Đang chờ Phuoc chốt phạm vi** (chỉ mạng nội bộ hay cả qua Internet); chưa nằm trong giai đoạn 0, 1.
+
+Thiết kế dự kiến (phương án lai, khuyến nghị):
+
+- **Máy chủ** chạy `ShowController` như bình thường. **Nút trình chiếu** là cùng ứng dụng chạy ở chế độ nút: không có thư viện để soạn, chỉ có `RenderEngine` và các đầu ra của máy đó.
+- **Đường chính, đồng bộ cảnh:** máy chủ gửi `RenderScene` (đã `Codable`, không chứa đường dẫn) cho từng nút theo vai đầu ra được gán. Nút tự dựng hình bằng Metal ở chất lượng gốc. Băng thông chỉ vài KB mỗi lần đổi trang.
+- **Media đồng bộ trước:** trước buổi nhóm, nút tải các media mà chương trình cần (theo `MediaID`, tức SHA-256) vào bộ đệm cục bộ. Khi lên màn mà media chưa có thì nút giữ khung cũ và báo về máy chủ, không bao giờ hiện màn đen.
+- **Đồng hồ chung:** nút đo lệch đồng hồ với máy chủ liên tục (kiểu NTP, nhiều mẫu, lấy trung vị). Cảnh mang thời điểm áp dụng theo đồng hồ máy chủ, cộng độ trễ an toàn (mặc định 100 ms trong mạng nội bộ) để mọi nút đổi cùng một khung. Video dùng `VideoRef.startedAt` để khớp vị trí phát.
+- **Đường phụ, truyền hình:** nguồn chỉ máy chủ có (camera cắm vào máy chủ, cửa sổ Zoom, lớp web) thì máy chủ mã hoá và gửi dạng video: NDI trong mạng nội bộ, SRT hoặc WebRTC qua Internet.
+- **Mạng:** trong mạng nội bộ, nút tự tìm máy chủ bằng Bonjour, ghép đôi bằng mã 6 số, kênh mã hoá TLS. Qua Internet cần một máy chủ chuyển tiếp nhỏ (dùng chung với trang tương tác hội chúng ở giai đoạn 4).
+- **Chịu lỗi:** mất kết nối thì nút giữ hình cuối, hiện chấm báo trên màn điều khiển máy chủ; kết nối lại thì nhận ngay trạng thái hiện tại.
+
+Ràng buộc đã áp vào đặc tả giai đoạn 0, 1 để sau này không phải viết lại: `RenderScene` `Codable` có `revision`, `MediaRef` chỉ mang `MediaID`, `RenderEngine` tìm tệp qua `MediaLocator`, `VideoRef` có `startedAt`.

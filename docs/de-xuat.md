@@ -9,3 +9,4 @@
 | 3 | Thư viện dùng chung nhiều máy qua thư mục đồng bộ | Không cần máy chủ | Hai người sửa cùng bài cùng lúc gây xung đột | Sau MVP; định dạng mỗi bài một tệp ngay từ đầu | Định dạng đã sẵn; phát hiện xung đột cơ bản trong T1.3 |
 | 4 | Kéo phần "khung vẽ kích thước tuỳ ý" vào MVP nếu màn LED cần bố cục riêng từ buổi đầu | LED dùng được ngay | Thêm khoảng 1 tuần | Chỉ làm khi Phuoc xác nhận LED cần | Chờ Phuoc |
 | 5 | Camera ảo cho Zoom (chỉ hình) làm sớm ngay sau MVP | Lên Zoom sớm | Cần tài khoản Apple Developer | Làm nếu Zoom gấp | Chờ Phuoc |
+| 6 | Trình chiếu đồng bộ nhiều máy: máy chủ điều khiển, các nút trình chiếu tự dựng hình ra đầu ra của mình (Phuoc yêu cầu 2026-11-26) | Linh động vị trí, vượt giới hạn cổng ra của một máy, chất lượng gốc ở mỗi nút | Thêm một chế độ ứng dụng, đồng bộ media và đồng hồ, cần máy chuyển tiếp nếu qua Internet | Giai đoạn mới sau giai đoạn 2; hợp đồng lõi đã chuẩn bị từ giai đoạn 0 | Chờ Phuoc chốt phạm vi mạng |
