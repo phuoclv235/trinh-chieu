@@ -1,6 +1,6 @@
 /*
  * TrinhChieu · Mã dùng chung cho mẫu giao diện
- * 1. Đọc lựa chọn hiển thị (sáng tối, phông A/B, màu A/B) từ địa chỉ hoặc lần xem trước.
+ * 1. Đọc lựa chọn hiển thị (sáng tối, phông A/B) từ địa chỉ hoặc lần xem trước.
  * 2. Chèn bộ biểu tượng SVG nét mảnh (mô phỏng SF Symbols; bản thật dùng SF Symbols).
  * 3. Dựng thanh duyệt mẫu ở góc dưới trái (không thuộc ứng dụng; ẩn khi chụp ảnh với ?shot).
  */
@@ -11,7 +11,7 @@
     get(k) { try { return localStorage.getItem("tc-mau-" + k); } catch (e) { return null; } },
     set(k, v) { try { localStorage.setItem("tc-mau-" + k, v); } catch (e) { /* trình duyệt chặn lưu trữ: bỏ qua */ } },
   };
-  const defaults = { theme: "dark", accent: "b", font: "a" };
+  const defaults = { theme: "dark", font: "a" };
   for (const k of Object.keys(defaults)) {
     const v = params.get(k) || store.get(k) || defaults[k];
     root.setAttribute("data-" + k, v);
@@ -109,7 +109,7 @@
       `<span class="mockbar__sep"></span>` + PAGES.map(link).join("") +
       `<span class="mockbar__sep"></span>` + toggle("theme", "dark", "light", "Tối", "Sáng") +
       (window.MOCK_PAGES ? "" : `<span class="mockbar__sep"></span><span class="mockbar__tag">Phông</span>` + toggle("font", "a", "b", "A", "B") +
-      `<span class="mockbar__sep"></span><span class="mockbar__tag">Màu</span>` + toggle("accent", "b", "a", "B", "A")) +
+      "") +
       (states ? `<span class="mockbar__sep"></span><span class="mockbar__tag">Trạng thái</span>${states}` : "");
     document.body.appendChild(bar);
     const sync = () => bar.querySelectorAll("button[data-k]").forEach((btn) => {

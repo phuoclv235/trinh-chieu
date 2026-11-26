@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Màn hình nhắc · Mẫu TrinhChieu</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="ui.css">
+<script>window.MOCK_STATES = [["last", "Trang cuối mục"], ["idle", "Không có gì đang chiếu"]];</script>
+<script src="ui.js"></script>
+<style>
+/* Màn hình nhắc là hình ra đầu ra (khung 1920x1080, nền đen), không phải giao diện điều khiển.
+   Luôn nền đen ở cả sáng và tối. Toạ độ theo bảng ở T1.5, quy ra cqw của khung 16:9. */
+html, body { background: #000; }
+.stage-wrap { height: 100%; display: grid; place-items: center; background: #000; }
+.stage-wrap .stage-render { width: min(100vw, calc(100vh * 16 / 9)); }
+</style>
+</head>
+<body>
+<div class="stage-wrap"><div class="stage-render" id="stage" role="img" aria-label="Màn hình nhắc"></div></div>
+<script src="data.js"></script>
+<script>
+(function () {
+  const D = window.TC_DATA, slides = D.slides(), root = document.documentElement;
+  const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  function render() {
+    const st = root.getAttribute("data-state");
+    const i = st === "last" ? slides.length - 1 : 2, cur = slides[i], nxt = slides[i + 1];
+    document.getElementById("stage").innerHTML = st === "idle"
+      ? `<p class="stage-render__clock">09:12:48</p><p class="stage-render__next" style="top:22cqw;color:rgb(255 255 255/.7)">Tiếp theo: Thi Thiên 23:1-6</p>`
+      : `<p class="stage-render__item">${D.song.title} · ${cur.label}</p><p class="stage-render__clock">09:12:48</p>` +
+        `<p class="stage-render__cur">${esc(cur.text)}</p>` +
+        `<p class="stage-render__next">${nxt ? esc(nxt.text) : "Tiếp theo: Thi Thiên 23:1-6"}</p>` +
+        `<p class="stage-render__note">${D.song.notes[i] || ""}</p>`;
+  }
+  document.addEventListener("mockstate", render);
+  render();
+})();
+</script>
+</body>
+</html>

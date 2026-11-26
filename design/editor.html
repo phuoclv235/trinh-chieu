@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Soạn thảo · Mẫu TrinhChieu</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="ui.css">
+<script>window.MOCK_STATES = [["menu", "Menu ngữ cảnh"], ["confirm", "Hộp xoá đoạn"], ["lyrics-closed", "Thu gọn ô lời"]];</script>
+<script src="ui.js"></script>
+<style>
+/* Dàn trang riêng của màn Soạn thảo */
+.cols { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: 248px minmax(0, 1fr) var(--rail-right); }
+.left { border-right: 1px solid var(--line); }
+.right { border-left: 1px solid var(--line); }
+.center { display: flex; flex-direction: column; min-width: 0; min-height: 0; background: var(--bg-stage); }
+.doc-head { display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-3) var(--sp-5); border-bottom: 1px solid var(--line); background: var(--bg-panel); flex-wrap: wrap; }
+.doc-head h1 { margin: 0; font-family: var(--font-display); font-size: 20px; font-weight: var(--fw-bold); letter-spacing: -0.02em; white-space: nowrap; }
+.arr { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-left: auto; }
+.arr .faint { font-size: var(--fs-12); }
+.stage-area { flex: 1 1 auto; min-height: 0; display: grid; place-items: center; padding: var(--sp-6) var(--sp-8) var(--sp-5); position: relative; }
+.canvas-box { position: relative; width: min(100%, calc((100vh - 470px) * 16 / 9)); min-width: 360px; padding: 18px 0 0 18px; }
+.ruler-x, .ruler-y { position: absolute; background-color: var(--bg-panel); color: var(--text-3); font: 9px/1 var(--font-num); }
+.ruler-x { left: 18px; right: 0; top: 0; height: 18px; border-bottom: 1px solid var(--line-strong);
+  background-image: repeating-linear-gradient(to right, var(--line-strong) 0 1px, transparent 1px 10%), repeating-linear-gradient(to right, var(--line) 0 1px, transparent 1px 2.5%);
+  background-size: 100% 8px, 100% 4px; background-position: 0 100%, 0 100%; background-repeat: no-repeat; }
+.ruler-y { left: 0; top: 18px; bottom: 0; width: 18px; border-right: 1px solid var(--line-strong);
+  background-image: repeating-linear-gradient(to bottom, var(--line-strong) 0 1px, transparent 1px 10%), repeating-linear-gradient(to bottom, var(--line) 0 1px, transparent 1px 2.5%);
+  background-size: 8px 100%, 4px 100%; background-position: 100% 0, 100% 0; background-repeat: no-repeat; }
+.ruler-x span { position: absolute; top: 2px; }
+.ruler-y span { position: absolute; left: 2px; writing-mode: vertical-rl; transform: rotate(180deg); }
+.ruler-mark { position: absolute; background: var(--accent); }
+.canvas { position: relative; box-shadow: 0 0 0 1px var(--line-strong); }
+.safe { position: absolute; inset: 5%; border: 1px dashed rgb(255 255 255 / 0.22); pointer-events: none; }
+.guide-v { position: absolute; top: 0; bottom: 0; left: 50%; width: 0; border-left: 1px dashed var(--accent); }
+.guide-tag { position: absolute; left: calc(50% + 6px); top: 8px; }
+.el { position: absolute; display: grid; place-items: center; text-align: center; color: #fff; font-family: var(--font-display); font-weight: var(--fw-semibold); line-height: 1.3; }
+.el--body { left: 10%; top: 31.5%; width: 80%; height: 37%; font-size: 3.75cqw; }
+.el--ref { left: 10%; bottom: 8%; width: 80%; height: 7%; font-size: 1.6cqw; font-weight: var(--fw-medium); color: rgb(255 255 255 / 0.7); font-family: var(--font-ui); }
+.el.is-sel { outline: 1.5px solid var(--accent); }
+.handle { position: absolute; width: 9px; height: 9px; background: #fff; border: 1.5px solid var(--accent); border-radius: 2px; }
+.handle.tl { left: -5px; top: -5px; } .handle.tr { right: -5px; top: -5px; } .handle.bl { left: -5px; bottom: -5px; } .handle.br { right: -5px; bottom: -5px; }
+.handle.tm { left: calc(50% - 4.5px); top: -5px; } .handle.bm { left: calc(50% - 4.5px); bottom: -5px; }
+.handle.ml { top: calc(50% - 4.5px); left: -5px; } .handle.mr { top: calc(50% - 4.5px); right: -5px; }
+.dim { position: absolute; left: 50%; bottom: -30px; transform: translateX(-50%); }
+.slot-tag { position: absolute; left: 0; top: -24px; display: inline-flex; gap: 6px; align-items: center; }
+.canvas-tools { position: absolute; right: var(--sp-5); bottom: var(--sp-3); display: flex; gap: 6px; align-items: center; }
+.lyrics { flex: none; border-top: 1px solid var(--line); background: var(--bg-panel); display: grid; grid-template-rows: 40px auto; }
+.lyrics__head { display: flex; align-items: center; gap: var(--sp-2); padding: 0 var(--sp-3) 0 var(--sp-5); border-bottom: 1px solid var(--line); }
+.lyrics__head b { font-size: var(--fs-125); }
+.lyrics__body { display: grid; grid-template-columns: minmax(0, 1fr) 220px; min-height: 0; }
+.lyrics__text { margin: 0; padding: var(--sp-3) var(--sp-5); height: 196px; overflow: auto; font: var(--fs-13)/1.65 var(--font-ui); color: var(--text); white-space: pre-wrap; background: var(--bg-stage); outline: none; }
+.lyrics__text .tag { font-family: var(--font-num); font-size: var(--fs-12); font-weight: var(--fw-semibold); color: var(--c); }
+.lyrics__text .cur { background: var(--accent-soft); box-shadow: inset 2px 0 0 var(--accent); display: inline-block; width: 100%; }
+.lyrics__help { padding: var(--sp-3) var(--sp-4); border-left: 1px solid var(--line); font-size: var(--fs-12); color: var(--text-3); display: grid; gap: 6px; align-content: start; }
+.lyrics__help code { font-family: var(--font-num); color: var(--text-2); }
+html[data-state="lyrics-closed"] .lyrics__body { display: none; }
+html[data-state="lyrics-closed"] .canvas-box { width: min(100%, calc((100vh - 250px) * 16 / 9)); }
+/* Danh sách đoạn và trang */
+.grp { padding: var(--sp-2) 0; border-bottom: 1px solid var(--line); }
+.grp__head { display: flex; align-items: center; gap: var(--sp-2); padding: 4px var(--sp-3) 6px var(--sp-4); font-size: var(--fs-12); font-weight: var(--fw-semibold); }
+.grp__head .chip__dot { width: 8px; height: 8px; border-radius: 2px; background: var(--c); }
+.grp__head .faint { font-weight: var(--fw-regular); margin-left: auto; font-family: var(--font-num); font-size: var(--fs-11); }
+.sl { display: grid; grid-template-columns: 16px 92px minmax(0, 1fr); gap: var(--sp-2); align-items: center; padding: 4px var(--sp-3) 4px var(--sp-4); border-left: 2px solid transparent; }
+.sl:hover { background: var(--bg-hover); }
+.sl.is-selected { background: var(--accent-soft); border-left-color: var(--accent); }
+.sl__num { font: var(--fs-11) var(--font-num); color: var(--text-3); }
+.sl .slide-render { border-radius: 4px; box-shadow: 0 0 0 1px var(--line-strong); }
+.sl .slide-render__text { font-size: 7cqw; }
+.sl__txt { font-size: var(--fs-11); color: var(--text-2); line-height: 1.35; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.sl.is-selected .sl__txt { color: var(--text); }
+.insp { padding: var(--sp-3) var(--sp-4); display: grid; gap: var(--sp-4); }
+.insp__row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-2); }
+.insp__line { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); min-height: 28px; font-size: var(--fs-125); }
+.insp__line > span { display: inline-flex; align-items: center; gap: 6px; }
+.insp__group { display: grid; gap: var(--sp-2); padding-top: var(--sp-3); border-top: 1px solid var(--line); }
+.insp__title { font-size: var(--fs-12); font-weight: var(--fw-semibold); color: var(--text-2); display: flex; justify-content: space-between; align-items: center; }
+.ctx { position: absolute; left: 160px; top: 230px; z-index: 30; }
+</style>
+</head>
+<body>
+<div class="win">
+  <header class="toolbar">
+    <div class="traffic" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="seg" role="tablist" aria-label="Chế độ">
+      <a href="live.html" role="tab" aria-selected="false">Trực tiếp</a>
+      <a class="is-selected" href="editor.html" role="tab" aria-selected="true">Soạn thảo</a>
+    </div>
+    <div class="toolbar__group" style="margin-left:var(--sp-3)">
+      <button class="ibtn" aria-label="Hoàn tác" data-tip="Hoàn tác" data-kbd="⌘Z" data-icon="undo"></button>
+      <button class="ibtn" aria-label="Làm lại" data-tip="Làm lại" data-kbd="⇧⌘Z" data-icon="redo"></button>
+    </div>
+    <div class="toolbar__spacer"></div>
+    <div class="toolbar__group" role="group" aria-label="Thêm phần tử">
+      <button class="btn" data-icon="text" data-tip="Thêm ô chữ" data-kbd="T">Chữ</button>
+      <button class="btn" data-icon="photo" data-tip="Thêm ảnh từ Media hoặc kéo tệp vào">Ảnh</button>
+      <button class="btn" data-icon="film" data-tip="Thêm video">Video</button>
+      <button class="btn" data-icon="shape" data-tip="Thêm hình chữ nhật">Hình</button>
+    </div>
+    <div class="toolbar__spacer"></div>
+    <div class="toolbar__group">
+      <span class="meter"><i class="lamp is-ok"></i>Đã lưu 9:41</span>
+      <button class="btn" data-icon="import" data-tip="Nhập OpenLyrics, PDF, văn bản lời" data-kbd="⌘I" data-tip-pos="left">Nhập</button>
+      <a class="btn btn--primary" href="live.html" data-icon="live">Lên màn<span class="kbd">⌘↵</span></a>
+    </div>
+  </header>
+
+  <div class="cols">
+    <aside class="left panel" aria-label="Đoạn và trang">
+      <div class="panel__head"><span class="panel__title" style="font-size:var(--fs-15)">Đoạn và trang</span><span class="panel__meta" style="margin-left:auto">7 trang</span>
+        <button class="ibtn ibtn--sm" aria-label="Thêm trang" data-tip="Thêm trang" data-kbd="⌘↩" data-tip-pos="left" data-icon="plus"></button></div>
+      <div class="panel__body" id="groups"></div>
+    </aside>
+
+    <main class="center" aria-label="Khung vẽ">
+      <div class="doc-head">
+        <h1>Đấng Chăn Giữ Tôi</h1>
+        <span class="chip chip--tag" style="--c:transparent">Bài hát</span>
+        <div class="arr" aria-label="Thứ tự hát">
+          <span class="faint">Thứ tự hát</span>
+          <select class="select" style="width:auto;height:24px;font-size:12px" aria-label="Chọn thứ tự hát"><option>Mặc định</option><option>Rút gọn</option></select>
+          <span id="arr" style="display:contents"></span>
+          <button class="chip chip--add" aria-label="Thêm đoạn vào thứ tự hát" data-tip="Thêm đoạn vào thứ tự hát" data-tip-pos="left"><svg class="i i--sm"><use href="#i-plus"/></svg></button>
+        </div>
+      </div>
+      <div class="stage-area">
+        <div class="canvas-box">
+          <div class="ruler-x" aria-hidden="true"><span style="left:0">0</span><span style="left:25%">480</span><span style="left:50%">960</span><span style="left:75%">1440</span><i class="ruler-mark" style="left:10%;width:80%;bottom:0;height:2px"></i></div>
+          <div class="ruler-y" aria-hidden="true"><span style="top:2px">0</span><span style="top:50%">540</span><i class="ruler-mark" style="top:31.5%;height:37%;right:0;width:2px"></i></div>
+          <div class="canvas slide-render" style="display:block">
+            <div class="safe" aria-hidden="true"></div>
+            <div class="guide-v" aria-hidden="true"></div>
+            <span class="pill pill--live guide-tag">Tâm</span>
+            <div class="el el--body is-sel" id="el-body">
+              <span class="slot-tag"><span class="pill pill--neutral">Ô mẫu: Thân</span><span class="pill pill--neutral">Khoá theo mẫu</span></span>
+              <span>Dù qua trũng bóng tối tăm<br>Tôi chẳng sợ điều chi</span>
+              <i class="handle tl"></i><i class="handle tm"></i><i class="handle tr"></i><i class="handle ml"></i><i class="handle mr"></i><i class="handle bl"></i><i class="handle bm"></i><i class="handle br"></i>
+              <span class="pill pill--neutral dim num">X 192 · Y 340 · 1536 × 400</span>
+            </div>
+            <div class="el el--ref">Đấng Chăn Giữ Tôi · Điệp khúc</div>
+          </div>
+        </div>
+        <div class="canvas-tools">
+          <span class="faint" style="font-size:12px">Thu phóng</span>
+          <select class="select" style="width:auto;height:24px;font-size:12px" aria-label="Thu phóng khung vẽ"><option>Vừa khung</option><option>100%</option><option>50%</option></select>
+        </div>
+      </div>
+      <section class="lyrics" aria-label="Ô soạn lời">
+        <div class="lyrics__head">
+          <svg class="i" aria-hidden="true"><use href="#i-note"/></svg><b>Lời bài hát</b>
+          <span class="faint" style="font-size:12px">Sửa ở đây hoặc trên khung vẽ, hai bên tự khớp</span>
+          <span style="flex:1"></span>
+          <button class="btn btn--sm" data-icon="split" data-tip="Chia trang dài theo số dòng của mẫu" data-tip-pos="left">Chia trang theo mẫu</button>
+          <button class="ibtn ibtn--sm ibtn--bare" aria-label="Thu gọn ô lời" data-tip="Thu gọn ô lời" data-tip-pos="left" data-icon="chevron-down" id="toggle-lyrics"></button>
+        </div>
+        <div class="lyrics__body">
+          <div class="lyrics__text" contenteditable="true" spellcheck="false" aria-label="Lời bài hát dạng văn bản" id="lyrics"></div>
+          <div class="lyrics__help">
+            <span><code>[Câu 1]</code>, <code>[Điệp khúc]</code>, <code>[Cầu nối]</code>, <code>[Kết]</code> mở một đoạn mới.</span>
+            <span>Một dòng trống tách hai trang.</span>
+            <span>Dừng gõ 0,4 giây là lưới trang cập nhật; <span class="kbd">⌘Z</span> hoàn tác cả lần khớp.</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="right panel" aria-label="Thuộc tính">
+      <nav class="tabs" aria-label="Nhóm thuộc tính" id="insp-tabs">
+        <button class="is-selected">Chữ</button><button>Bố cục</button><button>Nền trang</button><button>Bộ trình chiếu</button>
+      </nav>
+      <div class="panel__body">
+        <div class="insp">
+          <div class="field">
+            <span class="field__label">Phông chữ</span>
+            <select class="select" aria-label="Phông chữ"><option>Hệ thống (theo mẫu)</option><option>SF Pro Display</option><option>Be Vietnam Pro</option></select>
+          </div>
+          <div class="insp__row">
+            <div class="field"><span class="field__label">Độ đậm</span><select class="select" aria-label="Độ đậm"><option>Đậm vừa</option><option>Đậm</option><option>Thường</option></select></div>
+            <div class="field"><span class="field__label"><i class="override-dot" title="Đang khác mẫu"></i>Cỡ chữ</span><div class="input-unit"><input class="input input--num" value="72" aria-label="Cỡ chữ"><span>pt</span></div></div>
+          </div>
+          <div class="insp__row">
+            <div class="field"><span class="field__label">Căn ngang</span>
+              <div class="seg seg--block seg--icon" role="group" aria-label="Căn ngang"><button aria-label="Trái" data-icon="align-left"></button><button class="is-selected" aria-label="Giữa" data-icon="align-center"></button><button aria-label="Phải" data-icon="align-right"></button></div></div>
+            <div class="field"><span class="field__label">Căn dọc</span>
+              <div class="seg seg--block seg--icon" role="group" aria-label="Căn dọc"><button aria-label="Trên" data-icon="valign-top"></button><button class="is-selected" aria-label="Giữa" data-icon="valign-middle"></button><button aria-label="Dưới" data-icon="valign-bottom"></button></div></div>
+          </div>
+          <div class="field">
+            <span class="field__label">Màu chữ</span>
+            <div style="display:flex;gap:6px;align-items:center"><span class="swatch" style="--c:#ffffff"><span></span></span><input class="input num" value="#FFFFFF" aria-label="Mã màu chữ" style="font-family:var(--font-num);font-size:12px"></div>
+          </div>
+          <div class="field"><span class="field__label" style="justify-content:space-between">Khoảng dòng<span class="num faint">1,30</span></span><input class="slider" type="range" value="40" style="--v:40%" aria-label="Khoảng dòng"></div>
+          <div class="field"><span class="field__label" style="justify-content:space-between">Khoảng chữ<span class="num faint">0</span></span><input class="slider" type="range" value="50" style="--v:50%" aria-label="Khoảng chữ"></div>
+          <div class="insp__group">
+            <div class="insp__line"><span>Chữ hoa</span><label class="switch"><input type="checkbox" aria-label="Chữ hoa"><span></span></label></div>
+            <div class="insp__line"><span>Viền chữ</span><label class="switch"><input type="checkbox" aria-label="Viền chữ"><span></span></label></div>
+            <div class="insp__line"><span><i class="override-dot"></i>Bóng chữ</span><label class="switch"><input type="checkbox" checked aria-label="Bóng chữ"><span></span></label></div>
+            <div class="insp__line"><span>Hộp nền sau chữ</span><label class="switch"><input type="checkbox" aria-label="Hộp nền sau chữ"><span></span></label></div>
+            <div class="insp__line"><span>Co chữ cho vừa khung</span><label class="switch"><input type="checkbox" checked aria-label="Co chữ cho vừa khung"><span></span></label></div>
+          </div>
+          <div class="insp__group">
+            <div class="insp__title">2 thuộc tính đang khác mẫu "Đêm sâu"</div>
+            <button class="btn btn--block" data-icon="undo">Về theo mẫu</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="ctx" id="ctx" hidden>
+    <div class="menu" role="menu">
+      <button>Thêm trang<span class="kbd">⌘↩</span></button>
+      <button>Nhân đôi<span class="kbd">⌘D</span></button>
+      <button>Tắt trang</button>
+      <hr>
+      <button>Tách trang tại con trỏ</button>
+      <button>Gộp với trang sau</button>
+      <hr>
+      <button>Đổi nhãn đoạn…</button>
+      <button>Đổi màu đoạn</button>
+      <hr>
+      <button class="is-danger">Xoá đoạn "Điệp khúc"…<span class="kbd">⌫</span></button>
+    </div>
+  </div>
+  <div class="scrim" id="confirm" hidden>
+    <div class="dialog" role="alertdialog" aria-labelledby="dlg-t">
+      <h2 class="dialog__title" id="dlg-t">Xoá đoạn "Điệp khúc" và 2 trang?</h2>
+      <p class="dialog__body">Đoạn này cũng bị gỡ khỏi mọi thứ tự hát của bài. Bạn có thể Hoàn tác ngay sau khi xoá.</p>
+      <div class="dialog__actions"><button class="btn" id="dlg-cancel">Giữ lại</button><button class="btn btn--danger">Xoá đoạn</button></div>
+    </div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+(function () {
+  const D = window.TC_DATA, S = D.song, root = document.documentElement, $ = (s) => document.querySelector(s);
+  const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  let n = 0;
+  $("#groups").innerHTML = Object.entries(S.groups).map(([k, g]) =>
+    `<div class="grp"><div class="grp__head" style="--c:${g.c}"><i class="chip__dot"></i>${g.label}<span class="faint">${g.slides.length} trang</span></div>` +
+    g.slides.map((t, i) => { n++; return `<div class="sl${k === "ch" && i === 0 ? " is-selected" : ""}" tabindex="0"><span class="sl__num">${n}</span>` +
+      `<span class="slide-render"><span class="slide-render__text">${esc(t)}</span></span><span class="sl__txt">${esc(t.replace("\n", " / "))}</span></div>`; }).join("") + `</div>`).join("");
+  $("#arr").innerHTML = S.arrangement.map((g, i) => `<span class="chip chip--group${i === 1 ? " is-selected" : ""}" style="--c:${S.groups[g].c}" draggable="true" title="Kéo để đổi thứ tự">${S.groups[g].label}</span>`).join("");
+  $("#lyrics").innerHTML = Object.entries(S.groups).map(([k, g]) =>
+    `<span class="tag" style="--c:${g.c}">[${g.label}]</span>\n` + g.slides.map((t, i) => k === "ch" && i === 0 ? `<span class="cur">${esc(t)}</span>` : esc(t)).join("\n\n")).join("\n\n");
+  function apply() {
+    const st = root.getAttribute("data-state");
+    $("#ctx").hidden = st !== "menu";
+    $("#confirm").hidden = st !== "confirm";
+  }
+  document.addEventListener("mockstate", apply);
+  $("#dlg-cancel").onclick = () => { root.removeAttribute("data-state"); apply(); };
+  $("#toggle-lyrics").onclick = () => { const c = root.getAttribute("data-state") === "lyrics-closed"; if (c) root.removeAttribute("data-state"); else root.setAttribute("data-state", "lyrics-closed"); apply(); };
+  $("#insp-tabs").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; document.querySelectorAll("#insp-tabs button").forEach((x) => x.classList.toggle("is-selected", x === b)); });
+  apply();
+})();
+</script>
+</body>
+</html>

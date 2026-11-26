@@ -1,13 +1,13 @@
 /*
- * TrinhChieu · Biến thiết kế (design tokens)
+ * TrinhChieu · Biến thiết kế (design tokens) · Hướng 5 "Bàn trộn" (Phuoc tạm chọn 2026-11-27)
  * Một nguồn duy nhất cho màu, phông, cỡ chữ, khoảng cách, bo góc, thời lượng hiệu ứng.
- * Bố cục: cửa sổ Mac ba cột, nền than chì ngả nhẹ về màu chủ đạo; nội dung (trang chiếu) là thứ sáng nhất trên màn.
+ * Tinh thần: tối chuyên nghiệp, nút là khối rõ, viền đều 1 px, bo nhẹ 6 px,
+ * đèn trạng thái thở nhẹ ở chỗ đang hoạt động, luồng tín hiệu dạng nút và lớp.
  *
  * Thuộc tính trên <html>:
- *   data-theme  = "dark" (mặc định, quyết định 3) | "light"
- *   data-accent = "b" (khuyến nghị: lam ngọc) | "a" (xanh lam #2563EB)
- *   data-font   = "a" (khuyến nghị: phông hệ thống San Francisco) | "b" (Inter)
- * Bản Swift sẽ đọc bảng này ra Asset Catalog; tên biến giữ nguyên làm tên màu.
+ *   data-theme = "dark" (mặc định) | "light"
+ *   data-font  = "a" (khuyến nghị: San Francisco của hệ thống) | "b" (Inter đóng gói)
+ * Bản Swift đọc bảng này ra Asset Catalog; tên biến giữ nguyên làm tên màu.
  */
 
 @font-face { font-family: "Inter Mau"; font-weight: 400; font-style: normal; font-display: swap; src: url("fonts/Inter-Regular.woff2") format("woff2"); }
@@ -18,74 +18,77 @@
 :root {
   color-scheme: dark;
 
-  /* Mặt nền: bốn tầng, càng lên càng sáng */
-  --bg-desk: #0b0c0e;        /* nền ngoài cửa sổ (chỉ dùng trong mẫu) */
-  --bg-window: #121416;      /* thân cửa sổ, thanh công cụ */
-  --bg-panel: #16191c;       /* cột trái, cột phải */
-  --bg-stage: #0d0f11;       /* vùng lưới trang chiếu, khung vẽ: tối nhất để trang chiếu nổi lên */
-  --bg-raised: #1e2226;      /* ô nhập, thẻ, nút */
-  --bg-hover: #24292e;
-  --bg-pressed: #2b3137;
-  --bg-overlay: #1a1d21;     /* hộp thoại, bảng lệnh, chú giải */
-  --scrim: rgb(5 6 8 / 0.62);
+  /* Mặt nền: than chì ngả xanh đêm, bốn tầng, càng lên càng sáng */
+  --bg-desk: #060709;        /* nền ngoài cửa sổ (chỉ dùng trong mẫu) */
+  --bg-window: #0e0f13;      /* thân cửa sổ, thanh công cụ */
+  --bg-panel: #121318;       /* cột trái, cột phải */
+  --bg-stage: #08090b;       /* vùng lưới trang chiếu, khung vẽ: tối nhất để trang chiếu nổi lên */
+  --bg-raised: #1a1c22;      /* nút, ô nhập, nút lớp đang có nội dung */
+  --bg-hover: #22252c;
+  --bg-pressed: #2a2d35;
+  --bg-overlay: #17191e;     /* hộp thoại, bảng lệnh, chú giải */
+  --scrim: rgb(3 4 6 / 0.66);
 
-  --line: #262b30;           /* đường chia mảnh */
-  --line-strong: #353b42;    /* viền ô nhập, thẻ */
-  --line-focus-gap: #0d0f11;
+  --line: #23252c;           /* đường chia vùng */
+  --line-strong: #363944;    /* viền mọi điều khiển: một độ dày, một màu */
 
-  --text: #e9ebed;
-  --text-2: #a9b0b8;         /* chữ phụ */
-  --text-3: #8a929b;         /* chữ phụ cấp ba, vẫn đạt AA trên --bg-panel */
-  --text-disabled: #5b636b;  /* chỉ dùng cho điều khiển bị tắt (WCAG miễn trừ) */
+  --text: #ecebe9;
+  --text-2: #a7a6aa;         /* chữ phụ */
+  --text-3: #8f8e94;         /* chữ phụ cấp ba, vẫn đạt AA trên --bg-panel */
+  --text-disabled: #5a5a61;  /* chỉ cho điều khiển bị tắt (WCAG miễn trừ) */
   --text-on-media: #ffffff;
 
-  /* Trạng thái (độc lập với màu chủ đạo) */
-  --warn: #f0aa3c;           /* Tập dượt, trễ giờ */
-  --warn-soft: rgb(240 170 60 / 0.14);
+  /* Màu chủ đạo: cam đất. Nghĩa duy nhất: "đang hoạt động, đang lên màn" */
+  --accent: #f0814a;
+  --accent-fill: #f0814a;
+  --on-accent: #1e0d03;
+  --accent-soft: rgb(240 129 74 / 0.13);
+  --accent-line: rgb(240 129 74 / 0.5);
+  --glow: rgb(240 129 74 / 0.32);    /* quầng thở của đèn trạng thái */
+
+  /* Trạng thái (mỗi nghĩa một màu, không trùng màu chủ đạo) */
+  --warn: #e6699d;           /* Tập dượt: hồng sen */
+  --warn-soft: rgb(230 105 157 / 0.14);
+  --late: #e8cf55;           /* trễ giờ: vàng chanh */
+  --late-ink: #1a1600;
   --freeze: #8fd4f4;         /* Đóng băng: xanh băng */
-  --freeze-soft: rgb(143 212 244 / 0.14);
-  --danger: #f27373;
-  --danger-fill: #c43d3d;
+  --freeze-soft: rgb(143 212 244 / 0.13);
+  --danger: #f47272;
+  --danger-fill: #c93a3a;
   --on-danger: #ffffff;
   --ok: #6fcf86;             /* đúng giờ, khung hình đều */
-  --ok-soft: rgb(111 207 134 / 0.14);
+  --ok-glow: rgb(111 207 134 / 0.35);
 
-  /* Màu đoạn (dải màu trên thẻ trang chiếu) */
+  /* Màu đoạn (vạch màu dưới thẻ trang chiếu, chip thứ tự hát) */
   --g-verse: #7f9ed9;        /* Câu */
   --g-chorus: #d88ea2;       /* Điệp khúc */
-  --g-bridge: #cfa86a;       /* Cầu nối */
+  --g-bridge: #b9a3e0;       /* Cầu nối */
   --g-ending: #98ad6c;       /* Kết */
-  --g-intro: #a493d6;        /* Dạo đầu */
+  --g-intro: #6fc1c9;        /* Dạo đầu */
 
-  /* Nội dung mẫu trên trang chiếu (không đổi theo sáng tối, vì là hình ra đầu ra) */
-  --slide-bg: #0f1a24;
-  --slide-bg-2: #050a0f;
-
-  /* Màu chủ đạo B (khuyến nghị): lam ngọc trầm */
-  --accent: #4cc3b6;          /* viền, chấm, chữ màu chủ đạo trên nền tối */
-  --accent-fill: #4cc3b6;     /* nền nút chính */
-  --on-accent: #062522;       /* chữ trên nút chính */
-  --accent-soft: rgb(76 195 182 / 0.16);  /* nền phiến chọn */
-  --accent-line: rgb(76 195 182 / 0.45);  /* viền rê chuột */
+  /* Nền mẫu trình bày trên trang chiếu (là hình ra đầu ra, không đổi theo sáng tối) */
+  --slide-bg: radial-gradient(130% 110% at 0% 100%, #3a2116 0%, #1a1414 45%, #0e1014 80%);
 
   /* Phông */
   --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Inter Mau", Inter, system-ui, sans-serif;
   --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", "Inter Mau", Inter, system-ui, sans-serif;
-  --font-mono: ui-monospace, "SF Mono", Menlo, "JetBrains Mono", monospace;
+  --font-num: ui-monospace, "SF Mono", Menlo, "JetBrains Mono", monospace;   /* giờ, phím tắt, bộ đếm */
 
   /* Cỡ chữ (px). Chữ nhỏ chỉ dùng 11, 12, 12.5 */
   --fs-11: 11px;
   --fs-12: 12px;
   --fs-125: 12.5px;
-  --fs-13: 13px;     /* chữ thân, đúng cỡ chuẩn của macOS */
+  --fs-13: 13px;     /* chữ thân, cỡ chuẩn macOS */
   --fs-15: 15px;     /* tiêu đề khối */
-  --fs-20: 20px;     /* tiêu đề cửa sổ, tiêu đề nguồn */
-  --fs-28: 28px;     /* đồng hồ */
-  --lh-tight: 1.25;
+  --fs-16: 16px;     /* tiêu đề cột */
+  --fs-26: 26px;     /* tiêu đề nguồn, tiêu đề cửa sổ */
+  --fs-40: 40px;     /* đồng hồ */
+  --lh-tight: 1.2;
   --lh-body: 1.45;
   --fw-regular: 400;
   --fw-medium: 500;
   --fw-semibold: 600;
+  --fw-bold: 700;
 
   /* Khoảng cách: lưới 4 */
   --sp-1: 4px;
@@ -96,91 +99,76 @@
   --sp-6: 24px;
   --sp-8: 32px;
 
-  /* Bo góc */
-  --r-xs: 4px;      /* chip nhỏ, kbd */
-  --r-sm: 6px;      /* nút, ô nhập */
-  --r-md: 8px;      /* thẻ trang chiếu */
-  --r-lg: 12px;     /* phiến chọn, hộp thoại */
-  --r-window: 12px;
+  /* Bo góc: nhẹ và đều */
+  --r-xs: 4px;      /* phím, ô đánh dấu */
+  --r: 6px;         /* mọi điều khiển, thẻ trang chiếu, nút lớp */
+  --r-lg: 8px;      /* phiến chọn trong danh sách */
+  --r-pop: 10px;    /* hộp thoại, bảng lệnh */
 
   /* Kích thước cố định */
-  --toolbar-h: 52px;
-  --control-h: 28px;
+  --toolbar-h: 48px;
+  --control-h: 30px;
   --control-h-sm: 24px;
+  --rail-left: 288px;
   --rail-right: 320px;
-  --rail-left: 280px;
 
-  /* Bóng: chỉ cho lớp nổi (hộp thoại, bảng lệnh, chú giải) */
-  --shadow-pop: 0 0 0 1px rgb(0 0 0 / 0.5), 0 12px 32px rgb(0 0 0 / 0.45);
+  /* Bóng: chỉ cho lớp nổi */
+  --shadow-pop: 0 0 0 1px rgb(0 0 0 / 0.55), 0 16px 40px rgb(0 0 0 / 0.5);
 
   /* Hiệu ứng */
   --dur-fast: 120ms;
   --dur: 160ms;
   --dur-slow: 200ms;
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-/* Màu chủ đạo A: xanh lam, tối */
-:root[data-accent="a"] {
-  --accent: #6b9cf8;
-  --accent-fill: #2563eb;
-  --on-accent: #ffffff;
-  --accent-soft: rgb(59 130 246 / 0.18);
-  --accent-line: rgb(107 156 248 / 0.5);
+  --breath: 2.6s;    /* một nhịp thở của đèn trạng thái */
 }
 
 /* ---------- Sáng ---------- */
 :root[data-theme="light"] {
   color-scheme: light;
-  --bg-desk: #d9dde1;
-  --bg-window: #eef0f2;
-  --bg-panel: #f7f8f9;
-  --bg-stage: #e6e9ec;
+  --bg-desk: #d6d3cf;
+  --bg-window: #efedea;
+  --bg-panel: #f8f7f5;
+  --bg-stage: #e5e2de;
   --bg-raised: #ffffff;
-  --bg-hover: #eceef1;
-  --bg-pressed: #e2e5e9;
+  --bg-hover: #ebe8e4;
+  --bg-pressed: #e0ddd8;
   --bg-overlay: #ffffff;
-  --scrim: rgb(20 24 28 / 0.32);
+  --scrim: rgb(20 18 16 / 0.32);
 
-  --line: #e0e3e7;
-  --line-strong: #cdd2d7;
-  --line-focus-gap: #ffffff;
+  --line: #dcd8d3;
+  --line-strong: #c9c4be;
 
-  --text: #16191c;
-  --text-2: #4e5761;
-  --text-3: #626b75;
-  --text-disabled: #a3aab2;
+  --text: #17161a;
+  --text-2: #504e55;
+  --text-3: #64616a;
+  --text-disabled: #a9a5a0;
 
-  --warn: #9a5800;
-  --warn-soft: rgb(214 132 18 / 0.14);
+  --accent: #9e4317;
+  --accent-fill: #9e4317;
+  --on-accent: #ffffff;
+  --accent-soft: rgb(158 67 23 / 0.1);
+  --accent-line: rgb(158 67 23 / 0.45);
+  --glow: rgb(158 67 23 / 0.25);
+
+  --warn: #b3326b;
+  --warn-soft: rgb(179 50 107 / 0.1);
+  --late: #8a6d00;
+  --late-ink: #ffffff;
   --freeze: #1b78a3;
-  --freeze-soft: rgb(27 120 163 / 0.12);
+  --freeze-soft: rgb(27 120 163 / 0.1);
   --danger: #c22f2f;
   --danger-fill: #c22f2f;
   --ok: #1d7f45;
-  --ok-soft: rgb(29 127 69 / 0.12);
+  --ok-glow: rgb(29 127 69 / 0.3);
 
   --g-verse: #5f80c4;
   --g-chorus: #c46d85;
-  --g-bridge: #b48a45;
+  --g-bridge: #8a72c0;
   --g-ending: #788f4b;
-  --g-intro: #8a77c4;
+  --g-intro: #3f9aa3;
 
-  --accent: #0a776f;
-  --accent-fill: #0a776f;
-  --on-accent: #ffffff;
-  --accent-soft: rgb(10 119 111 / 0.11);
-  --accent-line: rgb(10 119 111 / 0.4);
-
-  --shadow-pop: 0 0 0 1px rgb(15 20 25 / 0.08), 0 12px 32px rgb(15 20 25 / 0.16);
-}
-
-:root[data-theme="light"][data-accent="a"] {
-  --accent: #2563eb;
-  --accent-fill: #2563eb;
-  --on-accent: #ffffff;
-  --accent-soft: rgb(37 99 235 / 0.1);
-  --accent-line: rgb(37 99 235 / 0.4);
+  --shadow-pop: 0 0 0 1px rgb(20 16 12 / 0.08), 0 16px 40px rgb(20 16 12 / 0.16);
 }
 
 /* Phông B: Inter đóng gói kèm */
