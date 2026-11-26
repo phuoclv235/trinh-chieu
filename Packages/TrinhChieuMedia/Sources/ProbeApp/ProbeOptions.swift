@@ -59,7 +59,8 @@ struct ProbeOptions: Sendable {
             case "--no-pip":
                 options.pictureInPicture = false
             case "--duration", "--warmup", "--interval", "--dissolve":
-                guard let text = value(flag), let number = Double(text), number >= 0 else {
+                // Giới hạn 24 giờ để mọi phép đổi sang số nguyên đều an toàn.
+                guard let text = value(flag), let number = Double(text), number >= 0, number <= 86_400 else {
                     return .failure("Giá trị không hợp lệ cho \(flag)")
                 }
                 switch flag {

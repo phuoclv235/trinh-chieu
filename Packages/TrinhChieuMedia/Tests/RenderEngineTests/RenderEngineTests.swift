@@ -95,22 +95,24 @@ struct FrameStatsTests {
     func countsDrops() {
         let period = 1.0 / 60
         let stats = FrameStats(label: "thu", nominalPeriod: period)
-        stats.recordPresented(100)  // chưa ghi: bị bỏ qua
+        stats.recordPresented(100, now: 100)  // chưa ghi: bị bỏ qua
         stats.startRecording(at: 100)
         var time = 100.0
         for _ in 0..<10 {
             time += period
-            stats.recordPresented(time)
+            stats.recordPresented(time, now: time)
         }
         time += period * 2  // trễ một khung
-        stats.recordPresented(time)
-        stats.recordPresented(0)  // không lên màn
+        stats.recordPresented(time, now: time)
+        stats.recordPresented(0, now: time + period)  // không lên màn
+        time += period * 2  // khoảng trống của khung không lên màn: không đếm lần hai
+        stats.recordPresented(time, now: time)
         stats.recordSceneLatency(0.02)
         stats.recordGPUTime(0.003)
         stats.stopRecording(at: time)
 
         let snapshot = stats.snapshot(now: time)
-        #expect(snapshot.framesPresented == 11)
+        #expect(snapshot.framesPresented == 12)
         #expect(snapshot.lateFrames == 1)
         #expect(snapshot.framesNotPresented == 1)
         #expect(snapshot.droppedFrames == 2)

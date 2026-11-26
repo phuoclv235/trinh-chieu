@@ -153,7 +153,7 @@ public final class FrameLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked S
         let postedAt = outcome.newScenePostedAt
         drawable.addPresentedHandler { presented in
             let presentedTime = presented.presentedTime
-            stats.recordPresented(presentedTime)
+            stats.recordPresented(presentedTime, now: CACurrentMediaTime())
             if let postedAt, presentedTime > 0 {
                 stats.recordSceneLatency(presentedTime - postedAt)
             }

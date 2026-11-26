@@ -169,10 +169,15 @@ final class ProbeController {
         )
         let markdown = report.markdown()
         let reportURL = options.report ?? Self.defaultReportURL(startedAt: startedAt)
-        try markdown.write(to: reportURL, atomically: true, encoding: .utf8)
+        // In ra terminal trước, để số đo không mất nếu ghi tệp lỗi.
         Console.out("")
         Console.out(markdown)
-        Console.out("Đã ghi báo cáo: \(reportURL.path)")
+        do {
+            try markdown.write(to: reportURL, atomically: true, encoding: .utf8)
+            Console.out("Đã ghi báo cáo: \(reportURL.path)")
+        } catch {
+            Console.err("Không ghi được báo cáo vào \(reportURL.path): \(error)")
+        }
         return report.allPassed ? 0 : 1
     }
 

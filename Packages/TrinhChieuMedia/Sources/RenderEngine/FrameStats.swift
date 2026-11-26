@@ -28,6 +28,8 @@ public final class FrameStats: Sendable {
         var framesPresented = 0
         var framesNotPresented = 0
         var lateFrames = 0
+        /// Có khung không lên màn kể từ khung lên màn gần nhất: khoảng trống kế tiếp đã được đếm.
+        var gapAlreadyCounted = false
         var dropsPerMinute: [Int] = []
         var presentIntervals: [Double] = []
         var gpuTimes: [Double] = []
@@ -61,24 +63,28 @@ public final class FrameStats: Sendable {
         }
     }
 
-    /// Gọi từ `presentedHandler`. `presentedTime == 0` nghĩa là khung không được hiển thị.
-    public func recordPresented(_ presentedTime: Double) {
+    /// Gọi từ `presentedHandler`. `presentedTime == 0` nghĩa là khung không được hiển thị;
+    /// khi đó `now` (theo `CACurrentMediaTime`) dùng để xếp khung rớt vào đúng phút.
+    /// Khung không lên màn đã được đếm thì khoảng trống nó để lại không bị đếm thêm lần nữa.
+    public func recordPresented(_ presentedTime: Double, now: Double) {
         let period = nominalPeriod
         state.withLock { state in
             guard state.recording else { return }
             if presentedTime <= 0 {
                 state.framesNotPresented += 1
-                Self.addDrop(&state, at: state.lastPresented)
+                state.gapAlreadyCounted = true
+                Self.addDrop(&state, at: now)
                 return
             }
             if state.lastPresented > 0 {
                 let interval = presentedTime - state.lastPresented
                 state.presentIntervals.append(interval)
-                if interval > period * 1.5 {
+                if interval > period * 1.5, !state.gapAlreadyCounted {
                     state.lateFrames += 1
                     Self.addDrop(&state, at: presentedTime)
                 }
             }
+            state.gapAlreadyCounted = false
             state.lastPresented = presentedTime
             state.framesPresented += 1
         }
