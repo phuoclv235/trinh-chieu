@@ -81,11 +81,6 @@
 
   function ready(fn) { document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", fn) : fn(); }
 
-  ready(function () {
-    document.body.insertAdjacentHTML("afterbegin", sprite);
-    buildMockbar();
-  });
-
   const PAGES = window.MOCK_PAGES || [
     ["components.html", "Thành phần"],
     ["live.html", "Trực tiếp"],
@@ -94,6 +89,12 @@
     ["settings-outputs.html", "Cài đặt đầu ra"],
     ["stage.html", "Màn hình nhắc"],
   ];
+
+  // Gọi sau khi PAGES đã khai báo, để vẫn chạy đúng khi tệp được nạp sau lúc trang dựng xong
+  ready(function () {
+    document.body.insertAdjacentHTML("afterbegin", sprite);
+    buildMockbar();
+  });
 
   function buildMockbar() {
     const here = location.pathname.split("/").pop() || "index.html";
@@ -108,6 +109,7 @@
       `<button type="button" class="mockbar__toggle" title="Thu gọn hoặc mở thanh duyệt mẫu">Mẫu T0.3</button>` +
       `<span class="mockbar__sep"></span>` + PAGES.map(link).join("") +
       `<span class="mockbar__sep"></span>` + toggle("theme", "dark", "light", "Tối", "Sáng") +
+      // Trang thăm dò hướng (design/huong/, có MOCK_PAGES) cố định phông riêng nên không hiện nút đổi phông
       (window.MOCK_PAGES ? "" : `<span class="mockbar__sep"></span><span class="mockbar__tag">Phông</span>` + toggle("font", "a", "b", "A", "B") +
       "") +
       (states ? `<span class="mockbar__sep"></span><span class="mockbar__tag">Trạng thái</span>${states}` : "");

@@ -274,8 +274,8 @@
   document.addEventListener("keydown", (e) => {
     const meta = e.metaKey || e.ctrlKey;
     if (meta && e.key.toLowerCase() === "k") { e.preventDefault(); setState("palette"); return; }
-    if (e.key === "Escape") { setState(""); return; }
-    if (!$("#palette").hidden && e.key === "Enter") { live = 0; setState(""); toast("Giăng 3:16 đã lên màn (mẫu)"); return; }
+    if (e.key === "Escape") { if (!$("#palette").hidden) setState(""); return; }
+    if (!$("#palette").hidden && e.key === "Enter") { live = 0; render(); setState(""); toast("Giăng 3:16 đã lên màn (mẫu)"); return; }
     if (TC.isTyping(e)) return;
     if (meta && e.key.toLowerCase() === "r") { e.preventDefault(); $("#btn-rehearsal").click(); return; }
     if (meta && e.shiftKey && e.key.toLowerCase() === "f") { e.preventDefault(); $("#btn-freeze").click(); return; }
