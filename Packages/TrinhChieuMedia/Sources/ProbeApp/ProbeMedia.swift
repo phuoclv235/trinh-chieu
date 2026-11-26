@@ -117,6 +117,10 @@ enum ProbeMedia {
         let totalFrames = spec.seconds * spec.framesPerSecond
         for frame in 0..<totalFrames {
             while !input.isReadyForMoreMediaData {
+                guard writer.status == .writing else {
+                    let reason = writer.error.map { "\($0)" } ?? "trạng thái \(writer.status.rawValue)"
+                    throw MediaError.writerFailed(reason)
+                }
                 Thread.sleep(forTimeInterval: 0.002)
             }
             guard let pool = adaptor.pixelBufferPool else {
