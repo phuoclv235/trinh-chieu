@@ -27,7 +27,7 @@ Quy tắc ghi:
 - JSON mã hoá với `.prettyPrinted, .sortedKeys`, ngày giờ ISO 8601 UTC, để diff được và đồng bộ ít xung đột.
 - Xoá = chuyển vào `.trash/` kèm thời điểm xoá trong tên. Dọn sau 30 ngày khi mở ứng dụng.
 - Media trùng nội dung chỉ lưu một bản (theo SHA-256).
-- **Media liên kết** (NAS, Phuoc yêu cầu 2026-11-26): không có tệp trong `media/`, chỉ có `media/<id>.json` với `"origin": {"kind": "linked", "url": "https://..."}`; `id` là `l-` + 10 ký tự hex đầu của SHA-256 của URL. Bản tải về nằm ở `.cache/media/<id>.<ext>`, xoá được. Media chép vào thư viện có `"origin": {"kind": "copied"}`. Trường `origin` có từ schemaVersion 1 (giai đoạn 1 chỉ cần đọc ghi trường này; chức năng liên kết làm ở giai đoạn 2b).
+- **Media liên kết** (NAS, Phuoc yêu cầu 2026-11-26): không có tệp trong `media/`, chỉ có `media/<id>.json` với `"origin": {"kind": "linked", "url": "https://...", "provider": "slate", "etag": "..."}` (`provider` và `etag` không bắt buộc; với Slate, `url` là đường dẫn `/d/...`, không phải URL ký sẵn); `id` là `l-` + 10 ký tự hex đầu của SHA-256 của URL. Bản tải về nằm ở `.cache/media/<id>.<ext>`, xoá được. Media chép vào thư viện có `"origin": {"kind": "copied"}`. Trường `origin` có từ schemaVersion 1 (giai đoạn 1 chỉ cần đọc ghi trường này; chức năng liên kết làm ở giai đoạn 2b).
 
 ## 2. `Presentation` (bộ trình chiếu)
 
