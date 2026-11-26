@@ -14,6 +14,7 @@ let package = Package(
     products: [
         .library(name: "RenderEngine", targets: ["RenderEngine"]),
         .library(name: "MediaImport", targets: ["MediaImport"]),
+        .executable(name: "ProbeApp", targets: ["ProbeApp"]),
     ],
     dependencies: [
         .package(path: "../TrinhChieuCore")
@@ -28,5 +29,7 @@ let package = Package(
         .testTarget(name: "RenderEngineTests", dependencies: ["RenderEngine"], swiftSettings: commonSettings),
         .target(name: "MediaImport", dependencies: [coreModel], swiftSettings: commonSettings),
         .testTarget(name: "MediaImportTests", dependencies: ["MediaImport"], swiftSettings: commonSettings),
+        // Bản thử Metal (T0.4): `swift run -c release ProbeApp --help`.
+        .executableTarget(name: "ProbeApp", dependencies: ["RenderEngine"], swiftSettings: commonSettings),
     ]
 )
