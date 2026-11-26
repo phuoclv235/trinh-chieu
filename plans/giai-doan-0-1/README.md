@@ -70,7 +70,7 @@ Quy tắc điều phối:
 | 3 | macOS 15 trở lên, chỉ Apple Silicon |
 | 4 | Mac Apple Silicon 16 GB, 3 đầu ra (LED, máy chiếu phụ, màn hình nhắc), LED qua bộ xử lý nhận HDMI |
 | 5 | Tương tác 2 chiều gồm cả Zoom hai chiều và hội chúng gửi câu hỏi, bình chọn |
-| 6 | Bản Truyền Thống 1925 có sẵn nếu xác minh được là phạm vi công cộng; bản khác người dùng tự nhập; giao diện tiếng Việt |
+| 6 | Phuoc chốt (2026-11-26): cần **Bản Truyền Thống 1925** và **Bản Hiệu Đính 2010**. 1925 đóng gói sẵn nếu xác minh là phạm vi công cộng. 2010 còn bản quyền: chỉ đóng gói khi có giấy phép bằng văn bản của chủ sở hữu; trong lúc chờ, Phuoc tự nhập tệp cho dùng nội bộ. Giao diện tiếng Việt |
 | 7 | Tên mã `TrinhChieu`, giao diện xưng "Hệ thống" |
 
 ## Trạng thái

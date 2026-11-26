@@ -122,7 +122,7 @@ public enum RenderItem: Sendable, Equatable, Codable {
 | swift-protobuf | Đọc ProPresenter 7 | Apache 2.0 | 6 |
 | WhisperKit hoặc tương đương | Nhận dạng giọng nói trên máy | MIT | 7 |
 
-Công cụ phát triển (không đóng gói vào sản phẩm): **XcodeGen** để sinh dự án Xcode từ `App/project.yml`, cài bằng Homebrew trên máy Mac. Nếu Phuoc không cho phép, dùng phương án dự phòng ở T0.1.
+Công cụ phát triển (không đóng gói vào sản phẩm): **XcodeGen** để sinh dự án Xcode từ `App/project.yml`, cài bằng Homebrew trên máy Mac. **Phuoc đã cho phép ngày 2026-11-26.**
 
 Mọi thư viện khác: phải xin Phuoc (nêu tên, lý do, kích thước, phương án thay thế).
 
