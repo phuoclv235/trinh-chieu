@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thành phần · Mẫu TrinhChieu</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="ui.css">
+<script src="ui.js"></script>
+<style>
+/* Trang danh mục: chỉ dàn trang, mọi thành phần lấy từ ui.css */
+body { background: var(--bg-window); height: auto; }
+.page { max-width: 1180px; margin: 0 auto; padding: 32px 24px 96px; display: grid; gap: 40px; }
+.page > header h1 { margin: 0; font-family: var(--font-display); font-size: var(--fs-26); font-weight: var(--fw-bold); letter-spacing: -0.025em; }
+.page > header p { margin: 6px 0 0; color: var(--text-2); max-width: 720px; }
+.sec { display: grid; gap: 14px; }
+.sec h2 { margin: 0; font-size: var(--fs-15); font-weight: var(--fw-bold); }
+.sec > p { margin: 0; color: var(--text-3); font-size: var(--fs-12); }
+.demo { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 20px; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--bg-panel); }
+.demo--col { display: grid; align-items: start; }
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.sw { display: grid; gap: 6px; font-size: var(--fs-12); }
+.sw i { height: 44px; border-radius: var(--r); border: 1px solid var(--line-strong); background: var(--c); }
+.sw code { font-family: var(--font-num); font-size: var(--fs-11); color: var(--text-3); }
+.cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px 12px; width: 100%; padding: 16px; background: var(--bg-stage); border-radius: var(--r); }
+.w-320 { width: 292px; }
+.typo { display: grid; gap: 10px; }
+.typo span { display: flex; gap: 16px; align-items: baseline; }
+.typo code { width: 120px; flex: none; font-family: var(--font-num); font-size: var(--fs-11); color: var(--text-3); }
+.inline-pop { position: relative; display: grid; place-items: center; padding: 28px; width: 100%; background: var(--bg-stage); border-radius: var(--r); }
+.inline-pop .scrim, .inline-pop .toast-host { position: static; transform: none; background: none; }
+</style>
+</head>
+<body>
+<main class="page">
+  <header>
+    <h1>Thành phần dùng chung</h1>
+    <p>Hướng 5 · Bàn trộn. Mọi màn chỉ ghép các thành phần dưới đây. Viền điều khiển 1 px một màu, bo 6 px; cam đất chỉ dùng cho "đang hoạt động, đang lên màn"; chỉ đèn trạng thái và trang đang lên màn mới thở.</p>
+  </header>
+
+  <section class="sec"><h2>Màu</h2><p>Mỗi trạng thái một màu, không màu nào mang hai nghĩa.</p>
+    <div class="swatches">
+      <div class="sw"><i style="--c:var(--accent)"></i>Đang lên màn, đang hoạt động<code>--accent</code></div>
+      <div class="sw"><i style="--c:var(--warn)"></i>Tập dượt<code>--warn</code></div>
+      <div class="sw"><i style="--c:var(--freeze)"></i>Đóng băng<code>--freeze</code></div>
+      <div class="sw"><i style="--c:var(--late)"></i>Trễ giờ, mục thiếu tệp<code>--late</code></div>
+      <div class="sw"><i style="--c:var(--ok)"></i>Đúng giờ, khung hình đều<code>--ok</code></div>
+      <div class="sw"><i style="--c:var(--danger-fill)"></i>Xoá<code>--danger-fill</code></div>
+      <div class="sw"><i style="--c:var(--bg-stage)"></i>Nền lưới, khung vẽ<code>--bg-stage</code></div>
+      <div class="sw"><i style="--c:var(--bg-panel)"></i>Cột, thanh công cụ<code>--bg-panel</code></div>
+      <div class="sw"><i style="--c:var(--bg-raised)"></i>Nút, nút lớp bật<code>--bg-raised</code></div>
+      <div class="sw"><i style="--c:var(--g-verse)"></i>Đoạn: Câu<code>--g-verse</code></div>
+      <div class="sw"><i style="--c:var(--g-chorus)"></i>Đoạn: Điệp khúc<code>--g-chorus</code></div>
+      <div class="sw"><i style="--c:var(--g-ending)"></i>Đoạn: Kết<code>--g-ending</code></div>
+    </div>
+  </section>
+
+  <section class="sec"><h2>Chữ</h2>
+    <div class="demo typo">
+      <span><code>26 · đậm</code><b style="font:var(--fw-bold) var(--fs-26)/1.1 var(--font-display);letter-spacing:-.025em">Đấng Chăn Giữ Tôi</b></span>
+      <span><code>16 · đậm</code><b style="font:var(--fw-bold) var(--fs-16)/1.2 var(--font-display)">Chúa Nhật 30/11/2026</b></span>
+      <span><code>13 · thường</code><span>Chữ thân, cỡ chuẩn macOS. Lời chào và cầu nguyện mở đầu.</span></span>
+      <span><code>12.5 · đậm vừa</code><span style="font-size:var(--fs-125);font-weight:600">Nút, tab, nhãn điều khiển</span></span>
+      <span><code>12 · phụ</code><span style="font-size:var(--fs-12);color:var(--text-2)">Nhãn trường, chú thích</span></span>
+      <span><code>11 · số đều</code><span class="num" style="font-size:var(--fs-11);color:var(--text-3)">9:07 · 9:12:48 · ⌘⇧F · Trang 03 / 09</span></span>
+      <span><code>40 · đồng hồ</code><span class="clock__time" style="margin:0">9:12:48</span></span>
+    </div>
+  </section>
+
+  <section class="sec"><h2>Nút</h2><p>Nút chính dùng động từ. Nút phụ dạng biểu tượng luôn có chú giải kèm phím tắt (rê chuột để xem).</p>
+    <div class="demo">
+      <button class="btn btn--primary" data-icon="live">Lên màn<span class="kbd">⌘↵</span></button>
+      <button class="btn">Lưu thay đổi</button>
+      <button class="btn" data-icon="import">Nhập</button>
+      <button class="btn btn--danger">Xoá đoạn</button>
+      <button class="btn btn--quiet">Giữ lại</button>
+      <button class="btn" disabled>Không dùng được</button>
+      <button class="btn btn--sm">Nhỏ</button>
+      <button class="ibtn" aria-label="Hoàn tác" data-tip="Hoàn tác" data-kbd="⌘Z" data-icon="undo"></button>
+      <button class="ibtn is-on" aria-label="Cột phải" data-tip="Ẩn hoặc hiện cột phải" data-kbd="⌥⌘0" data-icon="sidebar"></button>
+      <button class="ibtn ibtn--sm" aria-label="Thêm" data-tip="Thêm mục" data-icon="plus"></button>
+    </div>
+    <div class="demo">
+      <button class="state-btn state-btn--rehearsal"><i class="lamp"></i>Tập dượt<span class="kbd kbd--bare">⌘R</span></button>
+      <button class="state-btn state-btn--rehearsal is-on"><i class="lamp"></i>Đang tập dượt<span class="kbd kbd--bare">⌘R</span></button>
+      <button class="state-btn state-btn--freeze"><i class="lamp"></i>Đóng băng<span class="kbd kbd--bare">⌘⇧F</span></button>
+      <button class="state-btn state-btn--freeze is-on"><i class="lamp"></i>Đóng băng<span class="kbd kbd--bare">⌘⇧F</span></button>
+      <span class="meter"><i class="lamp is-ok"></i>60 khung/giây</span>
+      <span class="kbd">⌘K</span><span class="kbd">F1</span>
+    </div>
+  </section>
+
+  <section class="sec"><h2>Đèn trạng thái</h2><p>Thở một nhịp 2,6 giây. Tắt khi máy bật "Giảm chuyển động".</p>
+    <div class="demo"><span><i class="lamp is-on"></i> Đang lên màn</span><span><i class="lamp is-ok"></i> Ổn định</span><span><i class="lamp"></i> Có kết nối, không phát</span><span><i class="lamp is-idle"></i> Trống</span><span><i class="lamp is-warn"></i> Tập dượt</span><span><i class="lamp is-freeze"></i> Đóng băng</span>
+      <span class="pill pill--live">Trên màn</span><span class="pill pill--next">Kế tiếp</span><span class="pill pill--warn">Đang tập dượt, đầu ra không đổi</span><span class="pill pill--freeze">Đang đóng băng</span><span class="pill pill--neutral">Ô mẫu: Thân</span></div>
+  </section>
+
+  <section class="sec"><h2>Điều khiển phân đoạn, tab, ô nhập</h2>
+    <div class="demo">
+      <div class="seg"><a class="is-selected" href="#">Trực tiếp</a><a href="#">Soạn thảo</a></div>
+      <div class="seg seg--icon"><button aria-label="Trái" data-icon="align-left"></button><button class="is-selected" aria-label="Giữa" data-icon="align-center"></button><button aria-label="Phải" data-icon="align-right"></button></div>
+      <label class="search" style="width:280px"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg><input placeholder="Tìm không cần dấu" aria-label="Tìm"><span class="kbd">⌘F</span></label>
+      <input class="input" style="width:180px" value="Giăng 3:16" aria-label="Địa chỉ câu">
+      <select class="select" style="width:200px" aria-label="Bản dịch"><option>Truyền Thống 1925</option></select>
+      <label class="switch"><input type="checkbox" checked aria-label="Bật"><span></span></label>
+      <label class="switch"><input type="checkbox" aria-label="Tắt"><span></span></label>
+      <input class="slider" type="range" value="40" style="--v:40%;width:160px" aria-label="Thanh trượt">
+      <span class="swatch" style="--c:#fff"><span></span></span>
+      <span class="check is-on"><svg class="i"><use href="#i-check"/></svg></span><span class="check"></span>
+    </div>
+    <div class="demo demo--col" style="padding:0;overflow:hidden">
+      <nav class="tabs"><button class="is-selected">Bài hát</button><button>Kinh Thánh</button><button>Media</button><button>Mẫu</button></nav>
+    </div>
+  </section>
+
+  <section class="sec"><h2>Danh sách và chip</h2>
+    <div class="demo demo--col" style="padding:0;max-width:340px">
+      <div class="list">
+        <div class="row row--heading">Thờ phượng</div>
+        <div class="row"><span class="row__time">9:03</span><span class="row__icon" data-icon="song"></span><span class="row__main"><span class="row__title">Thánh! Thánh! Thánh!</span><span class="row__sub">Thánh ca 1 · 4 câu</span></span><span class="row__trail">4′</span></div>
+        <div class="row is-selected"><span class="row__time">9:07</span><span class="row__icon" data-icon="song"></span><span class="row__main"><span class="row__title">Đấng Chăn Giữ Tôi</span><span class="row__sub">Bài hát · 9 trang</span></span><span class="row__trail"><i class="lamp is-on"></i>5′</span></div>
+        <div class="now-line"><span>9:12</span></div>
+        <div class="row is-missing"><span class="row__time">9:56</span><span class="row__icon" data-icon="film"></span><span class="row__main"><span class="row__title">Video Trại hè thiếu nhi 2026</span><span class="row__sub">Không tìm thấy</span></span><span class="row__trail">2′</span></div>
+      </div>
+    </div>
+    <div class="demo"><span class="chip" style="--c:var(--g-verse)">Câu 1</span><span class="chip is-selected" style="--c:var(--g-chorus)">Điệp khúc</span><span class="chip chip--group" style="--c:var(--g-ending)">Kết</span><span class="chip chip--tag">Thờ phượng</span><span class="chip chip--count">96</span></div>
+  </section>
+
+  <section class="sec"><h2>Thẻ trang chiếu</h2><p>Bình thường, rê chuột, kế tiếp (viền mảnh), đang lên màn (viền 2 px và quầng thở), tắt.</p>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <section class="sec"><h2>Xem trước, luồng tín hiệu, đồng hồ</h2>
+    <div class="demo" style="align-items:start">
+      <div class="w-320 preview"><div class="preview__head"><i class="lamp is-on"></i><span class="preview__name">Đầu ra chính</span><span class="preview__screen">Bộ xử lý LED</span></div>
+        <div class="preview__frame"><div class="slide-render"><div class="slide-render__text">Dù qua trũng bóng tối tăm
+Tôi chẳng sợ điều chi</div></div></div></div>
+      <div class="w-320 preview is-rehearsal"><div class="preview__head"><i class="lamp is-warn"></i><span class="preview__name">Đầu ra chính</span><span class="preview__screen">Tập dượt</span></div>
+        <div class="preview__frame"><div class="slide-render"><div class="slide-render__text">Ngài là Đấng chăn giữ tôi
+Tôi chẳng thiếu thốn gì</div></div><span class="preview__badge"><span class="pill pill--warn">Đầu ra không đổi</span></span></div></div>
+      <div class="w-320 preview"><div class="preview__head"><i class="lamp"></i><span class="preview__name">Màn hình nhắc</span></div>
+        <div class="preview__frame"><div class="stage-render"><p class="stage-render__item">Đấng Chăn Giữ Tôi · Điệp khúc</p><p class="stage-render__clock">09:12:48</p><p class="stage-render__cur">Dù qua trũng bóng tối tăm
+Tôi chẳng sợ điều chi</p><p class="stage-render__next">Vì Chúa luôn ở cùng tôi
+Cây gậy Ngài an ủi</p><p class="stage-render__note">Lần 1: cả ban nhạc vào</p></div></div></div>
+    </div>
+    <div class="demo" style="align-items:start">
+      <div class="w-320">
+        <div class="block__label">Luồng tín hiệu<span>Bấm một lớp để xoá</span></div>
+        <div class="flow">
+          <div class="flow__col">
+            <button class="node is-on"><i class="lamp is-on"></i><span class="node__main"><b>Chữ</b><span>Dù qua trũng bóng tối tăm</span></span><span class="kbd kbd--bare">F2</span><i class="port port--out"></i></button>
+            <button class="node is-on"><i class="lamp is-on"></i><span class="node__main"><b>Nền</b><span>Mẫu Đêm sâu</span></span><span class="kbd kbd--bare">F3</span><i class="port port--out"></i></button>
+            <button class="node"><i class="lamp is-idle"></i><span class="node__main"><b>Âm thanh</b><span>Không phát</span></span><span class="kbd kbd--bare">F4</span><i class="port port--out"></i></button>
+          </div>
+          <svg class="wires" viewBox="0 0 46 148" preserveAspectRatio="none" aria-hidden="true"><path class="wire is-on" d="M0 22 C 26 22, 20 40, 46 40"/><path class="wire is-on" d="M0 74 C 26 74, 20 40, 46 40"/><path class="wire is-on" d="M0 22 C 26 22, 20 108, 46 108"/><path class="wire is-off" d="M0 126 C 14 126, 18 126, 24 126"/></svg>
+          <div class="flow__col flow__col--out">
+            <div class="out-node is-on"><i class="port port--in is-on"></i><i class="lamp is-on"></i><b>Đầu ra chính</b><span>LED · HDMI</span></div>
+            <div class="out-node"><i class="port port--in is-on"></i><i class="lamp"></i><b>Màn hình nhắc</b><span>Bục giảng</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="w-320">
+        <div class="clock__time">9:12:48</div>
+        <div class="clock__row"><span>Mục này bắt đầu</span><b>9:10</b></div>
+        <div class="clock__row"><span>So với dự kiến 9:07</span><b class="is-late">Trễ 3 phút</b></div>
+        <div class="clock__row"><span>Mục trước</span><b class="is-ok">Sớm 1 phút</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec"><h2>Bảng</h2>
+    <div class="demo demo--col" style="padding:0 12px 12px">
+      <table class="table"><colgroup><col style="width:40px"><col><col style="width:72px"><col style="width:30%"><col style="width:130px"></colgroup>
+        <thead><tr><th class="col-check"><span class="check"></span></th><th class="is-sorted">Tên</th><th class="col-num">Số</th><th>Tác giả</th><th>Sửa lần cuối</th></tr></thead>
+        <tbody><tr><td class="col-check"><span class="check"></span></td><td><mark>Bình An</mark> Như Dòng Sông</td><td class="col-num">47</td><td>Horatio G. Spafford</td><td class="col-date">09/11/2026</td></tr>
+          <tr class="is-selected"><td class="col-check"><span class="check is-on"><svg class="i"><use href="#i-check"/></svg></span></td><td>Ân Điển Lạ Lùng</td><td class="col-num">302</td><td>John Newton</td><td class="col-date">14/11/2026</td></tr></tbody></table>
+    </div>
+  </section>
+
+  <section class="sec"><h2>Hộp xác nhận xoá, thông báo nhỏ, menu, bảng lệnh</h2><p>Xoá luôn nêu tên đối tượng và có Hoàn tác.</p>
+    <div class="inline-pop" style="gap:24px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));align-items:start">
+      <div class="dialog" role="alertdialog"><h3 class="dialog__title">Xoá đoạn "Điệp khúc" và 2 trang?</h3><p class="dialog__body">Đoạn này cũng bị gỡ khỏi mọi thứ tự hát của bài.</p><div class="dialog__actions"><button class="btn">Giữ lại</button><button class="btn btn--danger">Xoá đoạn</button></div></div>
+      <div style="display:grid;gap:16px;justify-items:start">
+        <div class="toast" role="status">Đã xoá lớp Chữ<button class="btn btn--sm">Hoàn tác<span class="kbd kbd--bare">⌘Z</span></button></div>
+        <div class="menu"><button>Nhân đôi<span class="kbd">⌘D</span></button><button>Tắt trang</button><hr><button class="is-danger">Xoá đoạn "Điệp khúc"…<span class="kbd">⌫</span></button></div>
+      </div>
+    </div>
+    <div class="inline-pop">
+      <div class="palette" role="dialog" aria-label="Bảng lệnh"><div class="palette__input"><svg class="i i--lg" aria-hidden="true"><use href="#i-search"/></svg><input value="gi 3 16" aria-label="Gõ lệnh"><span class="kbd">Esc</span></div>
+        <div class="palette__group"><div class="palette__label">Kinh Thánh</div><div class="row is-selected"><span class="row__icon" data-icon="book"></span><span class="row__main"><span class="row__title">Giăng 3:16 <span class="faint">(TT1925)</span></span><span class="row__sub">Vì Đức Chúa Trời yêu thương thế gian, đến nỗi đã ban Con một của Ngài…</span></span><span class="palette__hint"><span class="kbd">↵</span></span></div></div>
+        <div class="palette__foot"><span><span class="kbd">↵</span> lên màn</span><span><span class="kbd">⌘↵</span> thêm vào chương trình</span></div></div>
+    </div>
+  </section>
+
+  <section class="sec"><h2>Cảnh báo, trạng thái rỗng, vùng thả, biểu mẫu</h2>
+    <div class="demo demo--col" style="padding:0;overflow:hidden"><div class="banner"><svg class="i" aria-hidden="true"><use href="#i-warning"/></svg><span class="banner__text">Màn "Máy chiếu phụ" vừa bị rút ra.</span><button class="btn btn--sm">Chọn lại màn hình</button></div></div>
+    <div class="demo" style="align-items:stretch">
+      <div class="empty" style="flex:1"><div class="empty__icon"><svg class="i i--xl"><use href="#i-song"/></svg></div><h3 class="empty__title">Thư viện chưa có bài hát nào</h3><p class="empty__body">Nhập tệp hoặc gõ lời một bài mới.</p><div class="empty__actions"><button class="btn">Nhập bài hát</button><button class="btn btn--primary">Tạo bài hát</button></div></div>
+      <div style="position:relative;flex:1;min-height:200px"><div class="dropzone" style="inset:0"><div class="dropzone__inner"><svg class="i i--xl"><use href="#i-import"/></svg><b>Thả để nhập 3 tệp</b></div></div></div>
+    </div>
+    <div class="form-group" style="max-width:640px"><div class="form-row"><span class="form-row__label"><b>Hết trang thì sang mục kế</b><span>Bấm → ở trang cuối sẽ lên trang đầu của mục sau</span></span><span class="form-row__control"><label class="switch"><input type="checkbox" checked aria-label="Hết trang thì sang mục kế"><span></span></label></span></div>
+      <div class="form-row"><span class="form-row__label"><b>Bản dịch mặc định</b></span><span class="form-row__control"><select class="select" style="width:200px" aria-label="Bản dịch mặc định"><option>Truyền Thống 1925</option></select></span></div></div>
+  </section>
+</main>
+<script src="data.js"></script>
+<script>
+(function () {
+  const s = window.TC_DATA.slides();
+  const st = ["", "hover", "is-next", "is-live"];
+  document.getElementById("cards").innerHTML = [0, 1, 3, 2].map((i, k) => {
+    const cls = k === 2 ? "is-next" : k === 3 ? "is-live" : "";
+    const tag = k === 3 ? '<span class="pill pill--live slide-card__tag">Trên màn</span>' : k === 2 ? '<span class="pill pill--next slide-card__tag">Kế tiếp</span>' : "";
+    const hover = k === 1 ? ' style="--c:' + s[i].c + '"' : ' style="--c:' + s[i].c + '"';
+    return `<button class="slide-card ${cls}"${hover}><span class="slide-card__frame"${k === 1 ? ' style="box-shadow:0 0 0 1px var(--accent-line)"' : ""}><span class="slide-render"><span class="slide-render__text">${s[i].text}</span></span>${tag}</span><span class="slide-card__meta"><span class="slide-card__num">0${i + 1}</span><span class="slide-card__label">${s[i].label}${k === 1 ? " · rê chuột" : ""}</span></span></button>`;
+  }).join("");
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+/*
+ * Khung chung cho 3 hướng thẩm mỹ: chỉ có bố cục (lưới cột) và cách dựng chữ trên trang chiếu.
+ * Màu, phông, viền, bo góc, mật độ nằm ở huong-1.css, huong-2.css, huong-3.css.
+ */
+:root { --g-verse: #7f9ed9; --g-chorus: #d88ea2; --g-bridge: #cfa86a; --g-ending: #98ad6c; }
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 13px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: default; }
+h1, h2, p, ol, ul { margin: 0; padding: 0; list-style: none; }
+kbd { font-family: var(--font-num, inherit); font-variant-numeric: tabular-nums; }
+svg.ic { width: 15px; height: 15px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+.app { height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+.tb { flex: none; display: flex; align-items: center; min-width: 0; }
+.tb-search { display: flex; align-items: center; min-width: 0; flex: 0 1 420px; }
+.tb-search span { flex: 1 1 auto; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.tb-right { margin-left: auto; display: flex; align-items: center; flex: none; }
+.traffic { display: flex; gap: 8px; flex: none; }
+.traffic span { width: 12px; height: 12px; border-radius: 50%; background: #ff5f57; }
+.traffic span:nth-child(2) { background: #febc2e; } .traffic span:nth-child(3) { background: #28c840; }
+.seg, .tgl, .fps { display: inline-flex; align-items: center; white-space: nowrap; flex: none; }
+
+.cols { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: var(--left-w, 280px) minmax(0, 1fr) var(--right-w, 320px); }
+.left, .right, .center { min-height: 0; min-width: 0; overflow: hidden; }
+.left { display: grid; grid-template-rows: minmax(0, 1.25fr) minmax(0, 1fr); }
+.plan, .lib { min-height: 0; display: flex; flex-direction: column; }
+.p-list, .l-list { flex: 1 1 auto; min-height: 0; overflow: auto; scrollbar-width: none; }
+.sec-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; flex: none; }
+.p-row { display: grid; grid-template-columns: var(--at-w, 38px) 18px minmax(0, 1fr) auto; align-items: center; column-gap: 8px; position: relative; }
+.p-main, .l-row { min-width: 0; }
+.p-title, .p-sub, .l-title, .l-meta { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.p-at, .p-dur, .c-num, .ck-time, .ck-row b, .l-no { font-variant-numeric: tabular-nums; }
+.p-dur { display: inline-flex; align-items: center; gap: 6px; }
+.p-ic { display: grid; place-items: center; }
+.p-now { position: relative; height: 0; }
+.tabs { display: flex; flex: none; overflow: hidden; }
+.tabs button { white-space: nowrap; }
+.l-search { display: flex; align-items: center; flex: none; }
+.l-row { display: grid; grid-template-columns: 30px minmax(0, 1fr); column-gap: 8px; align-items: baseline; }
+.l-meta { grid-column: 2; }
+
+.center { display: flex; flex-direction: column; }
+.c-head { flex: none; display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.c-titles { min-width: 0; }
+.c-tools { display: flex; align-items: center; flex-wrap: wrap; }
+.chip { display: inline-flex; align-items: center; white-space: nowrap; }
+.grid { flex: 1 1 auto; min-height: 0; overflow: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--card-min, 168px), 1fr)); align-content: start; }
+.card { display: grid; text-align: left; min-width: 0; }
+.c-frame, .pv-frame { container-type: inline-size; aspect-ratio: 16 / 9; position: relative; overflow: hidden; display: grid; place-items: center; text-align: center; color: #fff; background: var(--slide-bg, radial-gradient(120% 90% at 50% 110%, #12202c 0%, #04080c 70%)); }
+.c-text { font-weight: 600; font-size: 6.2cqw; line-height: 1.3; padding: 0 7cqw; text-wrap: balance; }
+.c-cap { display: flex; align-items: center; min-width: 0; }
+.c-label { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.c-tag { position: absolute; z-index: 2; white-space: nowrap; }
+
+.right { display: flex; flex-direction: column; overflow: auto; scrollbar-width: none; }
+.pv-head { display: flex; align-items: center; gap: 6px; min-width: 0; white-space: nowrap; }
+.pv-head span { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.pv-stage { background: #000; display: block; text-align: left; font-variant-numeric: tabular-nums; }
+.pv-stage > span { position: absolute; left: 2.5cqw; right: 2.5cqw; display: block; }
+.st-top { top: 1.8cqw; display: flex !important; justify-content: space-between; font-size: 3.4cqw; color: rgb(255 255 255 / 0.7); }
+.st-cur { top: 9cqw; font-size: 6cqw; font-weight: 600; line-height: 1.25; }
+.st-next { top: 34cqw; font-size: 4.3cqw; line-height: 1.25; color: rgb(255 255 255 / 0.55); }
+.st-note { bottom: 1.8cqw; font-size: 3.2cqw; color: #f0aa3c; }
+.lay-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+.lay, .clear-all { display: flex; align-items: center; justify-content: space-between; white-space: nowrap; }
+.ck-row { display: flex; justify-content: space-between; gap: 8px; }
+/* ---------- Thanh duyệt mẫu (không thuộc ứng dụng) ---------- */
+.mockbar {
+  position: fixed;
+  left: 12px;
+  bottom: 12px;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 10px;
+  background: #24282c;
+  color: #e9ebed;
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.08), 0 8px 24px rgb(0 0 0 / 0.4);
+  font: 500 12px/1 system-ui, sans-serif;
+  max-width: calc(100vw - 24px);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.mockbar[data-collapsed="true"] > :not(.mockbar__toggle) { display: none; }
+.mockbar a, .mockbar button { height: 24px; display: inline-flex; align-items: center; padding: 0 8px; border: 0; border-radius: 6px; background: transparent; color: #c5cbd1; text-decoration: none; white-space: nowrap; cursor: pointer; font: inherit; }
+.mockbar a:hover, .mockbar button:hover { background: rgb(255 255 255 / 0.08); color: #fff; }
+.mockbar .is-current { background: rgb(255 255 255 / 0.14); color: #fff; }
+.mockbar__sep { width: 1px; height: 16px; background: rgb(255 255 255 / 0.14); flex: none; }
+.mockbar__tag { color: #8d969f; padding: 0 6px; white-space: nowrap; }
+html[data-shot] .mockbar { display: none; }
+html[data-shot] *, html[data-shot] *::before, html[data-shot] *::after { animation: none !important; transition: none !important; }
+
+.dock { display: none; }
+.flow { display: none; }
