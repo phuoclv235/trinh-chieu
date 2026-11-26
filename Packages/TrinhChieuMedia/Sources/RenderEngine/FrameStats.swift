@@ -85,8 +85,9 @@ public final class FrameStats: Sendable {
                     let slots = max(1, Int((interval / period).rounded()) - 1)
                     let missed = max(0, slots - state.notPresentedSinceLast)
                     state.lateFrames += missed
-                    for _ in 0..<missed {
-                        Self.addDrop(&state, at: presentedTime)
+                    // Xếp mỗi nhịp bỏ lỡ vào đúng phút nó xảy ra (khoảng trống có thể vắt qua ranh giới phút).
+                    for index in 0..<missed {
+                        Self.addDrop(&state, at: state.lastPresented + period * Double(index + 1))
                     }
                 }
             }

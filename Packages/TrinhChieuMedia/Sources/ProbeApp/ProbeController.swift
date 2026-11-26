@@ -12,6 +12,7 @@ final class ProbeController {
         var screen: ScreenDescription
         var window: OutputWindow
         var loop: FrameLoop
+        var renderer: ProbeRenderer
     }
 
     private let options: ProbeOptions
@@ -98,7 +99,7 @@ final class ProbeController {
                 pixelHeight: Int(size.height),
                 maximumFramesPerSecond: screen.maximumFramesPerSecond
             )
-            outputs.append(Output(screen: description, window: window, loop: loop))
+            outputs.append(Output(screen: description, window: window, loop: loop, renderer: renderer))
         }
 
         // Dựng trước chữ cho mọi màn, để độ trễ đo được là của vòng vẽ, không phải của Core Text.
@@ -164,6 +165,7 @@ final class ProbeController {
             mediaDescriptions: media.descriptions,
             screens: outputs.map(\.screen),
             outputs: outputs.map { $0.loop.stats.snapshot(now: measureEnd) },
+            framesWithVideo: outputs.map(\.renderer.framesWithVideo),
             processSamples: sampler.samples,
             stoppedEarly: stopRequested
         )
@@ -179,7 +181,7 @@ final class ProbeController {
             Console.err("Không ghi được báo cáo vào \(reportURL.path): \(error)")
         }
         if report.isInvalid {
-            Console.err("Lần chạy không hợp lệ: có màn không nhận khung nào (màn hình khoá hoặc tắt?).")
+            Console.err("Lần chạy không hợp lệ: có màn không nhận khung nào hoặc video nền không giải mã được.")
             return 2
         }
         return report.allPassed ? 0 : 1

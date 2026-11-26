@@ -2,6 +2,7 @@ import CoreGraphics
 import Metal
 import QuartzCore
 import RenderEngine
+import os
 
 /// Cảnh của bản thử: chỉ có lời đang hiện. Nền, khung phụ và logo cố định.
 struct ProbeScene: Sendable, Equatable {
@@ -78,6 +79,8 @@ final class ProbeRenderer: FrameRenderer, @unchecked Sendable {
     private let dissolveDuration: Double
     private let nominalPeriod: Double
 
+    /// Số khung có vẽ được khung video nền; đọc từ luồng chính khi lập báo cáo.
+    private let videoFrames = OSAllocatedUnfairLock(initialState: 0)
     private var shownRevision: UInt64 = 0
     private var currentText: TextKey?
     private var previousText: TextKey?
@@ -103,6 +106,11 @@ final class ProbeRenderer: FrameRenderer, @unchecked Sendable {
         self.nominalPeriod = nominalPeriod
     }
 
+    /// Số khung đã vẽ có video nền. Bằng 0 nghĩa là video không giải mã được.
+    var framesWithVideo: Int {
+        videoFrames.withLock { $0 }
+    }
+
     func encodeFrame(_ frame: FrameContext) -> FrameOutcome {
         let layout = CanvasLayout(canvasSize: ProbeLayout.canvas, targetSize: frame.targetSize)
         let encoder = frame.encoder
@@ -118,6 +126,7 @@ final class ProbeRenderer: FrameRenderer, @unchecked Sendable {
                 fit: .fill
             )
             retained.append(video.retain)
+            videoFrames.withLock { $0 += 1 }
         }
         if let pictureInPicture, let video = pictureInPicture.frame(forHostTime: frame.targetPresentationTime) {
             compositor.drawQuad(

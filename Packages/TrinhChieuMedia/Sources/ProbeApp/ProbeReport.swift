@@ -17,6 +17,8 @@ struct ProbeReport {
     var mediaDescriptions: [String]
     var screens: [ScreenDescription]
     var outputs: [FrameStats.Snapshot]
+    /// Số khung có video nền của từng màn, cùng thứ tự với `outputs`.
+    var framesWithVideo: [Int]
     var processSamples: [ProcessSampler.Sample]
     var stoppedEarly: Bool
 
@@ -43,7 +45,7 @@ struct ProbeReport {
 
     /// Lần chạy không có khung nào lên màn (thường do màn hình đang khoá hoặc tắt): số đo vô nghĩa.
     var isInvalid: Bool {
-        outputs.isEmpty || outputs.contains { $0.framesPresented == 0 }
+        outputs.isEmpty || outputs.contains { $0.framesPresented == 0 } || framesWithVideo.contains(0)
     }
 
     var allPassed: Bool {
@@ -62,8 +64,9 @@ struct ProbeReport {
         lines.append("")
         if isInvalid {
             lines.append(
-                "> **Lần chạy không hợp lệ:** có màn không nhận khung nào. "
-                    + "Thường do màn hình đang khoá, tắt hoặc Mac đang ngủ. Mở khoá rồi chạy lại."
+                "> **Lần chạy không hợp lệ:** có màn không nhận khung nào (màn hình khoá, tắt hoặc Mac đang ngủ), "
+                    + "hoặc video nền không giải mã được. Số khung có video từng màn: "
+                    + framesWithVideo.map(String.init).joined(separator: ", ")
             )
             lines.append("")
         }

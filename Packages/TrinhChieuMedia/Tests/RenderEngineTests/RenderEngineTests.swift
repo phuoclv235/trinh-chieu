@@ -147,6 +147,18 @@ struct FrameStatsTests {
         #expect(snapshot.droppedFrames == 4)
     }
 
+    @Test("Khoảng dừng vắt qua ranh giới phút: nhịp bỏ lỡ xếp vào đúng phút")
+    func pauseAcrossMinuteBoundary() {
+        let period = 1.0 / 60
+        let stats = FrameStats(label: "thu", nominalPeriod: period)
+        stats.startRecording(at: 0)
+        let before = 60 - period * 1.5
+        stats.recordPresented(before, now: before)
+        stats.recordPresented(before + period * 5, now: before + period * 5)  // bỏ lỡ 4 nhịp
+        let snapshot = stats.snapshot(now: 61)
+        #expect(snapshot.dropsPerMinute == [1, 3])
+    }
+
     @Test("Phân vị theo hạng gần nhất")
     func percentile() {
         let values = (1...100).map(Double.init)
