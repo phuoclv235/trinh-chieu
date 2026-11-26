@@ -125,7 +125,8 @@ public enum TextRasterizer {
         context.setShouldSubpixelPositionFonts(true)
 
         let fontSize = style.fontSize * scale
-        let font = CTFontCreateUIFontForLanguage(.emphasizedSystem, fontSize, "vi" as CFString)
+        let font =
+            CTFontCreateUIFontForLanguage(.emphasizedSystem, fontSize, "vi" as CFString)
             ?? CTFontCreateWithName("Helvetica Neue" as CFString, fontSize, nil)
 
         var alignment = CTTextAlignment.center
