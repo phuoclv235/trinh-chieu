@@ -1,0 +1,8 @@
+# Sinh từ App/project.yml bằng XcodeGen
+App/*.xcodeproj
+.build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+.swiftpm/
+.DS_Store
