@@ -1,0 +1,16 @@
+{
+  "sourceLanguage" : "vi",
+  "strings" : {
+    "System ready" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hệ thống đã sẵn sàng"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

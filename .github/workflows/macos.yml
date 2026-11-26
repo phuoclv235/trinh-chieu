@@ -1,0 +1,24 @@
+name: macos
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+concurrency:
+  group: macos-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  macos:
+    # Chỉ chạy khi PR không còn nháp, hoặc khi đẩy vào main.
+    if: github.event_name == 'push' || github.event.pull_request.draft == false
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cài XcodeGen
+        run: brew install xcodegen
+      - name: Kiểm đầy đủ
+        run: scripts/check.sh --full

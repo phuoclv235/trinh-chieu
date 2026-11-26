@@ -1,0 +1,25 @@
+name: core
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: core-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  core:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    container: swift:6.1-noble
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: Packages/TrinhChieuCore/.build
+          key: core-build-${{ runner.os }}-${{ hashFiles('Packages/**/Package.swift', 'Packages/**/Package.resolved') }}
+          restore-keys: |
+            core-build-${{ runner.os }}-
+      - name: Kiểm nhanh
+        run: scripts/check.sh --quick

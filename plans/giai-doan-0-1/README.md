@@ -77,7 +77,7 @@ Quy tắc điều phối:
 
 | Mã | Trạng thái | PR |
 | --- | --- | --- |
-| T0.1 | Chưa bắt đầu | |
+| T0.1 | Đang làm (chờ CI) | |
 | T0.3 | Chưa bắt đầu | |
 | T0.4 | Chưa bắt đầu | |
 | T0.5 | Chưa bắt đầu | |
