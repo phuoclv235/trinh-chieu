@@ -1,0 +1,85 @@
+name: TrinhChieu
+
+options:
+  deploymentTarget:
+    macOS: "15.0"
+  createIntermediateGroups: true
+  generateEmptyDirectories: true
+
+packages:
+  TrinhChieuCore:
+    path: ../Packages/TrinhChieuCore
+  TrinhChieuMedia:
+    path: ../Packages/TrinhChieuMedia
+
+settings:
+  base:
+    # Giữ chỗ: đổi ở đây (một chỗ duy nhất) khi có tên thương mại.
+    PRODUCT_BUNDLE_IDENTIFIER: app.trinhchieu.TrinhChieu
+    MACOSX_DEPLOYMENT_TARGET: "15.0"
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    ARCHS: arm64
+    ONLY_ACTIVE_ARCH: YES
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    # Phân phối ngoài App Store: không bật App Sandbox.
+    ENABLE_APP_SANDBOX: NO
+  configs:
+    Debug:
+      # "Sign to Run Locally"
+      CODE_SIGN_IDENTITY: "-"
+      CODE_SIGN_STYLE: Automatic
+      # Hardened Runtime bật ở Release. Ở Debug tắt để gói test ký ad hoc nạp được vào ứng dụng.
+      ENABLE_HARDENED_RUNTIME: NO
+    Release:
+      # Ký Developer ID để trống, làm ở giai đoạn 8.
+      ENABLE_HARDENED_RUNTIME: YES
+
+targets:
+  TrinhChieu:
+    type: application
+    platform: macOS
+    sources:
+      - path: TrinhChieu
+        excludes:
+          - Info.plist
+          - TrinhChieu.entitlements
+      - path: Resources
+    settings:
+      base:
+        PRODUCT_NAME: TrinhChieu
+        INFOPLIST_FILE: TrinhChieu/Info.plist
+        CODE_SIGN_ENTITLEMENTS: TrinhChieu/TrinhChieu.entitlements
+        GENERATE_INFOPLIST_FILE: NO
+    dependencies:
+      - package: TrinhChieuCore
+        product: VietText
+      - package: TrinhChieuCore
+        product: CoreModel
+      - package: TrinhChieuCore
+        product: Scripture
+      - package: TrinhChieuCore
+        product: LibraryIndex
+      - package: TrinhChieuCore
+        product: LibraryStore
+      - package: TrinhChieuCore
+        product: Importers
+      - package: TrinhChieuMedia
+        product: RenderEngine
+      - package: TrinhChieuMedia
+        product: MediaImport
+    scheme:
+      testTargets:
+        - TrinhChieuTests
+
+  TrinhChieuTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: TrinhChieuTests
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: app.trinhchieu.TrinhChieuTests
+    dependencies:
+      - target: TrinhChieu
