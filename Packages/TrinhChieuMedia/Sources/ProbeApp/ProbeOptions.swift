@@ -85,8 +85,12 @@ struct ProbeOptions: Sendable {
                 options.frameLatency = number
             case "--screens":
                 guard let text = value(flag) else { return .failure("Thiếu giá trị cho --screens") }
-                let indices = text.split(separator: ",").compactMap { Int($0.trimmingCharacters(in: .whitespaces)) }
-                guard !indices.isEmpty else { return .failure("Giá trị không hợp lệ cho --screens") }
+                let tokens = text.split(separator: ",", omittingEmptySubsequences: false)
+                let indices = tokens.compactMap { Int($0.trimmingCharacters(in: .whitespaces)) }
+                let valid = indices.count == tokens.count && Set(indices).count == indices.count
+                guard !indices.isEmpty, valid, indices.allSatisfy({ $0 >= 0 }) else {
+                    return .failure("--screens cần các chỉ số màn khác nhau, không âm, cách nhau bằng dấu phẩy")
+                }
                 options.screenIndices = indices
             case "--video1", "--video2", "--report", "--media-dir":
                 guard let text = value(flag) else { return .failure("Thiếu giá trị cho \(flag)") }

@@ -79,9 +79,13 @@ public final class FrameStats: Sendable {
             if state.lastPresented > 0 {
                 let interval = presentedTime - state.lastPresented
                 state.presentIntervals.append(interval)
-                if interval > period * 1.5, !state.gapAlreadyCounted {
-                    state.lateFrames += 1
-                    Self.addDrop(&state, at: presentedTime)
+                if period > 0, interval > period * 1.5, !state.gapAlreadyCounted {
+                    // Khoảng trống dài bỏ lỡ nhiều nhịp làm tươi: đếm đủ số nhịp bị bỏ lỡ.
+                    let missed = max(1, Int((interval / period).rounded()) - 1)
+                    state.lateFrames += missed
+                    for _ in 0..<missed {
+                        Self.addDrop(&state, at: presentedTime)
+                    }
                 }
             }
             state.gapAlreadyCounted = false

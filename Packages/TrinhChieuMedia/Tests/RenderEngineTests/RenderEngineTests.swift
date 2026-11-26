@@ -121,6 +121,18 @@ struct FrameStatsTests {
         #expect(snapshot.gpuTimes == [0.003])
     }
 
+    @Test("Khoảng dừng dài đếm đủ số nhịp bị bỏ lỡ")
+    func longPauseCountsEveryMissedRefresh() {
+        let period = 1.0 / 60
+        let stats = FrameStats(label: "thu", nominalPeriod: period)
+        stats.startRecording(at: 10)
+        stats.recordPresented(10 + period, now: 10 + period)
+        stats.recordPresented(10 + period * 6, now: 10 + period * 6)  // bỏ lỡ 4 nhịp
+        let snapshot = stats.snapshot(now: 11)
+        #expect(snapshot.lateFrames == 4)
+        #expect(snapshot.droppedFrames == 4)
+    }
+
     @Test("Phân vị theo hạng gần nhất")
     func percentile() {
         let values = (1...100).map(Double.init)
