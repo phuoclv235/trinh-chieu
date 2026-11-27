@@ -79,7 +79,12 @@ struct ProbeReport {
 
     /// Lần chạy không có khung nào lên màn (thường do màn hình đang khoá hoặc tắt): số đo vô nghĩa.
     var isInvalid: Bool {
-        outputs.isEmpty || outputs.contains { $0.framesPresented == 0 } || (expectsVideo && framesWithVideo.contains(0))
+        // Vẽ theo nhu cầu không ghi khung lên màn vào `FrameStats`: lấy số của `LoadStats`.
+        let presented = outputs.enumerated().map { index, output in
+            let load = loadRun.flatMap { index < $0.loads.count ? $0.loads[index] : nil }
+            return options.onDemand ? (load?.presentedFrames ?? 0) : output.framesPresented
+        }
+        return outputs.isEmpty || presented.contains(0) || (expectsVideo && framesWithVideo.contains(0))
     }
 
     var allPassed: Bool {
@@ -481,6 +486,7 @@ struct ProbeReport {
             "Lớn nhất",
             "Sau nghỉ lớn nhất",
             "Dựng / bỏ nhịp / nghỉ",
+            "Không lên ngay sau nghỉ",
             "Tạo lại link",
         ]
         lines.append("| " + headers.joined(separator: " | ") + " |")
@@ -507,6 +513,7 @@ struct ProbeReport {
                 Self.ms(output.sceneLatencies.max() ?? 0),
                 afterIdle,
                 "\(load.renderedFrames) / \(load.skippedTicks) / \(paused)",
+                String(load.notPresentedAfterResume),
                 recoveries.isEmpty ? "0" : "\(load.recoveries.count) (\(recoveries))",
             ]
             lines.append("| " + cells.joined(separator: " | ") + " |")

@@ -26,6 +26,8 @@ struct ProbeLoopConfig: Sendable {
     var frameLatency: Int
     /// B1: chỉ dựng và present khi có gì mới; cảnh đứng yên thì cho display link nghỉ.
     var onDemand = false
+    /// B1 khi cảnh đứng yên: `true` cho display link nghỉ (`isPaused`), `false` để link chạy tiếp và chỉ bỏ nhịp.
+    var idlePause = true
     /// B2: luồng vẽ theo chính sách thời gian thực của Mach.
     var realtime = false
     /// B5: tạo lại display link ở lần đổi cảnh kế tiếp khi đường ống dài ra.
@@ -63,6 +65,14 @@ final class ProbeFrameLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked Sen
     private var previousTarget: Double = 0
     private var recentCallToTarget: [Double] = []
     private var recoverArmed = false
+    /// Cảnh mới nằm trong một khung không lên màn: chuyển thời điểm gửi sang khung lên màn kế tiếp, vì đó mới là
+    /// lúc khán giả thấy cảnh mới. Chỉ handler `presented` (theo thứ tự khung) đọc ghi.
+    private let carriedScene = OSAllocatedUnfairLock<CarriedScene?>(initialState: nil)
+
+    private struct CarriedScene: Sendable {
+        var postedAt: Double
+        var afterIdle: Bool
+    }
 
     init(
         label: String,
@@ -199,7 +209,9 @@ final class ProbeFrameLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked Sen
                 return
             case .idle:
                 loadStats.recordSkip()
-                pause(link)
+                if config.idlePause {
+                    pause(link)
+                }
                 return
             }
         }
@@ -230,6 +242,7 @@ final class ProbeFrameLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked Sen
         let loadStats = loadStats
         let continuous = !config.onDemand
         let postedAt = outcome.newScenePostedAt
+        let carriedScene = carriedScene
         drawable.addPresentedHandler { presented in
             let presentedTime = presented.presentedTime
             let now = CACurrentMediaTime()
@@ -237,13 +250,27 @@ final class ProbeFrameLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked Sen
             if continuous {
                 stats.recordPresented(presentedTime, now: now)
             }
-            loadStats.recordPresented(presentedTime, target: targetTime, afterIdle: afterIdle, now: now)
+            loadStats.recordPresented(presentedTime, target: targetTime, now: now)
             stats.recordFrameTiming(callback: callbackTime, target: targetTime, presented: presentedTime)
-            if let postedAt, presentedTime > 0 {
-                stats.recordSceneLatency(presentedTime - postedAt)
-                if afterIdle {
-                    loadStats.recordFirstAfterIdle(presentedTime - postedAt)
+            if presentedTime <= 0 {
+                if let postedAt {
+                    carriedScene.withLock { carried in
+                        if carried == nil {
+                            carried = CarriedScene(postedAt: postedAt, afterIdle: afterIdle)
+                        }
+                    }
                 }
+                return
+            }
+            let carried = carriedScene.withLock { carried in
+                let value = carried
+                carried = nil
+                return value
+            }
+            guard let sceneTime = carried?.postedAt ?? postedAt else { return }
+            stats.recordSceneLatency(presentedTime - sceneTime)
+            if afterIdle || carried?.afterIdle == true {
+                loadStats.recordFirstAfterIdle(presentedTime - sceneTime)
             }
         }
         let retained = outcome.retainedResources

@@ -37,6 +37,10 @@ final class LoadStats: Sendable {
         var firstAfterIdleLatencies: [Double]
         /// Thời điểm (giây kể từ lúc bắt đầu ghi) tạo lại display link.
         var recoveries: [Double]
+        /// Số khung lên màn (để biết lần chạy có hợp lệ không khi vẽ theo nhu cầu).
+        var presentedFrames: Int
+        /// Khung không lên màn ngay sau lúc display link chạy lại (trước khung đầu tiên lên màn).
+        var notPresentedAfterResume: Int
 
         var dropsPerMinuteAverage: Double {
             Double(droppedFrames) / max(recordingDuration / 60, 1.0 / 60)
@@ -72,6 +76,10 @@ final class LoadStats: Sendable {
         var pausedAt: Double?
         var firstAfterIdleLatencies: [Double] = []
         var recoveries: [Double] = []
+        var presentedFrames = 0
+        var notPresentedAfterResume = 0
+        /// Vừa chạy lại sau lúc nghỉ, chưa có khung nào lên màn.
+        var awaitingFirstAfterResume = false
     }
 
     let nominalPeriod: Double
@@ -147,6 +155,7 @@ final class LoadStats: Sendable {
                 state.pausedSeconds += max(0, time - pausedAt)
             }
             state.pausedAt = nil
+            state.awaitingFirstAfterResume = true
         }
     }
 
@@ -164,17 +173,24 @@ final class LoadStats: Sendable {
         }
     }
 
-    /// Gọi từ `presentedHandler`. `afterIdle` là khung đầu tiên sau lúc nghỉ: màn đang đứng yên nên lên màn chậm
-    /// một nhịp không phải là khựng (độ trễ đã được tính riêng), chỉ tính nhịp bị lỡ.
-    func recordPresented(_ presented: Double, target: Double, afterIdle: Bool, now: Double) {
+    /// Gọi từ `presentedHandler`. Sau lúc nghỉ, tới khi có khung đầu tiên lên màn, màn vẫn đứng yên ở cảnh cũ:
+    /// khung không lên hoặc lên chậm lúc đó làm cảnh mới hiện trễ (đã tính vào trễ đổi cảnh), không phải khựng.
+    func recordPresented(_ presented: Double, target: Double, now: Double) {
         let period = nominalPeriod
         state.withLock { state in
             guard state.recording else { return }
             if presented <= 0 {
                 state.notPresented += 1
-                state.notPresentedSinceLast += 1
+                if state.awaitingFirstAfterResume {
+                    state.notPresentedAfterResume += 1
+                } else {
+                    state.notPresentedSinceLast += 1
+                }
                 return
             }
+            state.presentedFrames += 1
+            let afterIdle = state.awaitingFirstAfterResume
+            state.awaitingFirstAfterResume = false
             var late = 0
             if state.lastPresented > 0, !afterIdle, period > 0 {
                 let actualGap = presented - state.lastPresented
@@ -239,6 +255,8 @@ final class LoadStats: Sendable {
                 pausedSeconds: paused,
                 firstAfterIdleLatencies: state.firstAfterIdleLatencies,
                 recoveries: state.recoveries,
+                presentedFrames: state.presentedFrames,
+                notPresentedAfterResume: state.notPresentedAfterResume,
                 longestDrop: max(state.longestDrop, pending)
             )
         }

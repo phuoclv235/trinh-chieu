@@ -47,6 +47,8 @@ struct ProbeOptions: Sendable {
     // Cờ thử của T0.6 (đo dưới tải). Đặc tả: `plans/giai-doan-0-1/T0.6-ben-duoi-tai.md`.
     /// B1: chỉ dựng và present khi có gì mới.
     var onDemand = false
+    /// B1 biến thể: cảnh đứng yên thì bỏ nhịp nhưng display link vẫn chạy (không `isPaused`).
+    var onDemandSkip = false
     /// B2: luồng vẽ thời gian thực và `beginActivity(.latencyCritical)`.
     var realtime = false
     /// B3: lặp video bằng `AVPlayerLooper`.
@@ -88,6 +90,7 @@ struct ProbeOptions: Sendable {
           --media-dir <thư mục>   nơi lưu video tự tạo, mặc định ~/Library/Caches/TrinhChieuProbe
         Cờ thử T0.6 (đo dưới tải):
           --on-demand             B1: chỉ dựng khi cảnh đổi, đang hoà tan hoặc có khung video mới
+          --on-demand-skip        B1 biến thể: như --on-demand nhưng display link không nghỉ, chỉ bỏ nhịp
           --realtime              B2: luồng vẽ thời gian thực, tiến trình giữ latencyCritical
           --looper                B3: lặp video bằng AVPlayerLooper
           --decode-size <native|output>  B4: cỡ giải mã video, mặc định native
@@ -180,6 +183,9 @@ struct ProbeOptions: Sendable {
                 options.screenIndices = indices
             case "--on-demand":
                 options.onDemand = true
+            case "--on-demand-skip":
+                options.onDemand = true
+                options.onDemandSkip = true
             case "--realtime":
                 options.realtime = true
             case "--looper":
@@ -237,7 +243,8 @@ struct ProbeOptions: Sendable {
     /// Các biện pháp T0.6 đang bật, ví dụ "B1 B3", hoặc "không".
     var measures: String {
         let flags = [
-            ("B1", onDemand),
+            ("B1", onDemand && !onDemandSkip),
+            ("B1 (không nghỉ link)", onDemandSkip),
             ("B2", realtime),
             ("B3", looper),
             ("B4 (cỡ đầu ra)", decodeToOutputSize),

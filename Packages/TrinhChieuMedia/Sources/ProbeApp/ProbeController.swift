@@ -151,6 +151,7 @@ final class ProbeController {
                     preferredFrameRate: rate,
                     frameLatency: options.frameLatency,
                     onDemand: options.onDemand,
+                    idlePause: !options.onDemandSkip,
                     realtime: options.realtime,
                     recover: options.recover
                 )

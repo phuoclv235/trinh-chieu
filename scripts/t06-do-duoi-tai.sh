@@ -3,7 +3,7 @@
 #
 # Cách dùng (trên Mac, từ thư mục gốc của repo, Mac mở khoá, hai màn đang cắm):
 #   scripts/t06-do-duoi-tai.sh vong "<mô tả tải>"               L0..L5 (kèm L4m) hai vòng xen kẽ, mỗi lần 5 phút
-#   scripts/t06-do-duoi-tai.sh gon "<mô tả tải>"                L0..L5 (kèm L4m) một vòng, mỗi lần 3 phút
+#   scripts/t06-do-duoi-tai.sh gon "<mô tả tải>"                L0..L5 (kèm L4m, L4s, L0b) một vòng, 3 phút
 #   scripts/t06-do-duoi-tai.sh mot <mã> "<mô tả tải>" [cờ...]    một lần chạy (L6, L7, L8...), cờ truyền thẳng ProbeApp
 #
 # Ví dụ:
@@ -30,8 +30,12 @@ echo "=== Build ProbeApp (release) ==="
 swift build -c release --package-path Packages/TrinhChieuMedia --product ProbeApp || exit 2
 bin="$(swift build -c release --package-path Packages/TrinhChieuMedia --show-bin-path)/ProbeApp"
 
-# Mặc định đã chốt: mỗi đầu ra một command queue.
+# Mặc định đã chốt: mỗi đầu ra một command queue. Tần số 60 khung/giây như đầu ra HDMI tới LED và máy chiếu
+# (màn MacBook 120 Hz chạy tần số gốc sẽ cho chu kỳ 8.33 ms, không so được với đích thật). T06_FPS=native để bỏ ép.
 base=(--queue-per-screen)
+if [[ "${T06_FPS:-60}" != "native" ]]; then
+  base+=(--fps "${T06_FPS:-60}")
+fi
 
 run_one() {
   local label="$1"
@@ -76,7 +80,11 @@ case "$mode" in
     run_one L3 "$load" --duration 180 --looper --decode-size output
     run_one L4m "$load" --duration 180 --no-video
     run_one L4 "$load" --duration 180 --no-video --on-demand
+    # L4s: B1 biến thể, display link không nghỉ (so với L4 để biết nghỉ link có làm rớt khung đầu không).
+    run_one L4s "$load" --duration 180 --no-video --on-demand-skip
     run_one L5 "$load" --duration 180 --recover
+    # L0b: lặp mốc ở cuối vòng để thấy máy có đổi trạng thái giữa chừng không.
+    run_one L0b "$load" --duration 180
     ;;
   mot)
     label="${2:?Thiếu mã lần chạy}"
