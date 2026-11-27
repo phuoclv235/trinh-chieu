@@ -86,3 +86,30 @@ Nhận xét (chưa kiểm chứng, cần đo thêm):
 - Màn 0 là màn ProMotion 120 Hz, không phải màn 1080p 60 Hz như đặc tả. Mọi khung rớt ở màn này là khung "trễ" (không có khung "không lên"). Có thể display link 60 khung/giây lệch nhịp với màn 120 Hz. Cần đo lại với màn tích hợp ghim 60 Hz (Cài đặt hệ thống, Màn hình, Tần số làm tươi) để tách lỗi đo khỏi lỗi thật.
 - Màn 1 (60 Hz, gần với điều kiện đặc tả) rớt 1.60 khung/phút, gần ngưỡng. Độ trễ đổi cảnh ổn định quanh 45 ms (khoảng 2.7 khung), cao hơn hẳn màn 0 dù cùng `preferredFrameLatency = 1`. Có thể có thêm một khung trễ do bộ ghép hình của hệ thống trên màn ngoài.
 - Theo tiêu chí 5: dừng, báo coordinator kèm số đo, không tự đổi kiến trúc.
+
+### Lần chạy 3: vòng chẩn đoán (2026-11-27, commit 6aef6b9)
+
+Cùng máy với lần 2. Lần này màn tích hợp đã ghim 60 Hz (ProbeApp đọc được 60 Hz ở cả hai màn). Mỗi cấu hình chạy 180 giây bản release dưới `caffeinate -dimsu`, kiểm màn không khoá trước mỗi lần. Cả 6 lần đều có mã thoát 1 (không đạt), không lần nào lỗi.
+
+| Lần | Tuỳ chọn | Màn | Lên màn | Rớt (không lên / trễ) | Rớt/phút | Phút tệ nhất | GPU TB | GPU p99 | Trễ p50 | Trễ p95 | Trễ max | CPU TB | RAM TB |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| A | `--screens 1` | 1 | 10764 | 36 (11 / 25) | 12.00 | 18 | 0.30 ms | 0.66 ms | 42.06 ms | 43.57 ms | 48.40 ms | 9.8% | 79 MB |
+| B | `--screens 1 --fullscreen` | 1 | 10779 | 29 (18 / 11) | 9.67 | 16 | 0.34 ms | 0.57 ms | 64.82 ms | 81.43 ms | 82.92 ms | 10.4% | 112 MB |
+| C | `--screens 1 --frame-latency 2` | 1 | 10757 | 43 (27 / 16) | 14.33 | 20 | 0.30 ms | 0.39 ms | 45.31 ms | 47.46 ms | 47.80 ms | 10.2% | 79 MB |
+| D | `--fps native` | 0 | 10797 | 3 (0 / 3) | 1.00 | 2 | 0.89 ms | 1.75 ms | 33.39 ms | 46.40 ms | 48.76 ms | 13.2% | 315 MB |
+| D | `--fps native` | 1 | 10799 | 1 (1 / 0) | 0.33 | 1 | 0.59 ms | 1.50 ms | 34.51 ms | 46.31 ms | 48.21 ms | | |
+| E | `--fps native --fullscreen` | 0 | 10790 | 15 (6 / 9) | 5.00 | 11 | 1.21 ms | 2.12 ms | 63.09 ms | 64.22 ms | 64.56 ms | 14.5% | 413 MB |
+| E | `--fps native --fullscreen` | 1 | 10791 | 10 (5 / 5) | 3.33 | 8 | 0.58 ms | 1.55 ms | 65.34 ms | 66.40 ms | 66.44 ms | | |
+| F | mặc định, 2 màn | 0 | 10799 | 1 (0 / 1) | 0.33 | 1 | 0.87 ms | 0.98 ms | 42.39 ms | 45.25 ms | 48.71 ms | 16.2% | 309 MB |
+| F | mặc định, 2 màn | 1 | 10798 | 3 (3 / 0) | 1.00 | 2 | 0.29 ms | 0.35 ms | 46.05 ms | 48.62 ms | 48.88 ms | | |
+
+Ghi chú: "1.00/phút" được chấm ĐẠT vì thời gian đo dài hơn 180 giây một chút (3 khung trong hơn 3 phút cho 0.99x, làm tròn thành 1.00). Phép so sánh vẫn là "dưới 1".
+
+Kết luận chẩn đoán:
+
+- **Rớt khung:** lỗi ở lần 2 chủ yếu do màn 120 Hz. Khi cả hai màn ở 60 Hz, chạy 2 màn (D, F) đạt hoặc sát ngưỡng: 0.33 đến 1.00 khung/phút. Chỉ là 3 phút nên chưa đủ để chốt đạt cho 10 phút.
+- **Kỳ lạ:** chỉ chạy màn ngoài (A, B, C) lại rớt nhiều hơn hẳn (9.67 đến 14.33/phút, có cả khung "không lên"). Giả thuyết: khi màn tích hợp không có cửa sổ của bản thử, WindowServer ghép hình màn ngoài theo đường khác. Chưa kiểm chứng.
+- **Toàn màn hình AppKit (B, E):** không giúp gì; trễ đổi cảnh tăng thêm 20 đến 35 ms và rớt nhiều hơn. Loại.
+- **`--frame-latency 2` (C):** không cải thiện.
+- **Trễ đổi cảnh:** p95 ở mọi cấu hình đều 43 đến 48 ms (khoảng 2.6 đến 2.9 khung), kể cả khi gần như không rớt khung. Phân rã ước lượng: chờ tới lần gọi display link kế tiếp (0 đến 1 khung, trung bình nửa khung) cộng khoảng cách từ lúc gọi tới `targetPresentationTimestamp` (khoảng 2 khung: một khung dựng, một khung bộ ghép hình của hệ thống). Như vậy trễ nằm ở cấu trúc đường trình chiếu qua bộ ghép hình, không phải ở tải vẽ. Với đường hiện tại, tiêu chí 2 (dưới 2 khung, 33 ms) gần như không thể đạt.
+- Theo tiêu chí 5 và quyết định của coordinator: không đổi kiến trúc, không merge; chuyển tổng hợp để rà soát kiến trúc.
