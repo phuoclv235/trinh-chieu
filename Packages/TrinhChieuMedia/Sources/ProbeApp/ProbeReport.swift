@@ -495,7 +495,7 @@ struct ProbeReport {
             let pausedSeconds = Self.format(load.pausedSeconds, digits: 0)
             let paused = load.pauses > 0 ? "\(load.pauses) lần, \(pausedSeconds) giây" : "0"
             let recoveries = load.recoveries.map { Self.format($0, digits: 0) + " giây" }.joined(separator: ", ")
-            let cells = [
+            let cells: [String] = [
                 "\(screen.index)",
                 Self.format(load.dropsPerMinuteAverage, digits: 2),
                 "\(load.droppedFrames) (\(load.missedTicks) / \(load.latePresents) / \(load.notPresented))",
@@ -594,26 +594,30 @@ struct ProbeReport {
         var rows: [String] = []
         for (index, (screen, output)) in zip(screens, outputs).enumerated() {
             let load = loadRun.flatMap { index < $0.loads.count ? $0.loads[index] : nil }
-            let rate = load?.dropsPerMinuteAverage ?? evaluate(output).averageDropsPerMinute
-            let cells = [
+            let rate: Double = load?.dropsPerMinuteAverage ?? evaluate(output).averageDropsPerMinute
+            let stalls: String = load.map { String($0.stalls.count) } ?? ""
+            let longest: String = load.map { String($0.longestDrop) } ?? ""
+            let afterIdle: String = load?.firstAfterIdleLatencies.max().map { Self.ms($0) } ?? ""
+            let recoveries: String = load.map { String($0.recoveries.count) } ?? ""
+            let cells: [String] = [
                 label,
                 time,
                 options.measures,
                 options.loadDescription ?? "",
-                "\(screen.index)",
+                String(screen.index),
                 Self.format(rate, digits: 2),
-                load.map { "\($0.stalls.count)" } ?? "",
-                load.map { "\($0.longestDrop)" } ?? "",
+                stalls,
+                longest,
                 Self.ms(Percentile.value(output.pipelineLatencies, 0.5)),
                 Self.ms(Percentile.value(output.pipelineLatencies, 0.99)),
                 Self.ms(Percentile.value(output.sceneLatencies, 0.95)),
                 Self.ms(output.sceneLatencies.max() ?? 0),
-                load?.firstAfterIdleLatencies.max().map { Self.ms($0) } ?? "",
+                afterIdle,
                 Self.format(cpuMean, digits: 1) + "%",
                 Self.ms(Percentile.mean(output.gpuTimes)),
                 Self.format(memoryMax, digits: 0) + " MB",
                 thermal,
-                load.map { "\($0.recoveries.count)" } ?? "",
+                recoveries,
             ]
             rows.append("| " + cells.joined(separator: " | ") + " |")
         }
