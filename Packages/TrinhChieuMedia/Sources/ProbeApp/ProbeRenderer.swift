@@ -69,14 +69,14 @@ enum ProbeLayout {
 }
 
 /// Vẽ cảnh thử cho một đầu ra. Chỉ chạy trên luồng vẽ của đầu ra đó.
-final class ProbeRenderer: FrameRenderer, @unchecked Sendable {
+final class ProbeRenderer: ProbeFrameRenderer, @unchecked Sendable {
     private let compositor: Compositor
     private let textCache: TextTextureCache
     private let mailbox: SceneMailbox<ProbeScene>
-    private let background: VideoTap?
+    private let background: ProbeVideoTap?
     /// Nền màu đặc khi chạy không video.
     private let solidBackground: (any MTLTexture)?
-    private let pictureInPicture: VideoTap?
+    private let pictureInPicture: ProbeVideoTap?
     private let logo: any MTLTexture
     private let dissolveDuration: Double
     private let nominalPeriod: Double
@@ -87,14 +87,18 @@ final class ProbeRenderer: FrameRenderer, @unchecked Sendable {
     private var currentText: TextKey?
     private var previousText: TextKey?
     private var transitionStart: CFTimeInterval?
+    /// Đã dựng ít nhất một khung (vẽ theo nhu cầu vẫn phải dựng khung đầu tiên).
+    private var hasRendered = false
+    /// Bố cục của khung gần nhất, để hỏi chữ của cảnh mới đã dựng xong chưa.
+    private var lastLayout: CanvasLayout?
 
     init(
         compositor: Compositor,
         textCache: TextTextureCache,
         mailbox: SceneMailbox<ProbeScene>,
-        background: VideoTap?,
+        background: ProbeVideoTap?,
         solidBackground: (any MTLTexture)?,
-        pictureInPicture: VideoTap?,
+        pictureInPicture: ProbeVideoTap?,
         logo: any MTLTexture,
         dissolveDuration: Double,
         nominalPeriod: Double
@@ -115,8 +119,30 @@ final class ProbeRenderer: FrameRenderer, @unchecked Sendable {
         videoFrames.withLock { $0 }
     }
 
+    /// Vẽ theo nhu cầu (B1): dựng khi có cảnh mới, đang hoà tan, hoặc có khung video mới; không có video thì
+    /// cảnh đứng yên là lúc cho display link nghỉ.
+    func demand(at targetTime: CFTimeInterval) -> FrameDemand {
+        guard hasRendered else { return .render }
+        if transitionStart != nil {
+            return .render
+        }
+        if let entry = mailbox.latest(), entry.revision != shownRevision {
+            // Chữ chưa dựng xong thì chờ nhịp sau, không cho nghỉ (nghỉ sẽ lỡ cảnh này).
+            guard let lastLayout else { return .render }
+            let key = ProbeLayout.textKey(entry.scene.text, layout: lastLayout)
+            return textCache.texture(for: key) != nil ? .render : .skip
+        }
+        let videos = [background, pictureInPicture].compactMap { $0 }
+        if videos.contains(where: { $0.hasNewFrame(forHostTime: targetTime) }) {
+            return .render
+        }
+        return videos.isEmpty ? .idle : .skip
+    }
+
     func encodeFrame(_ frame: FrameContext) -> FrameOutcome {
+        hasRendered = true
         let layout = CanvasLayout(canvasSize: ProbeLayout.canvas, targetSize: frame.targetSize)
+        lastLayout = layout
         let encoder = frame.encoder
         let target = frame.targetSize
         var retained: [AnyObject] = []
