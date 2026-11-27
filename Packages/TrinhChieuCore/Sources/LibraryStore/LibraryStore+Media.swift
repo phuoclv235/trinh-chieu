@@ -1,22 +1,6 @@
 import CoreModel
 import Foundation
 
-extension MediaKind {
-    /// Loại media theo phần mở rộng (chữ thường). `nil` là loại Hệ thống chưa nhận.
-    init?(fileExtension: String) {
-        switch fileExtension {
-        case "jpg", "jpeg", "png", "gif", "heic", "heif", "tif", "tiff", "bmp", "webp":
-            self = .image
-        case "mp4", "mov", "m4v":
-            self = .video
-        case "mp3", "m4a", "aac", "wav", "aif", "aiff":
-            self = .audio
-        default:
-            return nil
-        }
-    }
-}
-
 extension LibraryStore {
     /// Nhập một tệp media: băm SHA-256 theo luồng trong lúc chép vào `media/<12 ký tự hex đầu>.<đuôi viết thường>`,
     /// ghi `media/<mã>.json`. Nội dung đã có trong thư viện thì trả bản có sẵn, không chép lần hai.

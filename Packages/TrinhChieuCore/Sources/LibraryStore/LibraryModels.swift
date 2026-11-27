@@ -229,7 +229,8 @@ public struct LibraryStoreConfiguration: Sendable {
     public var now: @Sendable () -> Date
     /// Múi giờ đặt tên tệp nhật ký buổi nhóm theo ngày.
     public var timeZone: TimeZone
-    /// Mẫu trình bày tạo sẵn cho thư viện mới; mẫu đầu tiên là mẫu mặc định. T1.5 thay bằng 3 mẫu mặc định.
+    /// Mẫu trình bày tạo sẵn cho thư viện mới; mẫu đầu tiên là mẫu mặc định, mẫu có mã
+    /// ``DefaultThemes/scriptureID`` (nếu có) là mẫu mặc định của Kinh Thánh.
     public var makeInitialThemes: @Sendable () -> [Theme]
     public var log: any LogSink
     /// Chuyển đổi định dạng tệp; test thay để thử đường migration.
@@ -238,7 +239,7 @@ public struct LibraryStoreConfiguration: Sendable {
     public init(
         writeDelay: Duration = .seconds(1), serviceLogInterval: Duration = .seconds(5),
         trashRetention: TimeInterval = 30 * 24 * 60 * 60, now: @escaping @Sendable () -> Date = { Date() },
-        timeZone: TimeZone = .current, makeInitialThemes: @escaping @Sendable () -> [Theme] = { [Theme.fallback()] },
+        timeZone: TimeZone = .current, makeInitialThemes: @escaping @Sendable () -> [Theme] = { DefaultThemes.make() },
         log: any LogSink = NullLogSink()
     ) {
         self.writeDelay = writeDelay

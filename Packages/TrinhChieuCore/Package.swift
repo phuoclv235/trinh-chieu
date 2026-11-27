@@ -45,11 +45,15 @@ let package = Package(
         .testTarget(name: "LibraryIndexTests", dependencies: ["LibraryIndex"], swiftSettings: commonSettings),
         .target(
             name: "LibraryStore",
-            dependencies: ["CoreModel", "LibraryIndex", .product(name: "ZIPFoundation", package: "ZIPFoundation")],
+            dependencies: [
+                "CoreModel", "Scripture", "LibraryIndex", .product(name: "ZIPFoundation", package: "ZIPFoundation"),
+            ],
+            resources: [.copy("Resources/default-themes")],
             swiftSettings: commonSettings
         ),
         .testTarget(
-            name: "LibraryStoreTests", dependencies: ["LibraryStore", "ZIPFoundation"], swiftSettings: commonSettings
+            name: "LibraryStoreTests", dependencies: ["LibraryStore", "Scripture", "ZIPFoundation"],
+            exclude: ["Fixtures"], swiftSettings: commonSettings
         ),
         .target(name: "Importers", dependencies: ["Scripture"], swiftSettings: commonSettings),
         .testTarget(name: "ImportersTests", dependencies: ["Importers"], swiftSettings: commonSettings),

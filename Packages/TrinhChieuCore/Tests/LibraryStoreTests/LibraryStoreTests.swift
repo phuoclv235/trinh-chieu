@@ -18,10 +18,10 @@ struct LibraryStoreTests {
             #expect(fileExists(dir.url.appendingPathComponent(name)), "thiếu thư mục \(name)")
         }
         #expect(fileExists(dir.url.appendingPathComponent("library.json")))
-        #expect(store.themes.count == 1)
-        let theme = try #require(store.themes.values.first)
+        #expect(store.themes.count == 3)
+        let theme = try #require(store.themes[DefaultThemes.lyricsCenterID])
         #expect(store.info.defaultThemeID == theme.id)
-        #expect(store.info.defaultScriptureThemeID == theme.id)
+        #expect(store.info.defaultScriptureThemeID == DefaultThemes.scriptureID)
         #expect(fileExists(dir.url.appendingPathComponent("themes/\(theme.id.uuidString).json")))
         #expect(store.loadProblems.isEmpty)
         await store.close()

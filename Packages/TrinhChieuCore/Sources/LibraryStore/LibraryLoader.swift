@@ -210,7 +210,8 @@ enum LibraryLoader {
                 snapshot.fingerprints[themePath] = FileFingerprint(data)
             }
             info.defaultThemeID = themes.first?.id
-            info.defaultScriptureThemeID = themes.first?.id
+            let scripture = themes.first { $0.id == DefaultThemes.scriptureID }
+            info.defaultScriptureThemeID = scripture?.id ?? themes.first?.id
         }
         let data = try DocumentCoding.encode(info)
         try AtomicFile.write(data, to: layout.url(path))
