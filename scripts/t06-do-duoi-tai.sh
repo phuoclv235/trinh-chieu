@@ -3,6 +3,7 @@
 #
 # Cách dùng (trên Mac, từ thư mục gốc của repo, Mac mở khoá, hai màn đang cắm):
 #   scripts/t06-do-duoi-tai.sh vong "<mô tả tải>"               L0..L5 (kèm L4m) hai vòng xen kẽ, mỗi lần 5 phút
+#   scripts/t06-do-duoi-tai.sh gon "<mô tả tải>"                L0..L5 (kèm L4m) một vòng, mỗi lần 3 phút
 #   scripts/t06-do-duoi-tai.sh mot <mã> "<mô tả tải>" [cờ...]    một lần chạy (L6, L7, L8...), cờ truyền thẳng ProbeApp
 #
 # Ví dụ:
@@ -67,6 +68,16 @@ case "$mode" in
       run_one L5 "$load" --duration 300 --recover
     done
     ;;
+  gon)
+    load="${2:?Thiếu mô tả tải}"
+    run_one L0 "$load" --duration 180
+    run_one L1 "$load" --duration 180 --realtime
+    run_one L2 "$load" --duration 180 --looper
+    run_one L3 "$load" --duration 180 --looper --decode-size output
+    run_one L4m "$load" --duration 180 --no-video
+    run_one L4 "$load" --duration 180 --no-video --on-demand
+    run_one L5 "$load" --duration 180 --recover
+    ;;
   mot)
     label="${2:?Thiếu mã lần chạy}"
     load="${3:?Thiếu mô tả tải}"
@@ -74,7 +85,7 @@ case "$mode" in
     run_one "$label" "$load" "$@"
     ;;
   *)
-    sed -n '2,14p' "$0" >&2
+    sed -n '2,15p' "$0" >&2
     exit 64
     ;;
 esac
