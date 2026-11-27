@@ -20,13 +20,14 @@ struct ScripturePanel: View {
         VStack(spacing: 0) {
             VStack(spacing: 8) {
                 SearchField(
-                    text: $text, prompt: "Reference, e.g. John 3:16", isFocused: $fieldFocused, symbol: "book")
-                    .onKeyPress(.upArrow) { moveCandidate(-1, in: result) }
-                    .onKeyPress(.downArrow) { moveCandidate(1, in: result) }
-                    .onKeyPress(.return, phases: .down) { press in
-                        submit(result, code: code, modifiers: press.modifiers)
-                    }
-                    .onChange(of: text) { _, _ in candidateIndex = 0 }
+                    text: $text, prompt: "Reference, e.g. John 3:16", isFocused: $fieldFocused, symbol: "book"
+                )
+                .onKeyPress(.upArrow) { moveCandidate(-1, in: result) }
+                .onKeyPress(.downArrow) { moveCandidate(1, in: result) }
+                .onKeyPress(.return, phases: .down) { press in
+                    submit(result, code: code, modifiers: press.modifiers)
+                }
+                .onChange(of: text) { _, _ in candidateIndex = 0 }
                 translationPicker(code)
             }
             .padding(.horizontal, 12)

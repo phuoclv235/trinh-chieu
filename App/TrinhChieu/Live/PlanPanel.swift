@@ -153,8 +153,9 @@ private struct PlanHeader: View {
                     .foregroundStyle(Palette.text2)
                     .frame(width: Metrics.controlHeightSmall, height: Metrics.controlHeightSmall)
                     .background(RoundedRectangle(cornerRadius: Metrics.radius).fill(Palette.bgRaised))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: Metrics.radius).strokeBorder(Palette.lineStrong, lineWidth: 1))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: Metrics.radius).strokeBorder(Palette.lineStrong, lineWidth: 1)
+                    }
                     .contentShape(Rectangle())
             }
             .menuStyle(.button)
