@@ -179,6 +179,24 @@ struct FrameStatsTests {
         #expect(snapshot.dropEvents[1].count == 2)
     }
 
+    @Test("Ghi thời gian lần gọi vẽ, lần gọi lâu và chuỗi đường ống theo 10 giây")
+    func callbackTimingAndBuckets() {
+        let stats = FrameStats(label: "thu", nominalPeriod: 1.0 / 60)
+        stats.startRecording(at: 100)
+        stats.recordCallback(start: 100.0, encodeEnd: 100.001, end: 100.002)
+        stats.recordCallback(start: 100.016, encodeEnd: 100.017, end: 100.026)  // lâu 10 ms
+        stats.recordFrameTiming(callback: 100.0, target: 100.033, presented: 100.033)
+        stats.recordFrameTiming(callback: 112.0, target: 112.05, presented: 112.05)
+        let snapshot = stats.snapshot(now: 113)
+        #expect(snapshot.callbackDurations.count == 2)
+        #expect(snapshot.callbackIntervals.count == 1)
+        #expect(abs(snapshot.callbackIntervals[0] - 0.016) < 1e-9)
+        #expect(snapshot.slowCallbacks.count == 1)
+        #expect(abs(snapshot.slowCallbacks[0].commit - 0.009) < 1e-9)
+        #expect(snapshot.callToTargetBuckets.count == 2)
+        #expect(snapshot.recordingStart == 100)
+    }
+
     @Test("Phân vị theo hạng gần nhất")
     func percentile() {
         let values = (1...100).map(Double.init)

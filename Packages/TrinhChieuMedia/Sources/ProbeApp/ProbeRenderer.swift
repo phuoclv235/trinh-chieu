@@ -73,7 +73,9 @@ final class ProbeRenderer: FrameRenderer, @unchecked Sendable {
     private let compositor: Compositor
     private let textCache: TextTextureCache
     private let mailbox: SceneMailbox<ProbeScene>
-    private let background: VideoTap
+    private let background: VideoTap?
+    /// Nền màu đặc khi chạy không video.
+    private let solidBackground: (any MTLTexture)?
     private let pictureInPicture: VideoTap?
     private let logo: any MTLTexture
     private let dissolveDuration: Double
@@ -90,7 +92,8 @@ final class ProbeRenderer: FrameRenderer, @unchecked Sendable {
         compositor: Compositor,
         textCache: TextTextureCache,
         mailbox: SceneMailbox<ProbeScene>,
-        background: VideoTap,
+        background: VideoTap?,
+        solidBackground: (any MTLTexture)?,
         pictureInPicture: VideoTap?,
         logo: any MTLTexture,
         dissolveDuration: Double,
@@ -100,6 +103,7 @@ final class ProbeRenderer: FrameRenderer, @unchecked Sendable {
         self.textCache = textCache
         self.mailbox = mailbox
         self.background = background
+        self.solidBackground = solidBackground
         self.pictureInPicture = pictureInPicture
         self.logo = logo
         self.dissolveDuration = dissolveDuration
@@ -117,7 +121,15 @@ final class ProbeRenderer: FrameRenderer, @unchecked Sendable {
         let target = frame.targetSize
         var retained: [AnyObject] = []
 
-        if let video = background.frame(forHostTime: frame.targetPresentationTime) {
+        if let solidBackground {
+            compositor.drawQuad(
+                encoder,
+                texture: solidBackground,
+                rect: layout.pixelRect(ProbeLayout.background),
+                targetSize: target
+            )
+        }
+        if let background, let video = background.frame(forHostTime: frame.targetPresentationTime) {
             compositor.drawQuad(
                 encoder,
                 texture: video.texture,

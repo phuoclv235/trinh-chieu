@@ -48,6 +48,7 @@ public final class FrameLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked S
 
     private let layer: CAMetalLayer
     private let gpu: GPUContext
+    private let commandQueue: any MTLCommandQueue
     private let renderer: any FrameRenderer
     private let preferredFrameRate: Float
     private let frameLatency: Int
@@ -62,6 +63,7 @@ public final class FrameLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked S
     /// - Parameters:
     ///   - preferredFrameRate: tần số khung mong muốn, ví dụ 60.
     ///   - frameLatency: số khung giữa lúc dựng và lúc lên màn (1 hoặc 2). Càng nhỏ độ trễ càng thấp.
+    ///   - commandQueue: hàng đợi lệnh riêng cho đầu ra này; `nil` dùng hàng đợi chung của `gpu`.
     public init(
         label: String,
         layer: CAMetalLayer,
@@ -69,11 +71,13 @@ public final class FrameLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked S
         renderer: any FrameRenderer,
         stats: FrameStats,
         preferredFrameRate: Float = 60,
-        frameLatency: Int = 1
+        frameLatency: Int = 1,
+        commandQueue: (any MTLCommandQueue)? = nil
     ) {
         self.label = label
         self.layer = layer
         self.gpu = gpu
+        self.commandQueue = commandQueue ?? gpu.commandQueue
         self.renderer = renderer
         self.stats = stats
         self.preferredFrameRate = preferredFrameRate
@@ -132,7 +136,7 @@ public final class FrameLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked S
         let targetTime = update.targetPresentationTimestamp
         let drawable = update.drawable
         let texture = drawable.texture
-        guard let commandBuffer = gpu.commandQueue.makeCommandBuffer() else { return }
+        guard let commandBuffer = commandQueue.makeCommandBuffer() else { return }
         commandBuffer.label = "Frame.\(label)"
 
         let pass = MTLRenderPassDescriptor()
@@ -150,6 +154,7 @@ public final class FrameLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked S
             )
         )
         encoder.endEncoding()
+        let encodeEnd = CACurrentMediaTime()
 
         let stats = stats
         let postedAt = outcome.newScenePostedAt
@@ -168,5 +173,6 @@ public final class FrameLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked S
         }
         commandBuffer.present(drawable)
         commandBuffer.commit()
+        stats.recordCallback(start: callbackTime, encodeEnd: encodeEnd, end: CACurrentMediaTime())
     }
 }

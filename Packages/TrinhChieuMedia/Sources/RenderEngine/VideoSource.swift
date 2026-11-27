@@ -12,6 +12,8 @@ public final class VideoSource {
     public let player: AVPlayer
     private let item: AVPlayerItem
     private var endObserver: (any NSObjectProtocol)?
+    /// Các thời điểm (theo `CACurrentMediaTime`) video bắt đầu phát từ đầu: lần `play()` đầu tiên và mỗi lần lặp.
+    public private(set) var loopStarts: [CFTimeInterval] = []
 
     public init(url: URL) {
         self.url = url
@@ -54,6 +56,9 @@ public final class VideoSource {
     }
 
     public func play() {
+        if loopStarts.isEmpty {
+            loopStarts.append(CACurrentMediaTime())
+        }
         player.play()
     }
 
@@ -64,6 +69,7 @@ public final class VideoSource {
     private func restart() {
         player.seek(to: .zero)
         player.play()
+        loopStarts.append(CACurrentMediaTime())
     }
 }
 

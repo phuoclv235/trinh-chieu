@@ -11,7 +11,7 @@ final class ProbeController {
     private struct Output {
         var screen: ScreenDescription
         var window: OutputWindow
-        var loop: FrameLoop
+        var loop: any ProbeLoop
         var renderer: ProbeRenderer
     }
 
@@ -55,8 +55,20 @@ final class ProbeController {
         }
 
         let media = try await prepareMedia()
-        let backgroundSource = VideoSource(url: media.background)
+        let backgroundSource = media.background.map { VideoSource(url: $0) }
         let secondarySource = media.secondary.map { VideoSource(url: $0) }
+        let solidBackground: (any MTLTexture)?
+        if options.noVideo {
+            // Xanh than đặc 2x2 điểm ảnh, kéo giãn phủ kín khung.
+            let pixels = Array([[UInt8]](repeating: [0x40, 0x24, 0x14, 0xFF], count: 4).joined())
+            let bitmap = BGRABitmap(width: 2, height: 2, bytesPerRow: 8, pixels: pixels)
+            guard let texture = TextRasterizer.makeTexture(bitmap, device: gpu.device) else {
+                throw RenderEngineError.textureUnavailable
+            }
+            solidBackground = texture
+        } else {
+            solidBackground = nil
+        }
 
         let logoBitmap = ProbeMedia.logoBitmap()
         guard let logo = TextRasterizer.makeTexture(logoBitmap, device: gpu.device) else {
@@ -76,22 +88,37 @@ final class ProbeController {
                 compositor: compositor,
                 textCache: textCache,
                 mailbox: mailbox,
-                background: backgroundSource.makeTap(gpu: gpu),
+                background: backgroundSource?.makeTap(gpu: gpu),
+                solidBackground: solidBackground,
                 pictureInPicture: secondarySource?.makeTap(gpu: gpu),
                 logo: logo,
                 dissolveDuration: options.dissolve,
                 nominalPeriod: period
             )
             let label = "man-\(index)"
-            let loop = FrameLoop(
-                label: label,
-                layer: window.metalLayer,
-                gpu: gpu,
-                renderer: renderer,
-                stats: FrameStats(label: label, nominalPeriod: period),
-                preferredFrameRate: rate,
-                frameLatency: options.frameLatency
-            )
+            let stats = FrameStats(label: label, nominalPeriod: period)
+            let loop: any ProbeLoop
+            if options.viewDisplayLink {
+                loop = ViewLinkLoop(
+                    label: label,
+                    window: window,
+                    gpu: gpu,
+                    renderer: renderer,
+                    stats: stats,
+                    preferredFrameRate: rate
+                )
+            } else {
+                loop = FrameLoop(
+                    label: label,
+                    layer: window.metalLayer,
+                    gpu: gpu,
+                    renderer: renderer,
+                    stats: stats,
+                    preferredFrameRate: rate,
+                    frameLatency: options.frameLatency,
+                    commandQueue: options.queuePerScreen ? gpu.device.makeCommandQueue() : nil
+                )
+            }
             let size = window.pixelSize
             let description = ScreenDescription(
                 index: index,
@@ -108,7 +135,7 @@ final class ProbeController {
 
         var phraseIndex = 0
         mailbox.post(ProbeScene(text: ProbeLayout.phrases[phraseIndex]))
-        backgroundSource.play()
+        backgroundSource?.play()
         secondarySource?.play()
         for output in outputs {
             output.window.show()
@@ -128,6 +155,7 @@ final class ProbeController {
         Console.out("Khởi động \(warmup) giây rồi đo \(duration) giây. Bấm Esc để dừng sớm.")
         try? await Task.sleep(for: .seconds(options.warmup))
 
+        let topBefore = await Self.topSnapshot()
         let sampler = ProcessSampler()
         let measureStart = CACurrentMediaTime()
         for output in outputs {
@@ -137,19 +165,23 @@ final class ProbeController {
 
         // Cộng ngẫu nhiên 0 đến 1 chu kỳ khung vào mỗi khoảng đổi chữ, để pha giữa lúc gửi cảnh và nhịp
         // display link trải đều (2 giây tròn là đúng 120 khung, pha gần như cố định).
-        let jitterPeriod = outputs.map(\.loop.stats.nominalPeriod).max() ?? (1.0 / 60)
+        let jitterPeriod = outputs.map { $0.loop.stats.nominalPeriod }.max() ?? (1.0 / 60)
         func nextInterval() -> Double {
             options.sceneInterval + Double.random(in: 0..<jitterPeriod)
         }
         var nextChange = measureStart + nextInterval()
         var lastProgress = measureStart
+        var sceneChanges: [CFTimeInterval] = []
         while !stopRequested, CACurrentMediaTime() - measureStart < options.duration {
             let wait = max(0.001, nextChange - CACurrentMediaTime())
             try? await Task.sleep(for: .seconds(min(wait, 0.25)))
             let now = CACurrentMediaTime()
-            if now >= nextChange {
+            if now >= nextChange, !options.staticText {
+                sceneChanges.append(now)
                 phraseIndex = (phraseIndex + 1) % ProbeLayout.phrases.count
                 mailbox.post(ProbeScene(text: ProbeLayout.phrases[phraseIndex]), at: now)
+                nextChange += nextInterval()
+            } else if now >= nextChange {
                 nextChange += nextInterval()
             }
             if now - lastProgress >= 60 {
@@ -167,10 +199,18 @@ final class ProbeController {
             output.loop.stop()
             output.window.close()
         }
-        backgroundSource.invalidate()
+        backgroundSource?.invalidate()
         secondarySource?.invalidate()
         removeKeyMonitor()
+        let topAfter = await Self.topSnapshot()
 
+        var videoLoops: [(name: String, starts: [CFTimeInterval])] = []
+        if let backgroundSource {
+            videoLoops.append(("nền", backgroundSource.loopStarts))
+        }
+        if let secondarySource {
+            videoLoops.append(("khung phụ", secondarySource.loopStarts))
+        }
         let report = ProbeReport(
             startedAt: startedAt,
             options: options,
@@ -179,7 +219,12 @@ final class ProbeController {
             outputs: outputs.map { $0.loop.stats.snapshot(now: measureEnd) },
             framesWithVideo: outputs.map(\.renderer.framesWithVideo),
             processSamples: sampler.samples,
-            stoppedEarly: stopRequested
+            stoppedEarly: stopRequested,
+            expectsVideo: backgroundSource != nil,
+            sceneChanges: sceneChanges,
+            videoLoops: videoLoops,
+            topBefore: topBefore,
+            topAfter: topAfter
         )
         let markdown = report.markdown()
         let reportURL = options.report ?? Self.defaultReportURL(startedAt: startedAt)
@@ -212,7 +257,7 @@ final class ProbeController {
     }
 
     private struct PreparedMedia {
-        var background: URL
+        var background: URL?
         var secondary: URL?
         var descriptions: [String]
     }
@@ -221,8 +266,11 @@ final class ProbeController {
         let directory = options.mediaDirectory ?? ProbeMedia.defaultDirectory()
         var descriptions: [String] = []
 
-        let background: URL
-        if let video1 = options.video1 {
+        let background: URL?
+        if options.noVideo {
+            background = nil
+            descriptions.append("Nền: màu đặc, không video")
+        } else if let video1 = options.video1 {
             background = video1
             descriptions.append("Nền: \(video1.lastPathComponent)")
         } else {
@@ -245,7 +293,8 @@ final class ProbeController {
             }
         }
         let phraseCount = ProbeLayout.phrases.count
-        descriptions.append("Chữ: 4 dòng cỡ 72, viền đen, đổi vòng \(phraseCount) lời; logo vẽ sẵn 256 px")
+        let textMode = options.staticText ? "một lời cố định" : "đổi vòng \(phraseCount) lời"
+        descriptions.append("Chữ: 4 dòng cỡ 72, viền đen, \(textMode); logo vẽ sẵn 256 px")
         return PreparedMedia(background: background, secondary: secondary, descriptions: descriptions)
     }
 
@@ -282,6 +331,26 @@ final class ProbeController {
             NSEvent.removeMonitor(keyMonitor)
         }
         keyMonitor = nil
+    }
+
+    /// Ảnh chụp `top` (8 tiến trình tốn CPU nhất) để biết máy đang bận gì.
+    private static func topSnapshot() async -> String {
+        await Task.detached {
+            let process = Process()
+            process.executableURL = URL(fileURLWithPath: "/usr/bin/top")
+            process.arguments = ["-l", "1", "-o", "cpu", "-n", "8"]
+            let pipe = Pipe()
+            process.standardOutput = pipe
+            process.standardError = Pipe()
+            do {
+                try process.run()
+            } catch {
+                return "Không chạy được top: \(error)"
+            }
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            process.waitUntilExit()
+            return String(decoding: data, as: UTF8.self)
+        }.value
     }
 
     private static func describe(_ spec: ProbeMedia.VideoSpec) -> String {

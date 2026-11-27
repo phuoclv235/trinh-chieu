@@ -28,6 +28,14 @@ struct ProbeOptions: Sendable {
     /// Đưa cửa sổ vào toàn màn hình gốc của macOS (`toggleFullScreen`, có Space riêng).
     var nativeFullScreen = false
     var frameLatency = 1
+    /// Giữ một lời cố định, không đổi chữ.
+    var staticText = false
+    /// Bỏ cả hai video, vẽ nền màu đặc.
+    var noVideo = false
+    /// Mỗi màn một command queue riêng.
+    var queuePerScreen = false
+    /// Dùng `CADisplayLink` của NSView (luồng chính) và `nextDrawable()` thay `CAMetalDisplayLink` (chỉ để so sánh).
+    var viewDisplayLink = false
     var report: URL?
     var mediaDirectory: URL?
 
@@ -45,6 +53,10 @@ struct ProbeOptions: Sendable {
           --fullscreen            dùng enterFullScreenMode của AppKit (thử trình chiếu trực tiếp)
           --native-fullscreen     dùng toàn màn hình gốc của macOS (toggleFullScreen)
           --frame-latency <1|2>   số khung trễ của display link, mặc định 1
+          --static-text           giữ một lời cố định, không đổi chữ
+          --no-video              bỏ cả hai video, nền màu đặc
+          --queue-per-screen      mỗi màn một command queue riêng
+          --view-display-link     dùng CADisplayLink của NSView thay CAMetalDisplayLink (so sánh)
           --report <tệp.md>       nơi ghi báo cáo, mặc định ./ket-qua-ban-thu-<thời điểm>.md
           --media-dir <thư mục>   nơi lưu video tự tạo, mặc định ~/Library/Caches/TrinhChieuProbe
         Bấm Esc trên màn đầu ra để dừng sớm (vẫn ghi báo cáo).
@@ -84,6 +96,15 @@ struct ProbeOptions: Sendable {
                 options.fullScreenMode = true
             case "--native-fullscreen":
                 options.nativeFullScreen = true
+            case "--static-text":
+                options.staticText = true
+            case "--no-video":
+                options.noVideo = true
+                options.pictureInPicture = false
+            case "--queue-per-screen":
+                options.queuePerScreen = true
+            case "--view-display-link":
+                options.viewDisplayLink = true
             case "--fps":
                 guard let text = value(flag) else { return .failure("Thiếu giá trị cho --fps") }
                 if text == "native" {

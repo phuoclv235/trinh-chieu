@@ -23,6 +23,20 @@ public final class FrameStats: Sendable {
         public var pipelineLatencies: [Double] = []
         /// Nhật ký khung rớt theo thứ tự thời gian.
         public var dropEvents: [DropEvent] = []
+        /// Thời điểm bắt đầu ghi (theo `CACurrentMediaTime`).
+        public var recordingStart: Double = 0
+        /// Thời gian chạy trọn một lần gọi vẽ của display link.
+        public var callbackDurations: [Double] = []
+        /// Phần `encodeFrame` (bên vẽ nội dung) trong lần gọi vẽ.
+        public var encodeDurations: [Double] = []
+        /// Phần `present` và `commit` command buffer trong lần gọi vẽ.
+        public var commitDurations: [Double] = []
+        /// Khoảng cách giữa hai lần gọi vẽ liên tiếp.
+        public var callbackIntervals: [Double] = []
+        /// Các lần gọi vẽ chạy lâu hơn `slowCallbackThreshold`.
+        public var slowCallbacks: [SlowCallback] = []
+        /// "Gọi tới đích" gom theo từng khoảng `timingBucketSeconds` kể từ lúc bắt đầu ghi.
+        public var callToTargetBuckets: [[Double]] = []
 
         /// Khung rớt = khung không lên màn + khung lên màn cách khung trước hơn 1.5 chu kỳ.
         public var droppedFrames: Int { framesNotPresented + lateFrames }
@@ -46,6 +60,20 @@ public final class FrameStats: Sendable {
         public var gap: Double?
     }
 
+    /// Một lần gọi vẽ chạy lâu.
+    public struct SlowCallback: Sendable, Equatable {
+        /// Giây kể từ lúc bắt đầu ghi.
+        public var time: Double
+        public var total: Double
+        public var encode: Double
+        public var commit: Double
+    }
+
+    /// Ngưỡng ghi một lần gọi vẽ vào danh sách chạy lâu (4 ms).
+    public static let slowCallbackThreshold = 0.004
+    /// Độ dài mỗi khoảng gom chuỗi thời gian "gọi tới đích" (10 giây).
+    public static let timingBucketSeconds = 10.0
+
     private struct State: Sendable {
         var recording = false
         var startedAt: Double = 0
@@ -64,6 +92,13 @@ public final class FrameStats: Sendable {
         var targetToPresented: [Double] = []
         var pipelineLatencies: [Double] = []
         var dropEvents: [DropEvent] = []
+        var callbackDurations: [Double] = []
+        var encodeDurations: [Double] = []
+        var commitDurations: [Double] = []
+        var callbackIntervals: [Double] = []
+        var lastCallbackStart: Double = 0
+        var slowCallbacks: [SlowCallback] = []
+        var callToTargetBuckets: [[Double]] = []
     }
 
     public let label: String
@@ -140,9 +175,42 @@ public final class FrameStats: Sendable {
         state.withLock { state in
             guard state.recording else { return }
             state.callToTarget.append(target - callback)
+            let bucket = max(0, Int((callback - state.startedAt) / Self.timingBucketSeconds))
+            while state.callToTargetBuckets.count <= bucket {
+                state.callToTargetBuckets.append([])
+            }
+            state.callToTargetBuckets[bucket].append(target - callback)
             guard presented > 0 else { return }
             state.targetToPresented.append(presented - target)
             state.pipelineLatencies.append(presented - callback)
+        }
+    }
+
+    /// Gọi ở cuối mỗi lần display link gọi vẽ: lúc bắt đầu, lúc `encodeFrame` xong, lúc `commit` xong.
+    public func recordCallback(start: Double, encodeEnd: Double, end: Double) {
+        state.withLock { state in
+            guard state.recording else {
+                state.lastCallbackStart = start
+                return
+            }
+            let total = end - start
+            state.callbackDurations.append(total)
+            state.encodeDurations.append(encodeEnd - start)
+            state.commitDurations.append(end - encodeEnd)
+            if state.lastCallbackStart > 0 {
+                state.callbackIntervals.append(start - state.lastCallbackStart)
+            }
+            state.lastCallbackStart = start
+            if total > Self.slowCallbackThreshold {
+                state.slowCallbacks.append(
+                    SlowCallback(
+                        time: start - state.startedAt,
+                        total: total,
+                        encode: encodeEnd - start,
+                        commit: end - encodeEnd
+                    )
+                )
+            }
         }
     }
 
@@ -182,7 +250,14 @@ public final class FrameStats: Sendable {
                 callToTarget: state.callToTarget,
                 targetToPresented: state.targetToPresented,
                 pipelineLatencies: state.pipelineLatencies,
-                dropEvents: state.dropEvents
+                dropEvents: state.dropEvents,
+                recordingStart: state.startedAt,
+                callbackDurations: state.callbackDurations,
+                encodeDurations: state.encodeDurations,
+                commitDurations: state.commitDurations,
+                callbackIntervals: state.callbackIntervals,
+                slowCallbacks: state.slowCallbacks,
+                callToTargetBuckets: state.callToTargetBuckets
             )
         }
     }
