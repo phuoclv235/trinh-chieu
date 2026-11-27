@@ -77,17 +77,24 @@ struct PixelImage {
         return CGRect(x: minX, y: minY, width: maxX - minX + 1, height: maxY - minY + 1)
     }
 
-    /// Sai số trung bình (0 đến 1) và sai số lớn nhất trên một kênh (0 đến 255) so với ảnh khác.
-    func difference(to other: PixelImage) -> (mean: Double, max: Int)? {
+    /// So với ảnh khác: sai số trung bình (0 đến 1), sai số lớn nhất trên một kênh (0 đến 255),
+    /// và số điểm ảnh có kênh lệch quá `channelTolerance`.
+    func difference(to other: PixelImage, channelTolerance: Int) -> (mean: Double, max: Int, outliers: Int)? {
         guard width == other.width, height == other.height else { return nil }
         var total = 0
         var largest = 0
-        for index in 0..<bytes.count {
-            let delta = abs(Int(bytes[index]) - Int(other.bytes[index]))
-            total += delta
-            largest = max(largest, delta)
+        var outliers = 0
+        for pixel in stride(from: 0, to: bytes.count, by: 4) {
+            var pixelLargest = 0
+            for index in pixel..<pixel + 4 {
+                let delta = abs(Int(bytes[index]) - Int(other.bytes[index]))
+                total += delta
+                pixelLargest = max(pixelLargest, delta)
+            }
+            largest = max(largest, pixelLargest)
+            if pixelLargest > channelTolerance { outliers += 1 }
         }
-        return (Double(total) / Double(bytes.count) / 255, largest)
+        return (Double(total) / Double(bytes.count) / 255, largest, outliers)
     }
 }
 
