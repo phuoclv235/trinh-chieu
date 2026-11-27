@@ -32,10 +32,11 @@ let package = Package(
         ),
         .target(
             name: "Scripture",
-            dependencies: ["CoreModel", .product(name: "GRDB", package: "GRDB.swift")],
+            dependencies: ["CoreModel", "VietText", .product(name: "GRDB", package: "GRDB.swift")],
+            resources: [.process("Resources")],
             swiftSettings: commonSettings
         ),
-        .testTarget(name: "ScriptureTests", dependencies: ["Scripture"], swiftSettings: commonSettings),
+        .testTarget(name: "ScriptureTests", dependencies: ["Scripture", "CoreModel"], swiftSettings: commonSettings),
         .target(
             name: "LibraryIndex",
             dependencies: ["Scripture", "VietText", .product(name: "GRDB", package: "GRDB.swift")],

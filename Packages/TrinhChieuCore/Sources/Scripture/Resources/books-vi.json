@@ -1,0 +1,876 @@
+{
+  "version": 1,
+  "books": [
+    {
+      "osis": "Gen",
+      "ordinal": 1,
+      "nameVi": "Sáng-thế Ký",
+      "shortVi": "Sáng",
+      "aliases": [
+        "sa",
+        "st",
+        "sáng thế"
+      ],
+      "nameEn": "Genesis",
+      "aliasesEn": [
+        "gen",
+        "ge",
+        "gn"
+      ],
+      "priority": 7
+    },
+    {
+      "osis": "Exod",
+      "ordinal": 2,
+      "nameVi": "Xuất Ê-díp-tô Ký",
+      "shortVi": "Xuất",
+      "aliases": [
+        "xuất hành"
+      ],
+      "nameEn": "Exodus",
+      "aliasesEn": [
+        "exod",
+        "exo"
+      ],
+      "priority": 102
+    },
+    {
+      "osis": "Lev",
+      "ordinal": 3,
+      "nameVi": "Lê-vi Ký",
+      "shortVi": "Lê",
+      "aliases": [],
+      "nameEn": "Leviticus",
+      "aliasesEn": [
+        "lev",
+        "lv"
+      ],
+      "priority": 103
+    },
+    {
+      "osis": "Num",
+      "ordinal": 4,
+      "nameVi": "Dân-số Ký",
+      "shortVi": "Dân",
+      "aliases": [],
+      "nameEn": "Numbers",
+      "aliasesEn": [
+        "num",
+        "nm"
+      ],
+      "priority": 104
+    },
+    {
+      "osis": "Deut",
+      "ordinal": 5,
+      "nameVi": "Phục-truyền Luật-lệ Ký",
+      "shortVi": "Phục",
+      "aliases": [
+        "phục truyền"
+      ],
+      "nameEn": "Deuteronomy",
+      "aliasesEn": [
+        "deut",
+        "dt"
+      ],
+      "priority": 105
+    },
+    {
+      "osis": "Josh",
+      "ordinal": 6,
+      "nameVi": "Giô-suê",
+      "shortVi": "Giô-suê",
+      "aliases": [],
+      "nameEn": "Joshua",
+      "aliasesEn": [
+        "josh",
+        "jos"
+      ],
+      "priority": 106
+    },
+    {
+      "osis": "Judg",
+      "ordinal": 7,
+      "nameVi": "Các Quan Xét",
+      "shortVi": "Quan",
+      "aliases": [
+        "quan xét"
+      ],
+      "nameEn": "Judges",
+      "aliasesEn": [
+        "judg",
+        "jdg"
+      ],
+      "priority": 107
+    },
+    {
+      "osis": "Ruth",
+      "ordinal": 8,
+      "nameVi": "Ru-tơ",
+      "shortVi": "Ru",
+      "aliases": [],
+      "nameEn": "Ruth",
+      "aliasesEn": [
+        "rth"
+      ],
+      "priority": 108
+    },
+    {
+      "osis": "1Sam",
+      "ordinal": 9,
+      "nameVi": "I Sa-mu-ên",
+      "shortVi": "1 Sa",
+      "aliases": [
+        "1 sam"
+      ],
+      "nameEn": "1 Samuel",
+      "aliasesEn": [
+        "1sam",
+        "1sa"
+      ],
+      "priority": 109
+    },
+    {
+      "osis": "2Sam",
+      "ordinal": 10,
+      "nameVi": "II Sa-mu-ên",
+      "shortVi": "2 Sa",
+      "aliases": [
+        "2 sam"
+      ],
+      "nameEn": "2 Samuel",
+      "aliasesEn": [
+        "2sam",
+        "2sa"
+      ],
+      "priority": 110
+    },
+    {
+      "osis": "1Kgs",
+      "ordinal": 11,
+      "nameVi": "I Các Vua",
+      "shortVi": "1 Vua",
+      "aliases": [],
+      "nameEn": "1 Kings",
+      "aliasesEn": [
+        "1kgs",
+        "1ki"
+      ],
+      "priority": 111
+    },
+    {
+      "osis": "2Kgs",
+      "ordinal": 12,
+      "nameVi": "II Các Vua",
+      "shortVi": "2 Vua",
+      "aliases": [],
+      "nameEn": "2 Kings",
+      "aliasesEn": [
+        "2kgs",
+        "2ki"
+      ],
+      "priority": 112
+    },
+    {
+      "osis": "1Chr",
+      "ordinal": 13,
+      "nameVi": "I Sử-ký",
+      "shortVi": "1 Sử",
+      "aliases": [],
+      "nameEn": "1 Chronicles",
+      "aliasesEn": [
+        "1chr",
+        "1ch"
+      ],
+      "priority": 113
+    },
+    {
+      "osis": "2Chr",
+      "ordinal": 14,
+      "nameVi": "II Sử-ký",
+      "shortVi": "2 Sử",
+      "aliases": [],
+      "nameEn": "2 Chronicles",
+      "aliasesEn": [
+        "2chr",
+        "2ch"
+      ],
+      "priority": 114
+    },
+    {
+      "osis": "Ezra",
+      "ordinal": 15,
+      "nameVi": "E-xơ-ra",
+      "shortVi": "E-xơ",
+      "aliases": [],
+      "nameEn": "Ezra",
+      "aliasesEn": [
+        "ezr"
+      ],
+      "priority": 115
+    },
+    {
+      "osis": "Neh",
+      "ordinal": 16,
+      "nameVi": "Nê-hê-mi",
+      "shortVi": "Nê",
+      "aliases": [],
+      "nameEn": "Nehemiah",
+      "aliasesEn": [
+        "neh"
+      ],
+      "priority": 116
+    },
+    {
+      "osis": "Esth",
+      "ordinal": 17,
+      "nameVi": "Ê-xơ-tê",
+      "shortVi": "Ê-xơ",
+      "aliases": [],
+      "nameEn": "Esther",
+      "aliasesEn": [
+        "esth",
+        "est"
+      ],
+      "priority": 117
+    },
+    {
+      "osis": "Job",
+      "ordinal": 18,
+      "nameVi": "Gióp",
+      "shortVi": "Gióp",
+      "aliases": [],
+      "nameEn": "Job",
+      "aliasesEn": [
+        "jb"
+      ],
+      "priority": 118
+    },
+    {
+      "osis": "Ps",
+      "ordinal": 19,
+      "nameVi": "Thi-thiên",
+      "shortVi": "Thi",
+      "aliases": [
+        "tt"
+      ],
+      "nameEn": "Psalms",
+      "aliasesEn": [
+        "ps",
+        "psa",
+        "psalm",
+        "pss"
+      ],
+      "priority": 2
+    },
+    {
+      "osis": "Prov",
+      "ordinal": 20,
+      "nameVi": "Châm-ngôn",
+      "shortVi": "Châm",
+      "aliases": [],
+      "nameEn": "Proverbs",
+      "aliasesEn": [
+        "prov",
+        "pr",
+        "prv"
+      ],
+      "priority": 9
+    },
+    {
+      "osis": "Eccl",
+      "ordinal": 21,
+      "nameVi": "Truyền-đạo",
+      "shortVi": "Truyền",
+      "aliases": [],
+      "nameEn": "Ecclesiastes",
+      "aliasesEn": [
+        "eccl",
+        "ecc",
+        "qoh"
+      ],
+      "priority": 121
+    },
+    {
+      "osis": "Song",
+      "ordinal": 22,
+      "nameVi": "Nhã-ca",
+      "shortVi": "Nhã",
+      "aliases": [],
+      "nameEn": "Song of Songs",
+      "aliasesEn": [
+        "song",
+        "song of solomon",
+        "sos"
+      ],
+      "priority": 122
+    },
+    {
+      "osis": "Isa",
+      "ordinal": 23,
+      "nameVi": "Ê-sai",
+      "shortVi": "Ê-sai",
+      "aliases": [],
+      "nameEn": "Isaiah",
+      "aliasesEn": [
+        "isa"
+      ],
+      "priority": 5
+    },
+    {
+      "osis": "Jer",
+      "ordinal": 24,
+      "nameVi": "Giê-rê-mi",
+      "shortVi": "Giê",
+      "aliases": [],
+      "nameEn": "Jeremiah",
+      "aliasesEn": [
+        "jer"
+      ],
+      "priority": 124
+    },
+    {
+      "osis": "Lam",
+      "ordinal": 25,
+      "nameVi": "Ca-thương",
+      "shortVi": "Ca",
+      "aliases": [],
+      "nameEn": "Lamentations",
+      "aliasesEn": [
+        "lam"
+      ],
+      "priority": 125
+    },
+    {
+      "osis": "Ezek",
+      "ordinal": 26,
+      "nameVi": "Ê-xê-chi-ên",
+      "shortVi": "Êxê",
+      "aliases": [],
+      "nameEn": "Ezekiel",
+      "aliasesEn": [
+        "ezek",
+        "eze"
+      ],
+      "priority": 126
+    },
+    {
+      "osis": "Dan",
+      "ordinal": 27,
+      "nameVi": "Đa-ni-ên",
+      "shortVi": "Đa",
+      "aliases": [],
+      "nameEn": "Daniel",
+      "aliasesEn": [
+        "dan",
+        "dn"
+      ],
+      "priority": 127
+    },
+    {
+      "osis": "Hos",
+      "ordinal": 28,
+      "nameVi": "Ô-sê",
+      "shortVi": "Ô",
+      "aliases": [],
+      "nameEn": "Hosea",
+      "aliasesEn": [
+        "hos"
+      ],
+      "priority": 128
+    },
+    {
+      "osis": "Joel",
+      "ordinal": 29,
+      "nameVi": "Giô-ên",
+      "shortVi": "Giô-ên",
+      "aliases": [],
+      "nameEn": "Joel",
+      "aliasesEn": [
+        "jl"
+      ],
+      "priority": 129
+    },
+    {
+      "osis": "Amos",
+      "ordinal": 30,
+      "nameVi": "A-mốt",
+      "shortVi": "A-mốt",
+      "aliases": [],
+      "nameEn": "Amos",
+      "aliasesEn": [
+        "am"
+      ],
+      "priority": 130
+    },
+    {
+      "osis": "Obad",
+      "ordinal": 31,
+      "nameVi": "Áp-đia",
+      "shortVi": "Áp",
+      "aliases": [],
+      "nameEn": "Obadiah",
+      "aliasesEn": [
+        "obad",
+        "ob"
+      ],
+      "priority": 131
+    },
+    {
+      "osis": "Jonah",
+      "ordinal": 32,
+      "nameVi": "Giô-na",
+      "shortVi": "Giô-na",
+      "aliases": [],
+      "nameEn": "Jonah",
+      "aliasesEn": [
+        "jon"
+      ],
+      "priority": 132
+    },
+    {
+      "osis": "Mic",
+      "ordinal": 33,
+      "nameVi": "Mi-chê",
+      "shortVi": "Mi",
+      "aliases": [],
+      "nameEn": "Micah",
+      "aliasesEn": [
+        "mic"
+      ],
+      "priority": 133
+    },
+    {
+      "osis": "Nah",
+      "ordinal": 34,
+      "nameVi": "Na-hum",
+      "shortVi": "Na",
+      "aliases": [],
+      "nameEn": "Nahum",
+      "aliasesEn": [
+        "nah"
+      ],
+      "priority": 134
+    },
+    {
+      "osis": "Hab",
+      "ordinal": 35,
+      "nameVi": "Ha-ba-cúc",
+      "shortVi": "Ha",
+      "aliases": [],
+      "nameEn": "Habakkuk",
+      "aliasesEn": [
+        "hab"
+      ],
+      "priority": 135
+    },
+    {
+      "osis": "Zeph",
+      "ordinal": 36,
+      "nameVi": "Sô-phô-ni",
+      "shortVi": "Sô",
+      "aliases": [],
+      "nameEn": "Zephaniah",
+      "aliasesEn": [
+        "zeph",
+        "zep"
+      ],
+      "priority": 136
+    },
+    {
+      "osis": "Hag",
+      "ordinal": 37,
+      "nameVi": "A-ghê",
+      "shortVi": "A-ghê",
+      "aliases": [],
+      "nameEn": "Haggai",
+      "aliasesEn": [
+        "hag"
+      ],
+      "priority": 137
+    },
+    {
+      "osis": "Zech",
+      "ordinal": 38,
+      "nameVi": "Xa-cha-ri",
+      "shortVi": "Xa",
+      "aliases": [],
+      "nameEn": "Zechariah",
+      "aliasesEn": [
+        "zech",
+        "zec"
+      ],
+      "priority": 138
+    },
+    {
+      "osis": "Mal",
+      "ordinal": 39,
+      "nameVi": "Ma-la-chi",
+      "shortVi": "Mal",
+      "aliases": [],
+      "nameEn": "Malachi",
+      "aliasesEn": [
+        "mal"
+      ],
+      "priority": 139
+    },
+    {
+      "osis": "Matt",
+      "ordinal": 40,
+      "nameVi": "Ma-thi-ơ",
+      "shortVi": "Mat",
+      "aliases": [
+        "mat"
+      ],
+      "nameEn": "Matthew",
+      "aliasesEn": [
+        "matt",
+        "mt"
+      ],
+      "priority": 4
+    },
+    {
+      "osis": "Mark",
+      "ordinal": 41,
+      "nameVi": "Mác",
+      "shortVi": "Mác",
+      "aliases": [],
+      "nameEn": "Mark",
+      "aliasesEn": [
+        "mrk",
+        "mk"
+      ],
+      "priority": 13
+    },
+    {
+      "osis": "Luke",
+      "ordinal": 42,
+      "nameVi": "Lu-ca",
+      "shortVi": "Lu",
+      "aliases": [],
+      "nameEn": "Luke",
+      "aliasesEn": [
+        "luk",
+        "lk"
+      ],
+      "priority": 6
+    },
+    {
+      "osis": "John",
+      "ordinal": 43,
+      "nameVi": "Giăng",
+      "shortVi": "Gi",
+      "aliases": [
+        "gi",
+        "giang"
+      ],
+      "nameEn": "John",
+      "aliasesEn": [
+        "jn",
+        "jhn"
+      ],
+      "priority": 1
+    },
+    {
+      "osis": "Acts",
+      "ordinal": 44,
+      "nameVi": "Công-vụ các Sứ-đồ",
+      "shortVi": "Công",
+      "aliases": [
+        "cv",
+        "công vụ"
+      ],
+      "nameEn": "Acts",
+      "aliasesEn": [
+        "act"
+      ],
+      "priority": 8
+    },
+    {
+      "osis": "Rom",
+      "ordinal": 45,
+      "nameVi": "Rô-ma",
+      "shortVi": "Rô",
+      "aliases": [
+        "ro"
+      ],
+      "nameEn": "Romans",
+      "aliasesEn": [
+        "rom",
+        "rm"
+      ],
+      "priority": 3
+    },
+    {
+      "osis": "1Cor",
+      "ordinal": 46,
+      "nameVi": "I Cô-rinh-tô",
+      "shortVi": "1 Cô",
+      "aliases": [
+        "1co"
+      ],
+      "nameEn": "1 Corinthians",
+      "aliasesEn": [
+        "1cor"
+      ],
+      "priority": 146
+    },
+    {
+      "osis": "2Cor",
+      "ordinal": 47,
+      "nameVi": "II Cô-rinh-tô",
+      "shortVi": "2 Cô",
+      "aliases": [
+        "2co"
+      ],
+      "nameEn": "2 Corinthians",
+      "aliasesEn": [
+        "2cor"
+      ],
+      "priority": 147
+    },
+    {
+      "osis": "Gal",
+      "ordinal": 48,
+      "nameVi": "Ga-la-ti",
+      "shortVi": "Ga",
+      "aliases": [],
+      "nameEn": "Galatians",
+      "aliasesEn": [
+        "gal"
+      ],
+      "priority": 148
+    },
+    {
+      "osis": "Eph",
+      "ordinal": 49,
+      "nameVi": "Ê-phê-sô",
+      "shortVi": "Êph",
+      "aliases": [],
+      "nameEn": "Ephesians",
+      "aliasesEn": [
+        "eph"
+      ],
+      "priority": 11
+    },
+    {
+      "osis": "Phil",
+      "ordinal": 50,
+      "nameVi": "Phi-líp",
+      "shortVi": "Phi",
+      "aliases": [],
+      "nameEn": "Philippians",
+      "aliasesEn": [
+        "phil",
+        "php"
+      ],
+      "priority": 12
+    },
+    {
+      "osis": "Col",
+      "ordinal": 51,
+      "nameVi": "Cô-lô-se",
+      "shortVi": "Côl",
+      "aliases": [],
+      "nameEn": "Colossians",
+      "aliasesEn": [
+        "col"
+      ],
+      "priority": 151
+    },
+    {
+      "osis": "1Thess",
+      "ordinal": 52,
+      "nameVi": "I Tê-sa-lô-ni-ca",
+      "shortVi": "1 Tê",
+      "aliases": [],
+      "nameEn": "1 Thessalonians",
+      "aliasesEn": [
+        "1thess",
+        "1th"
+      ],
+      "priority": 152
+    },
+    {
+      "osis": "2Thess",
+      "ordinal": 53,
+      "nameVi": "II Tê-sa-lô-ni-ca",
+      "shortVi": "2 Tê",
+      "aliases": [],
+      "nameEn": "2 Thessalonians",
+      "aliasesEn": [
+        "2thess",
+        "2th"
+      ],
+      "priority": 153
+    },
+    {
+      "osis": "1Tim",
+      "ordinal": 54,
+      "nameVi": "I Ti-mô-thê",
+      "shortVi": "1 Ti",
+      "aliases": [],
+      "nameEn": "1 Timothy",
+      "aliasesEn": [
+        "1tim"
+      ],
+      "priority": 154
+    },
+    {
+      "osis": "2Tim",
+      "ordinal": 55,
+      "nameVi": "II Ti-mô-thê",
+      "shortVi": "2 Ti",
+      "aliases": [],
+      "nameEn": "2 Timothy",
+      "aliasesEn": [
+        "2tim"
+      ],
+      "priority": 155
+    },
+    {
+      "osis": "Titus",
+      "ordinal": 56,
+      "nameVi": "Tít",
+      "shortVi": "Tít",
+      "aliases": [],
+      "nameEn": "Titus",
+      "aliasesEn": [
+        "tit"
+      ],
+      "priority": 156
+    },
+    {
+      "osis": "Phlm",
+      "ordinal": 57,
+      "nameVi": "Phi-lê-môn",
+      "shortVi": "Phlm",
+      "aliases": [],
+      "nameEn": "Philemon",
+      "aliasesEn": [
+        "phlm",
+        "phm"
+      ],
+      "priority": 157
+    },
+    {
+      "osis": "Heb",
+      "ordinal": 58,
+      "nameVi": "Hê-bơ-rơ",
+      "shortVi": "Hê",
+      "aliases": [
+        "he"
+      ],
+      "nameEn": "Hebrews",
+      "aliasesEn": [
+        "heb"
+      ],
+      "priority": 10
+    },
+    {
+      "osis": "Jas",
+      "ordinal": 59,
+      "nameVi": "Gia-cơ",
+      "shortVi": "Gia",
+      "aliases": [],
+      "nameEn": "James",
+      "aliasesEn": [
+        "jas",
+        "jm"
+      ],
+      "priority": 14
+    },
+    {
+      "osis": "1Pet",
+      "ordinal": 60,
+      "nameVi": "I Phi-e-rơ",
+      "shortVi": "1 Phi",
+      "aliases": [],
+      "nameEn": "1 Peter",
+      "aliasesEn": [
+        "1pet",
+        "1pe"
+      ],
+      "priority": 160
+    },
+    {
+      "osis": "2Pet",
+      "ordinal": 61,
+      "nameVi": "II Phi-e-rơ",
+      "shortVi": "2 Phi",
+      "aliases": [],
+      "nameEn": "2 Peter",
+      "aliasesEn": [
+        "2pet",
+        "2pe"
+      ],
+      "priority": 161
+    },
+    {
+      "osis": "1John",
+      "ordinal": 62,
+      "nameVi": "I Giăng",
+      "shortVi": "1 Gi",
+      "aliases": [],
+      "nameEn": "1 John",
+      "aliasesEn": [
+        "1john",
+        "1jn"
+      ],
+      "priority": 162
+    },
+    {
+      "osis": "2John",
+      "ordinal": 63,
+      "nameVi": "II Giăng",
+      "shortVi": "2 Gi",
+      "aliases": [],
+      "nameEn": "2 John",
+      "aliasesEn": [
+        "2john",
+        "2jn"
+      ],
+      "priority": 163
+    },
+    {
+      "osis": "3John",
+      "ordinal": 64,
+      "nameVi": "III Giăng",
+      "shortVi": "3 Gi",
+      "aliases": [],
+      "nameEn": "3 John",
+      "aliasesEn": [
+        "3john",
+        "3jn"
+      ],
+      "priority": 164
+    },
+    {
+      "osis": "Jude",
+      "ordinal": 65,
+      "nameVi": "Giu-đe",
+      "shortVi": "Giu",
+      "aliases": [],
+      "nameEn": "Jude",
+      "aliasesEn": [
+        "jud"
+      ],
+      "priority": 165
+    },
+    {
+      "osis": "Rev",
+      "ordinal": 66,
+      "nameVi": "Khải-huyền",
+      "shortVi": "Khải",
+      "aliases": [
+        "kh"
+      ],
+      "nameEn": "Revelation",
+      "aliasesEn": [
+        "rev",
+        "rv"
+      ],
+      "priority": 15
+    }
+  ]
+}

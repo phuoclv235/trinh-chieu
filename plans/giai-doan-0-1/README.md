@@ -82,6 +82,6 @@ Quy tắc điều phối:
 | T0.4 | Chưa bắt đầu | |
 | T0.5 | Xong | #5 |
 | T1.1 | Xong | #6 |
-| T1.2 | Đang làm | |
+| T1.2 | Xong | #7 |
 | T1.3 | Xong | (PR này) |
 | T1.4 đến T1.11 | Chưa bắt đầu | |

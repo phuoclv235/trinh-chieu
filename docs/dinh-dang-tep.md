@@ -167,7 +167,7 @@ Nhập từ OSIS, USFM hoặc Zefania một lần, sau đó chỉ đọc.
 
 ```sql
 CREATE TABLE meta(key TEXT PRIMARY KEY, value TEXT NOT NULL);
--- key: code, name, language, source, license, importedAt, schemaVersion
+-- key: code, name, language, source, license, importedAt, schemaVersion; abbreviation (không bắt buộc, tên viết tắt ghi trên trang: TT1925)
 CREATE TABLE verses(
   book TEXT NOT NULL,        -- mã sách OSIS: Gen, Exod, ..., John, ..., Rev
   chapter INTEGER NOT NULL,
