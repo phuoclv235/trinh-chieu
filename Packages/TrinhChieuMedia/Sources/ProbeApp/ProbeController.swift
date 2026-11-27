@@ -146,6 +146,21 @@ final class ProbeController {
             }
             output.loop.start()
         }
+        // Màn không dùng để đo: phủ cửa sổ đen tĩnh để không ứng dụng nào khác cập nhật trên đó.
+        var blankWindows: [NSWindow] = []
+        if options.blankOtherScreens {
+            for screen in NSScreen.screens where !screens.contains(where: { $0 === screen }) {
+                let blank = NSWindow(contentRect: screen.frame, styleMask: .borderless, backing: .buffered, defer: false)
+                blank.level = .screenSaver
+                blank.backgroundColor = .black
+                blank.isOpaque = true
+                blank.isReleasedWhenClosed = false
+                blank.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary, .ignoresCycle]
+                blank.setFrame(screen.frame, display: true)
+                blank.orderFrontRegardless()
+                blankWindows.append(blank)
+            }
+        }
         outputs.first?.window.window.makeKey()
         NSApp.activate()
         installKeyMonitor()
@@ -198,6 +213,10 @@ final class ProbeController {
         for output in outputs {
             output.loop.stop()
             output.window.close()
+        }
+        for blank in blankWindows {
+            blank.orderOut(nil)
+            blank.close()
         }
         backgroundSource?.invalidate()
         secondarySource?.invalidate()

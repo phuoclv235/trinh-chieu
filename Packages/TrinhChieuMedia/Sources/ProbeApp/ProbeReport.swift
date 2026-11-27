@@ -112,7 +112,8 @@ struct ProbeReport {
             options.fullScreenMode
             ? "toàn màn hình AppKit (enterFullScreenMode)"
             : options.nativeFullScreen ? "toàn màn hình gốc (toggleFullScreen)" : "cửa sổ không viền mức screenSaver"
-        lines.append("| Chế độ cửa sổ | \(windowMode) |")
+        let blank = options.blankOtherScreens ? "; màn không đo phủ đen" : ""
+        lines.append("| Chế độ cửa sổ | \(windowMode)\(blank) |")
         for media in mediaDescriptions {
             lines.append("| Media | \(media) |")
         }

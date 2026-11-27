@@ -36,6 +36,8 @@ struct ProbeOptions: Sendable {
     var queuePerScreen = false
     /// Dùng `CADisplayLink` của NSView (luồng chính) và `nextDrawable()` thay `CAMetalDisplayLink` (chỉ để so sánh).
     var viewDisplayLink = false
+    /// Phủ cửa sổ đen lên các màn không dùng để đo (thử giả thuyết ứng dụng khác làm lỡ nhịp).
+    var blankOtherScreens = false
     var report: URL?
     var mediaDirectory: URL?
 
@@ -57,6 +59,7 @@ struct ProbeOptions: Sendable {
           --no-video              bỏ cả hai video, nền màu đặc
           --queue-per-screen      mỗi màn một command queue riêng
           --view-display-link     dùng CADisplayLink của NSView thay CAMetalDisplayLink (so sánh)
+          --blank-other-screens   phủ cửa sổ đen lên các màn không dùng để đo
           --report <tệp.md>       nơi ghi báo cáo, mặc định ./ket-qua-ban-thu-<thời điểm>.md
           --media-dir <thư mục>   nơi lưu video tự tạo, mặc định ~/Library/Caches/TrinhChieuProbe
         Bấm Esc trên màn đầu ra để dừng sớm (vẫn ghi báo cáo).
@@ -105,6 +108,8 @@ struct ProbeOptions: Sendable {
                 options.queuePerScreen = true
             case "--view-display-link":
                 options.viewDisplayLink = true
+            case "--blank-other-screens":
+                options.blankOtherScreens = true
             case "--fps":
                 guard let text = value(flag) else { return .failure("Thiếu giá trị cho --fps") }
                 if text == "native" {
