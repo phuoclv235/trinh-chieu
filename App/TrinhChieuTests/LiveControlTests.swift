@@ -43,7 +43,7 @@ struct LiveKeyMapTests {
     }
 }
 
-@Suite("Thẻ trang chiếu")
+@MainActor @Suite("Thẻ trang chiếu")
 struct SlideCardsTests {
     private func sequence() -> SlideSequence {
         let a1 = Slide(elements: [.text(TextElement(slot: .body, text: "  Ngài là Đấng chăn giữ tôi  "))])
