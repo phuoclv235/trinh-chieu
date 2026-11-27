@@ -41,7 +41,8 @@ final class LibraryMediaLocator: MediaLocator {
                 }
             }
         }
-        table.withLock { $0 = next }
+        let snapshot = next
+        table.withLock { $0 = snapshot }
     }
 }
 
