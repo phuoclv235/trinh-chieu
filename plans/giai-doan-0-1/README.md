@@ -14,6 +14,7 @@ Phuoc duyệt kế hoạch ngày 2026-11-26 và giữ nguyên các giả định
 | [T0.1](T0.1-khung-repo.md) | Khung repo, gói Swift, dự án Xcode, CI | A | Không | Opus 5.5 | Một phần | 2 ngày |
 | [T0.3](T0.3-mau-giao-dien.md) | Mẫu giao diện HTML cho 4 màn chính | B | Không | Opus 5.5 | Có | 3 ngày + chờ duyệt |
 | [T0.4](T0.4-ban-thu-metal.md) | Bản thử Metal: chữ và video ra 2 màn | B | T0.1 | Opus 5.5 | Không | 3 ngày |
+| [T0.6](T0.6-ben-duoi-tai.md) | Bền dưới tải thật: đo có Zoom và web, chọn biện pháp tối ưu | B | T0.4 | Opus 5.5 | Không | 2 ngày |
 | [T0.5](T0.5-loi-lenh-trang-thai.md) | `CoreModel`: mô hình, lệnh, trạng thái, `RenderScene` | A | T0.1 | Opus 5.5 | Có | 4 ngày |
 | [T1.1](T1.1-viettext-chi-muc.md) | `VietText` và `LibraryIndex` | A | T0.5 | Opus 5.5 | Có | 3 ngày |
 | [T1.2](T1.2-kinh-thanh.md) | `Scripture`: địa chỉ câu, kho bản dịch, chia trang | A | T1.1 | Opus 5.5 | Có | 4 ngày |

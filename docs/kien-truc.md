@@ -91,7 +91,8 @@ Quy tắc:
 - Ngân sách trễ cho camera trực tiếp lên màn trong hội trường được xét riêng ở giai đoạn 3.
 - Mỗi đầu ra một `MTLCommandQueue` riêng trên cùng một `MTLDevice`.
 - **Lớp giữ nhịp:** mọi màn đang bật mà không phải đầu ra (màn điều khiển) phải có một lớp của Hệ thống được vẽ đều theo display link (lớp xem trước, 15 khung/giây là đủ). Đã đo: khi màn điều khiển chỉ có nội dung của ứng dụng khác cập nhật thất thường, bộ ghép hình làm lỡ nhịp đầu ra trên màn khác; phủ đen màn đó không giúp, lớp vẽ đều thì giúp.
-- Rớt khung phụ thuộc mạnh vào tải nền của máy (ứng dụng khác chiếm GPU, máy bị hãm nhiệt). Số đo chỉ có giá trị khi ghi kèm môi trường; máy chạy buổi nhóm nên là máy riêng.
+- Rớt khung phụ thuộc mạnh vào tải nền của máy (ứng dụng khác chiếm GPU, máy bị hãm nhiệt). Số đo chỉ có giá trị khi ghi kèm môi trường.
+- **Hệ thống phải mượt khi Zoom và ứng dụng web cùng chạy (Phuoc, 2026-11-27).** Tiêu chí hai mức: máy lặng dưới 1 khung rớt mỗi phút; dưới tải chuẩn không lần khựng nào từ 3 khung liên tiếp và tổng dưới 6 khung mỗi phút. Ngân sách của chính Hệ thống với 2 đầu ra 1080p có nền video: CPU dưới 25% một nhân, GPU dưới 3 ms mỗi khung, RAM dưới 500 MB; cảnh tĩnh thì gần 0. Biện pháp tối ưu được chọn bằng số đo ở T0.6.
 
 ## 5. Hợp đồng `RenderScene`
 
