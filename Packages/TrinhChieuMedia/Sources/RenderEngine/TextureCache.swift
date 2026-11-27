@@ -89,6 +89,7 @@ final class TextureCache: Sendable {
     private let device: UncheckedSendableBox<any MTLDevice>
     private let mediaLocator: any MediaLocator
     private let byteLimit: Int
+    private let health: SourceHealth?
     private let state = OSAllocatedUnfairLock(initialState: State())
     private let textQueue = DispatchQueue(label: "TrinhChieu.TextureCache.text", qos: .userInitiated)
     private let imageQueue = DispatchQueue(
@@ -98,10 +99,16 @@ final class TextureCache: Sendable {
     )
     private let logger = Logger(subsystem: "app.trinhchieu.RenderEngine", category: "TextureCache")
 
-    init(device: any MTLDevice, mediaLocator: any MediaLocator, byteLimit: Int = TextureCache.defaultByteLimit) {
+    init(
+        device: any MTLDevice,
+        mediaLocator: any MediaLocator,
+        byteLimit: Int = TextureCache.defaultByteLimit,
+        health: SourceHealth? = nil
+    ) {
         self.device = UncheckedSendableBox(device)
         self.mediaLocator = mediaLocator
         self.byteLimit = byteLimit
+        self.health = health
     }
 
     /// Dung lượng texture đang giữ (byte).
@@ -212,6 +219,11 @@ final class TextureCache: Sendable {
             )
             if result.truncated {
                 logger.warning("Chữ tràn khung sau khi co, đã cắt dòng cuối: \(textKey.string, privacy: .private)")
+                health?.report(.textTruncated, message: "Chữ tràn khung sau khi co, đã cắt dòng cuối")
+            }
+            if result.usedFallbackFont {
+                let family = textKey.style.fontFamily
+                health?.report(.fontMissing(family), message: "Không có phông \(family), đã dùng phông hệ thống")
             }
             return TextRasterizer.makeTexture(result.bitmap, device: device).map {
                 CachedTexture(texture: $0, padding: result.padding, truncated: result.truncated)
@@ -223,7 +235,10 @@ final class TextureCache: Sendable {
                     frame: CGSize(width: imageKey.pixelWidth, height: imageKey.pixelHeight),
                     fit: imageKey.fit
                 )
-            else { return nil }
+            else {
+                health?.report(.imageFailed(imageKey.media), message: "Không mở được ảnh")
+                return nil
+            }
             return TextRasterizer.makeTexture(bitmap, device: device).map {
                 CachedTexture(texture: $0, padding: 0, truncated: false)
             }

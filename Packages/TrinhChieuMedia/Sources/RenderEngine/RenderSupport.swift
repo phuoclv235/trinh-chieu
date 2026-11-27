@@ -3,6 +3,17 @@ import CoreModel
 import Foundation
 import Metal
 
+/// Mã của một đầu ra, do bên gắn đặt (ví dụ mã màn hình). Ổn định trong một phiên chạy.
+public struct OutputID: Hashable, Sendable, Codable, CustomStringConvertible {
+    public var rawValue: String
+
+    public init(_ rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    public var description: String { rawValue }
+}
+
 /// Vai của một đầu ra.
 public enum OutputRole: String, Sendable, Codable, CaseIterable {
     /// Đầu ra chính (LED, máy chiếu).
