@@ -68,7 +68,7 @@ Quy tắc điều phối:
 | 1 | Dùng nội bộ Hội Thánh trước, thiết kế sẵn đường thương mại hoá |
 | 2 | Phân phối ngoài App Store; Phuoc sẽ có tài khoản Apple Developer (cần trước giai đoạn 4) |
 | 3 | macOS 15 trở lên, chỉ Apple Silicon |
-| 4 | Mac Apple Silicon 16 GB, 3 đầu ra (LED, máy chiếu phụ, màn hình nhắc), LED qua bộ xử lý nhận HDMI |
+| 4 | Phuoc chốt (2026-11-27): máy chạy buổi nhóm thật là **Mac mini M4 bản base** (tối đa 3 màn theo thông số Apple). Máy chính cấp 3 màn: màn điều khiển, đầu ra chính (LED qua bộ xử lý nhận HDMI), màn hình nhắc. Máy chiếu phụ lặp lại màn LED bằng bộ chia HDMI, không tính là đầu ra riêng. Khi cần nhiều kiểu đầu ra khác nhau thì dùng máy con (nút trình chiếu, giai đoạn 2b). Không dùng bộ chuyển DisplayLink USB cho màn hội chúng nhìn |
 | 5 | Tương tác 2 chiều gồm cả Zoom hai chiều và hội chúng gửi câu hỏi, bình chọn |
 | 6 | Phuoc chốt (2026-11-26): cần **Bản Truyền Thống 1925** và **Bản Hiệu Đính 2010**. 1925 đóng gói sẵn nếu xác minh là phạm vi công cộng. 2010 còn bản quyền: chỉ đóng gói khi có giấy phép bằng văn bản của chủ sở hữu; trong lúc chờ, Phuoc tự nhập tệp cho dùng nội bộ. Giao diện tiếng Việt |
 | 7 | Tên mã `TrinhChieu`, giao diện xưng "Hệ thống" |
