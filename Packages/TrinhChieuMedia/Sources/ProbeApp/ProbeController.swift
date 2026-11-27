@@ -150,7 +150,12 @@ final class ProbeController {
         var blankWindows: [NSWindow] = []
         if options.blankOtherScreens {
             for screen in NSScreen.screens where !screens.contains(where: { $0 === screen }) {
-                let blank = NSWindow(contentRect: screen.frame, styleMask: .borderless, backing: .buffered, defer: false)
+                let blank = NSWindow(
+                    contentRect: screen.frame,
+                    styleMask: .borderless,
+                    backing: .buffered,
+                    defer: false
+                )
                 blank.level = .screenSaver
                 blank.backgroundColor = .black
                 blank.isOpaque = true
