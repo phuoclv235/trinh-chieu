@@ -18,6 +18,12 @@ public struct FrameContext {
     public let targetSize: CGSize
     /// Thời điểm (theo `CACurrentMediaTime`) khung này dự kiến lên màn.
     public let targetPresentationTime: CFTimeInterval
+
+    public init(encoder: any MTLRenderCommandEncoder, targetSize: CGSize, targetPresentationTime: CFTimeInterval) {
+        self.encoder = encoder
+        self.targetSize = targetSize
+        self.targetPresentationTime = targetPresentationTime
+    }
 }
 
 /// Kết quả dựng một khung.
