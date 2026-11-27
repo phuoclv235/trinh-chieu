@@ -401,3 +401,24 @@ struct GoldenSceneTests {
         #expect(brightest < 200)
     }
 }
+
+@Suite("renderOffscreen với bề rộng lẻ", .enabled(if: hasMetal))
+struct OffscreenOddSizeTests {
+    @Test("Bề rộng không chia hết cho 64: ảnh đủ cỡ, hàng không lệch")
+    func oddWidth() async throws {
+        let canvas = PixelSize(width: 101, height: 57)
+        let right = RenderLayer(
+            kind: .slide,
+            contentID: SceneKit.id(2),
+            items: [.color(SceneKit.blue, frame: PixelRect(x: 50, y: 0, width: 51, height: 57))]
+        )
+        let scene = SceneKit.scene([SceneKit.background(SceneKit.red, canvas: canvas), right], canvas: canvas)
+        let image = PixelImage(try await RenderEngine.renderOffscreen(scene, size: canvas, at: 0))
+        #expect(image.width == 101)
+        #expect(image.height == 57)
+        for y in [0, 28, 56] {
+            #expect(image.color(10, y).isClose(to: SceneKit.red))
+            #expect(image.color(90, y).isClose(to: SceneKit.blue))
+        }
+    }
+}

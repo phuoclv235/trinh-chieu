@@ -108,7 +108,8 @@ enum OffscreenRenderer {
         )
         descriptor.usage = [.renderTarget, .shaderRead]
         descriptor.storageMode = .private
-        let bytesPerRow = width * 4
+        // Hàng của bộ đệm đọc về căn 256 byte: an toàn cho mọi bề rộng khi chép texture sang bộ đệm.
+        let bytesPerRow = (width * 4 + 255) / 256 * 256
         guard let target = gpu.device.makeTexture(descriptor: descriptor),
             let readback = gpu.device.makeBuffer(length: bytesPerRow * height, options: .storageModeShared),
             let commandBuffer = gpu.commandQueue.makeCommandBuffer()
