@@ -247,3 +247,20 @@ struct SegmentedChoice<Value: Hashable>: View {
         .accessibilityLabel(accessibilityTitle)
     }
 }
+
+/// Nhãn trạng thái nhỏ (`.pill`): cao 20, bo 4, chữ 11 đậm vừa.
+struct Pill: View {
+    let text: String
+    let foreground: Color
+    let background: Color
+
+    var body: some View {
+        Text(verbatim: text)
+            .font(.system(size: 11, weight: .semibold))
+            .foregroundStyle(foreground)
+            .lineLimit(1)
+            .padding(.horizontal, 8)
+            .frame(height: 20)
+            .background(RoundedRectangle(cornerRadius: 4).fill(background))
+    }
+}

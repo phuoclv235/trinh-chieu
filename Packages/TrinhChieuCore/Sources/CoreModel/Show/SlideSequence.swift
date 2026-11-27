@@ -41,6 +41,15 @@ public struct SlideSequence: Sendable, Equatable {
     public func index(ofSlide slideID: UUID) -> Int? {
         slides.firstIndex { $0.slide.id == slideID }
     }
+
+    /// Chỉ số của vị trí đang chiếu. Một trang có thể lặp lại trong chuỗi (điệp khúc hát lại), nên ưu tiên
+    /// `slideIndex` khi trang ở đó vẫn đúng là `slideID`; không thì lấy lần xuất hiện đầu của `slideID`.
+    public func index(of live: LivePosition) -> Int? {
+        if slides.indices.contains(live.slideIndex), slides[live.slideIndex].slide.id == live.slideID {
+            return live.slideIndex
+        }
+        return index(ofSlide: live.slideID)
+    }
 }
 
 /// Một trang trong chuỗi, kèm vị trí của nó trong bộ trình chiếu.

@@ -317,7 +317,7 @@ private struct BackgroundPlayback {
             return
         }
         self.sequence = sequence
-        self.index = sequence.index(ofSlide: live.slideID)
+        self.index = sequence.index(of: live)
     }
 
     var entry: SequencedSlide? {

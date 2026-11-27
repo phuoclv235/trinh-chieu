@@ -24,6 +24,8 @@ public final class RenderEngine {
     let health: SourceHealth
     let videoPool: VideoPlayerPool
     private let mailboxes: [OutputRole: SceneMailbox<RenderScene>]
+    /// Hộp thư riêng của bản xem trước: khi tập dượt, xem trước đổi còn đầu ra chính giữ nguyên (T1.8).
+    private let previewMailboxes: [OutputRole: SceneMailbox<RenderScene>]
 
     private struct DisplayOutput {
         let window: OutputWindow
@@ -51,10 +53,13 @@ public final class RenderEngine {
         cache = TextureCache(device: gpu.device, mediaLocator: mediaLocator, health: health)
         videoPool = VideoPlayerPool(gpu: gpu, mediaLocator: mediaLocator, health: health)
         var mailboxes: [OutputRole: SceneMailbox<RenderScene>] = [:]
+        var previewMailboxes: [OutputRole: SceneMailbox<RenderScene>] = [:]
         for role in OutputRole.allCases {
             mailboxes[role] = SceneMailbox()
+            previewMailboxes[role] = SceneMailbox()
         }
         self.mailboxes = mailboxes
+        self.previewMailboxes = previewMailboxes
         screenObserver = NotificationCenter.default.addObserver(
             forName: NSApplication.didChangeScreenParametersNotification,
             object: nil,
@@ -112,7 +117,14 @@ public final class RenderEngine {
         mailboxes[role]?.post(scene)
     }
 
+    /// Gửi cảnh cho bản xem trước của một vai. Không chặn. Thường giống cảnh của đầu ra; khác khi tập dượt hoặc
+    /// đóng băng (đầu ra giữ hình cũ, xem trước theo thao tác mới).
+    public func setPreviewScene(_ scene: RenderScene, for role: OutputRole) {
+        previewMailboxes[role]?.post(scene)
+    }
+
     /// Lớp xem trước của một vai (640 điểm ảnh, 15 khung/giây), để giao diện gắn vào cây lớp của mình.
+    /// Vẽ cảnh gửi qua ``setPreviewScene(_:for:)``.
     ///
     /// Cập nhật liên tục kể cả khi cảnh tĩnh, theo display link của màn đang chứa lớp: lớp này kiêm "lớp giữ nhịp"
     /// cho màn điều khiển (bản thử T0.4, lần chạy 6).
@@ -127,7 +139,7 @@ public final class RenderEngine {
         layer.backgroundColor = CGColor(gray: 0, alpha: 1)
         layer.contentsGravity = .resizeAspect
         layer.drawableSize = Self.previewSize.cgSize
-        if let mailbox = mailboxes[role],
+        if let mailbox = previewMailboxes[role],
             let loop = try? RenderLoop(
                 label: "preview.\(role.rawValue)",
                 role: role,

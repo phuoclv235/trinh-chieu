@@ -259,12 +259,21 @@ private struct FrameDetails: View {
                         row("Dropped in last minute", value: "\(output.droppedLastMinute)")
                         row("GPU time per frame", value: String(format: "%.1f ms", output.gpuMilliseconds))
                         row("Pipeline latency", value: String(format: "%.0f ms", output.latencyMilliseconds))
+                        row("Scene change to screen", value: sceneLatency(output))
                     }
                 }
             }
         }
         .padding(16)
-        .frame(width: 280, alignment: .leading)
+        .frame(width: 300, alignment: .leading)
+    }
+
+    /// "18 ms · 1,1 khung": thời gian từ lúc gửi cảnh mới (bấm thẻ) tới lúc lên màn.
+    private func sceneLatency(_ output: FrameHealth.OutputSummary) -> String {
+        guard let milliseconds = output.sceneLatencyMilliseconds, let frames = output.sceneLatencyFrames else {
+            return "–"
+        }
+        return String(format: String(localized: "%.0f ms · %.1f frames"), milliseconds, frames)
     }
 
     private func row(_ title: LocalizedStringKey, value: String) -> some View {

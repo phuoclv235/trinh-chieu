@@ -1,46 +1,55 @@
+import Foundation
 import SwiftUI
 
-/// Chế độ Trực tiếp: ba cột theo mẫu `design/live.html`. T1.7 dựng khung và cột phải (xem trước, lớp giữ nhịp);
-/// chương trình buổi nhóm, thư viện thu gọn và lưới trang chiếu làm ở T1.8.
+/// Chế độ Trực tiếp: ba cột theo mẫu `design/live.html`. Trái: chương trình buổi nhóm và thư viện thu gọn; giữa:
+/// lưới trang chiếu của nguồn đang xem; phải: xem trước, luồng tín hiệu, đồng hồ. Phím điều khiển nghe cho cả cửa sổ.
 struct LiveWorkspace: View {
     let showsRightRail: Bool
+    /// Mở chế độ Soạn thảo với một bộ trình chiếu.
+    let onEdit: (UUID) -> Void
+    @Environment(AppEnvironment.self) private var environment
 
     var body: some View {
         HStack(spacing: 0) {
-            VStack(spacing: 0) {
-                EmptyStateView(
-                    systemImage: "list.bullet.rectangle",
-                    title: "No service plan yet",
-                    message: "Service plans and the compact library will appear in this column."
-                )
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            GeometryReader { proxy in
+                // Chương trình và thư viện chia cột theo tỉ lệ 1,2 : 1 như mẫu.
+                let planHeight = (proxy.size.height * 1.2 / 2.2).rounded()
+                VStack(spacing: 0) {
+                    ServicePlanPanel()
+                        .frame(height: planHeight)
+                    Hairline()
+                    CompactLibrary()
+                        .frame(maxHeight: .infinity)
+                }
             }
             .frame(width: Metrics.railLeft)
             .background(Palette.bgPanel)
             Hairline(vertical: true)
-            EmptyStateView(
-                systemImage: "rectangle.on.rectangle",
-                title: "Nothing selected",
-                message: "Choose an item in the service plan to see its slides here."
-            )
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Palette.bgStage)
+            SlideStage(onEdit: onEdit)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             if showsRightRail {
                 Hairline(vertical: true)
-                ScrollView {
-                    VStack(spacing: 0) {
-                        OutputPreviewCard(role: .program)
-                        Hairline()
-                        OutputPreviewCard(role: .stage)
-                        Hairline()
-                    }
-                }
-                .scrollIndicators(.never)
-                .frame(width: Metrics.railRight)
-                .background(Palette.bgPanel)
-                .transition(.move(edge: .trailing))
+                LiveRightRail()
+                    .frame(width: Metrics.railRight)
+                    .background(Palette.bgPanel)
+                    .transition(.move(edge: .trailing))
             }
         }
+        .background {
+            LiveKeyMonitor { key in environment.perform(key) }
+        }
+    }
+}
+
+/// Chương trình buổi nhóm (cột trái trên).
+struct ServicePlanPanel: View {
+    var body: some View {
+        EmptyStateView(
+            systemImage: "list.bullet.rectangle",
+            title: "No service plan yet",
+            message: "Service plans arrive in the next update. Pick songs from the library below for now."
+        )
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 

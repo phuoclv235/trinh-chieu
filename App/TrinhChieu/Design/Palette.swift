@@ -26,6 +26,8 @@ enum Palette {
     static let onAccent = dynamic(dark: 0x1E0D03, light: 0xFFFFFF)
     static let accentSoft = dynamic(dark: 0xF0814A, light: 0x9E4317, darkAlpha: 0.13, lightAlpha: 0.1)
     static let accentLine = dynamic(dark: 0xF0814A, light: 0x9E4317, darkAlpha: 0.5, lightAlpha: 0.45)
+    /// Quầng thở quanh thẻ đang lên màn (`--glow`).
+    static let glow = dynamic(dark: 0xF0814A, light: 0x9E4317, darkAlpha: 0.32, lightAlpha: 0.25)
 
     /// Tập dượt: hồng sen.
     static let warn = dynamic(dark: 0xE6699D, light: 0xB3326B)
@@ -41,6 +43,13 @@ enum Palette {
     static let onDanger = dynamic(dark: 0xFFFFFF, light: 0xFFFFFF)
     /// Đúng giờ, khung hình đều.
     static let ok = dynamic(dark: 0x6FCF86, light: 0x1D7F45)
+
+    /// Màu đoạn (`--g-*`): vạch dưới thẻ trang chiếu, chip thứ tự hát.
+    static let groupVerse = dynamic(dark: 0x7F9ED9, light: 0x5F80C4)
+    static let groupChorus = dynamic(dark: 0xD88EA2, light: 0xC46D85)
+    static let groupBridge = dynamic(dark: 0xB9A3E0, light: 0x8A72C0)
+    static let groupEnding = dynamic(dark: 0x98AD6C, light: 0x788F4B)
+    static let groupIntro = dynamic(dark: 0x6FC1C9, light: 0x3F9AA3)
 
     /// Bản `NSColor` của một màu (cho lớp Core Animation).
     static func nsColor(_ color: Color) -> NSColor {

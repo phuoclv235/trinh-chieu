@@ -42,8 +42,14 @@ enum WorkspaceMode: String, CaseIterable, Sendable {
     private(set) var show: ShowController?
     /// Bản dịch Kinh Thánh đã mở được, theo tên.
     private(set) var translations: [TranslationInfo] = []
+    /// Tăng mỗi khi thư viện báo nội dung đổi: giao diện đọc số này để dựng lại lưới trang của nguồn đang xem.
+    private(set) var contentRevision = 0
+    /// Bộ trình chiếu bạn bấm "Soạn" ở chế độ Trực tiếp; chế độ Soạn thảo mở bộ này (T1.9).
+    var editingPresentationID: UUID?
+    /// Ảnh thu nhỏ của thẻ trang chiếu.
+    let thumbnails: SlideThumbnailCache
 
-    @ObservationIgnored private let mediaLocator = LibraryMediaLocator()
+    @ObservationIgnored private let mediaLocator: LibraryMediaLocator
     @ObservationIgnored private var sink: AppSceneSink?
     @ObservationIgnored private var clock: SystemShowClock?
     @ObservationIgnored private var statisticsTask: Task<Void, Never>?
@@ -53,6 +59,9 @@ enum WorkspaceMode: String, CaseIterable, Sendable {
 
     init(settings: SettingsStore = SettingsStore()) {
         self.settings = settings
+        let locator = LibraryMediaLocator()
+        mediaLocator = locator
+        thumbnails = SlideThumbnailCache(mediaLocator: locator)
     }
 
     // MARK: - Khởi động
@@ -97,6 +106,7 @@ enum WorkspaceMode: String, CaseIterable, Sendable {
             content.startObserving { [weak self, weak show] change in
                 self?.mediaLocator.update(from: self?.library)
                 show?.send(.contentDidChange(ids: change.documentIDs))
+                self?.contentRevision &+= 1
             }
             library = store
             self.bible = bible
@@ -131,6 +141,8 @@ enum WorkspaceMode: String, CaseIterable, Sendable {
         clock = nil
         bible = nil
         translations = []
+        editingPresentationID = nil
+        thumbnails.removeAll()
         mediaLocator.update(from: nil)
     }
 

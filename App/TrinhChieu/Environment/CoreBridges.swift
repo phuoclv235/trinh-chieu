@@ -46,8 +46,8 @@ final class LibraryMediaLocator: MediaLocator {
     }
 }
 
-/// Nơi nhận cảnh của `ShowController`: đầu ra đi thẳng vào hộp thư của lõi dựng hình (không chặn), xem trước giữ lại
-/// cho giao diện.
+/// Nơi nhận cảnh của `ShowController`: đầu ra và bản xem trước đi thẳng vào hộp thư riêng của lõi dựng hình
+/// (không chặn).
 @MainActor final class AppSceneSink: SceneSink {
     private let engine: RenderEngine
     /// Cảnh xem trước mới nhất (khi tập dượt, khác với cảnh trên đầu ra).
@@ -62,8 +62,11 @@ final class LibraryMediaLocator: MediaLocator {
         engine.setScene(publication.stage, for: .stage)
     }
 
+    /// Bản xem trước vẽ cảnh này, kể cả khi tập dượt hay đóng băng (đầu ra giữ hình cũ, xem trước đi theo thao tác).
     func publishToPreview(_ publication: ScenePublication) {
         latestPreview = publication
+        engine.setPreviewScene(publication.program, for: .program)
+        engine.setPreviewScene(publication.stage, for: .stage)
     }
 }
 

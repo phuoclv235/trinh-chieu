@@ -1,6 +1,16 @@
 {
   "sourceLanguage": "vi",
   "strings": {
+    "%.0f ms · %.1f frames": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%.0f ms · %.1f khung"
+          }
+        }
+      }
+    },
     "%@ (not connected)": {
       "localizations": {
         "vi": {
@@ -47,6 +57,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Thêm %lld cảnh báo"
+          }
+        }
+      }
+    },
+    "%lld slides": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld trang"
           }
         }
       }
@@ -121,6 +141,36 @@
         }
       }
     },
+    "Background": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nền"
+          }
+        }
+      }
+    },
+    "Bible": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kinh Thánh"
+          }
+        }
+      }
+    },
+    "Bible lookup": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tra Kinh Thánh"
+          }
+        }
+      }
+    },
     "Cannot be assigned": {
       "localizations": {
         "vi": {
@@ -151,6 +201,16 @@
         }
       }
     },
+    "Card size": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cỡ thẻ"
+          }
+        }
+      }
+    },
     "Change folder…": {
       "localizations": {
         "vi": {
@@ -177,6 +237,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Chọn một bộ trình chiếu trong thư viện để soạn trang chiếu và lời bài hát."
+          }
+        }
+      }
+    },
+    "Choose a song, Bible passage or media in the library to see its slides here.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn một bài hát, đoạn Kinh Thánh hay media trong thư viện để xem các trang ở đây."
           }
         }
       }
@@ -227,6 +297,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Chọn lại màn hình"
+          }
+        }
+      }
+    },
+    "Choose song order": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn thứ tự hát"
           }
         }
       }
@@ -291,12 +371,52 @@
         }
       }
     },
+    "Clear every layer from the main output": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xoá mọi lớp khỏi đầu ra chính"
+          }
+        }
+      }
+    },
     "Clear text": {
       "localizations": {
         "vi": {
           "stringUnit": {
             "state": "translated",
             "value": "Xoá chữ"
+          }
+        }
+      }
+    },
+    "Clear the background layer": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xoá lớp Nền"
+          }
+        }
+      }
+    },
+    "Clear the text layer": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xoá lớp Chữ"
+          }
+        }
+      }
+    },
+    "Click a layer to clear": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bấm một lớp để xoá"
           }
         }
       }
@@ -321,6 +441,16 @@
         }
       }
     },
+    "Content not found": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không tìm thấy nội dung"
+          }
+        }
+      }
+    },
     "Create library": {
       "localizations": {
         "vi": {
@@ -341,12 +471,32 @@
         }
       }
     },
+    "Current slide went live": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trang này lên màn lúc"
+          }
+        }
+      }
+    },
     "Dark": {
       "localizations": {
         "vi": {
           "stringUnit": {
             "state": "translated",
             "value": "Tối"
+          }
+        }
+      }
+    },
+    "Default": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mặc định"
           }
         }
       }
@@ -401,12 +551,32 @@
         }
       }
     },
+    "Edit this presentation": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Soạn bộ trình chiếu này"
+          }
+        }
+      }
+    },
     "Editor": {
       "localizations": {
         "vi": {
           "stringUnit": {
             "state": "translated",
             "value": "Soạn thảo"
+          }
+        }
+      }
+    },
+    "Empty": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trống"
           }
         }
       }
@@ -491,6 +661,16 @@
         }
       }
     },
+    "Frozen": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang đóng băng"
+          }
+        }
+      }
+    },
     "GPU time per frame": {
       "localizations": {
         "vi": {
@@ -521,12 +701,32 @@
         }
       }
     },
+    "Hymn %@": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thánh ca %@"
+          }
+        }
+      }
+    },
     "Import": {
       "localizations": {
         "vi": {
           "stringUnit": {
             "state": "translated",
             "value": "Nhập"
+          }
+        }
+      }
+    },
+    "Import lyrics files from the welcome screen.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhập tệp lời bài hát ở màn chào."
           }
         }
       }
@@ -561,12 +761,32 @@
         }
       }
     },
+    "Larger cards": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thẻ lớn hơn"
+          }
+        }
+      }
+    },
     "Library": {
       "localizations": {
         "vi": {
           "stringUnit": {
             "state": "translated",
             "value": "Thư viện"
+          }
+        }
+      }
+    },
+    "Library default": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mặc định của thư viện"
           }
         }
       }
@@ -587,6 +807,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Không thấy thư mục thư viện"
+          }
+        }
+      }
+    },
+    "Library type": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loại trong thư viện"
           }
         }
       }
@@ -641,12 +871,32 @@
         }
       }
     },
+    "Media": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Media"
+          }
+        }
+      }
+    },
     "Media audio": {
       "localizations": {
         "vi": {
           "stringUnit": {
             "state": "translated",
             "value": "Âm thanh media"
+          }
+        }
+      }
+    },
+    "Media you import into the library appears here.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Media đã nhập vào thư viện sẽ hiện ở đây."
           }
         }
       }
@@ -671,6 +921,16 @@
         }
       }
     },
+    "Mute the media that is playing": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tắt tiếng media đang phát"
+          }
+        }
+      }
+    },
     "Next slide": {
       "localizations": {
         "vi": {
@@ -687,6 +947,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ở trang cuối, lệnh trang kế chuyển sang mục kế tiếp của chương trình buổi nhóm."
+          }
+        }
+      }
+    },
+    "No media yet": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa có media"
           }
         }
       }
@@ -711,6 +981,26 @@
         }
       }
     },
+    "No results": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không có kết quả"
+          }
+        }
+      }
+    },
+    "No screen": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa gán màn"
+          }
+        }
+      }
+    },
     "No screen assigned": {
       "localizations": {
         "vi": {
@@ -731,6 +1021,36 @@
         }
       }
     },
+    "No slides": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa có trang"
+          }
+        }
+      }
+    },
+    "No songs yet": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa có bài hát"
+          }
+        }
+      }
+    },
+    "No themes yet": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa có mẫu trình bày"
+          }
+        }
+      }
+    },
     "No translation yet": {
       "localizations": {
         "vi": {
@@ -747,6 +1067,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Chưa xong"
+          }
+        }
+      }
+    },
+    "Not playing": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không phát"
           }
         }
       }
@@ -811,6 +1141,16 @@
         }
       }
     },
+    "On screen": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trên màn"
+          }
+        }
+      }
+    },
     "Open command palette": {
       "localizations": {
         "vi": {
@@ -861,6 +1201,16 @@
         }
       }
     },
+    "Picture": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ảnh"
+          }
+        }
+      }
+    },
     "Pipeline latency": {
       "localizations": {
         "vi": {
@@ -891,6 +1241,16 @@
         }
       }
     },
+    "Presentation": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bộ trình chiếu"
+          }
+        }
+      }
+    },
     "Presenting": {
       "localizations": {
         "vi": {
@@ -917,6 +1277,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Thoát"
+          }
+        }
+      }
+    },
+    "Real time": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giờ thật"
           }
         }
       }
@@ -971,12 +1341,32 @@
         }
       }
     },
+    "Rehearsing, output unchanged": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang tập dượt, đầu ra không đổi"
+          }
+        }
+      }
+    },
     "Run the show while the main output stays unchanged": {
       "localizations": {
         "vi": {
           "stringUnit": {
             "state": "translated",
             "value": "Chạy thật nhưng đầu ra chính không đổi"
+          }
+        }
+      }
+    },
+    "Scene change to screen": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bấm đến lên màn"
           }
         }
       }
@@ -1031,12 +1421,32 @@
         }
       }
     },
+    "Search without accents": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tìm không cần dấu"
+          }
+        }
+      }
+    },
     "Service plans and the compact library will appear in this column.": {
       "localizations": {
         "vi": {
           "stringUnit": {
             "state": "translated",
             "value": "Chương trình buổi nhóm và thư viện thu gọn sẽ hiện ở cột này."
+          }
+        }
+      }
+    },
+    "Service plans arrive in the next update. Pick songs from the library below for now.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chương trình buổi nhóm có ở bản cập nhật kế. Tạm thời chọn bài từ thư viện bên dưới."
           }
         }
       }
@@ -1101,12 +1511,102 @@
         }
       }
     },
+    "Signal flow": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Luồng tín hiệu"
+          }
+        }
+      }
+    },
     "Skip": {
       "localizations": {
         "vi": {
           "stringUnit": {
             "state": "translated",
             "value": "Bỏ qua"
+          }
+        }
+      }
+    },
+    "Slide %@ / %@": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trang %@ / %@"
+          }
+        }
+      }
+    },
+    "Slide %@, %@": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trang %@, %@"
+          }
+        }
+      }
+    },
+    "Slides": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trang chiếu"
+          }
+        }
+      }
+    },
+    "Smaller cards": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thẻ nhỏ hơn"
+          }
+        }
+      }
+    },
+    "Solid color": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Màu trơn"
+          }
+        }
+      }
+    },
+    "Song": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bài hát"
+          }
+        }
+      }
+    },
+    "Song order": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thứ tự hát"
+          }
+        }
+      }
+    },
+    "Songs": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bài hát"
           }
         }
       }
@@ -1147,6 +1647,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ở lại"
+          }
+        }
+      }
+    },
+    "Text": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chữ"
           }
         }
       }
@@ -1211,12 +1721,52 @@
         }
       }
     },
+    "Themes": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mẫu"
+          }
+        }
+      }
+    },
+    "Themes control how slides look on the main output.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mẫu trình bày quyết định trang chiếu trông thế nào trên đầu ra chính."
+          }
+        }
+      }
+    },
     "This Mac does not support Metal": {
       "localizations": {
         "vi": {
           "stringUnit": {
             "state": "translated",
             "value": "Máy này không hỗ trợ Metal"
+          }
+        }
+      }
+    },
+    "This item has no slides yet. Open it in the editor to add some.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mục này chưa có trang nào. Mở trong Soạn thảo để thêm."
+          }
+        }
+      }
+    },
+    "This item is no longer in the library, or its file is missing.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mục này không còn trong thư viện, hoặc tệp của nó bị mất."
           }
         }
       }
@@ -1251,12 +1801,52 @@
         }
       }
     },
+    "Try fewer words, or search by hymn number.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thử bớt chữ, hoặc tìm theo số thánh ca."
+          }
+        }
+      }
+    },
+    "Type a reference such as John 3:16 to see the verses. Arrives with the service plan.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gõ địa chỉ câu như Giăng 3:16 để xem các câu. Có cùng bản cập nhật chương trình buổi nhóm."
+          }
+        }
+      }
+    },
+    "Up next": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kế tiếp"
+          }
+        }
+      }
+    },
     "Use this folder": {
       "localizations": {
         "vi": {
           "stringUnit": {
             "state": "translated",
             "value": "Dùng thư mục này"
+          }
+        }
+      }
+    },
+    "Video": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video"
           }
         }
       }
@@ -1287,6 +1877,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Chào bạn"
+          }
+        }
+      }
+    },
+    "disabled": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "đang tắt"
           }
         }
       }
