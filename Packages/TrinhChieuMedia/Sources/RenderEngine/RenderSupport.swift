@@ -46,6 +46,19 @@ extension RGBA {
         )
     }
 
+    /// Trộn hai màu theo `t` (0 là màu này, 1 là `other`).
+    func mixed(with other: RGBA, t: Double) -> RGBA {
+        func lerp(_ a: UInt8, _ b: UInt8) -> UInt8 {
+            UInt8((Double(a) + (Double(b) - Double(a)) * min(max(t, 0), 1)).rounded())
+        }
+        return RGBA(
+            red: lerp(red, other.red),
+            green: lerp(green, other.green),
+            blue: lerp(blue, other.blue),
+            alpha: lerp(alpha, other.alpha)
+        )
+    }
+
     /// Màu Core Graphics trong không gian sRGB.
     var cgColor: CGColor {
         let components = [CGFloat(red) / 255, CGFloat(green) / 255, CGFloat(blue) / 255, CGFloat(alpha) / 255]

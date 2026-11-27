@@ -174,7 +174,7 @@ final class TextureCache: Sendable {
             return false
         }
         if failedKey {
-            logger.warning("Không dựng được texture cho \(String(describing: key), privacy: .public)")
+            logger.warning("Không dựng được texture cho \(String(describing: key), privacy: .private)")
         }
     }
 

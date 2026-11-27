@@ -22,6 +22,8 @@ struct DrawCommand {
 /// Lớp đã dựng xong: giữ texture của chính nó, nên đệm có bỏ bớt cũng không mất hình trên màn.
 struct ResolvedLayer {
     let commands: [DrawCommand]
+    /// Màu phủ kín khung vẽ của lớp (chỉ lớp nền dùng để tô phần thừa ngoài khung vẽ).
+    var letterbox: RGBA?
 }
 
 /// Bộ trộn lớp của một đầu ra: mỗi `LayerKind` một `LayerSlot`, vẽ dưới lên trên, hoà tan theo lớp.
@@ -64,7 +66,7 @@ final class LayerCompositor {
                 source: source,
                 spec: scene.transition,
                 time: time
-            ) { resolve($0, layout: layout) }
+            ) { resolve($0, canvas: scene.canvasSize, layout: layout) }
         }
         for kind in slots.keys where !present.contains(kind) {
             slots[kind]?.update(source: nil, spec: scene.transition, time: time) { _ in nil }
@@ -120,11 +122,16 @@ final class LayerCompositor {
         pass.colorAttachments[0].texture = target
         pass.colorAttachments[0].loadAction = .clear
         pass.colorAttachments[0].storeAction = .store
-        pass.colorAttachments[0].clearColor = Self.letterboxColor(scene).clearColor
+        pass.colorAttachments[0].clearColor = letterboxColor(at: time).clearColor
         guard let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: pass) else { return }
         encoder.label = "Compose"
         let canvasRect = CGRect(origin: layout.offset, size: canvasPixels)
-        encoder.setScissorRect(Self.scissor(canvasRect, targetSize: targetSize))
+        // Khung vẽ nằm ngoài đích (không xảy ra với kích thước hợp lệ): chỉ tô màu phần thừa.
+        if let scissor = Self.scissor(canvasRect, targetSize: targetSize) {
+            encoder.setScissorRect(scissor)
+        } else {
+            steps.removeAll()
+        }
         for step in steps {
             switch step {
             case .steady(let layer):
@@ -145,7 +152,7 @@ final class LayerCompositor {
 
     // MARK: - Dựng lớp
 
-    private func resolve(_ target: LayerTarget, layout: CanvasLayout) -> ResolvedLayer? {
+    private func resolve(_ target: LayerTarget, canvas: PixelSize, layout: CanvasLayout) -> ResolvedLayer? {
         var commands: [DrawCommand] = []
         let scale = layout.scale
         for item in target.layer.items {
@@ -204,7 +211,7 @@ final class LayerCompositor {
                 continue
             }
         }
-        return ResolvedLayer(commands: commands)
+        return ResolvedLayer(commands: commands, letterbox: Self.coveringColor(target.layer, canvas: canvas))
     }
 
     static func imageCommand(_ texture: any MTLTexture, rect: CGRect, fit: ContentFit) -> DrawCommand {
@@ -316,25 +323,38 @@ final class LayerCompositor {
         return order.filter { seen.insert($0).inserted }
     }
 
-    /// Màu phần thừa khi tỉ lệ khung vẽ khác tỉ lệ màn:
-    /// màu nền của lớp `background` nếu là màu phủ kín, không thì đen.
-    static func letterboxColor(_ scene: RenderScene) -> RGBA {
-        guard let background = scene.layers.first(where: { $0.kind == .background }),
-            case .color(let color, let frame)? = background.items.first,
+    /// Màu phần thừa khi tỉ lệ khung vẽ khác tỉ lệ màn: màu nền của lớp `background` đang hiện nếu là màu
+    /// phủ kín, không thì đen. Lớp nền đang hoà tan thì phần thừa cũng chuyển màu theo cùng nhịp.
+    func letterboxColor(at time: Double) -> RGBA {
+        guard let slot = slots[.background] else { return .black }
+        switch slot.plan(at: time) {
+        case .nothing:
+            return .black
+        case .steady(let layer):
+            return layer.letterbox ?? .black
+        case .dissolve(let from, let to, let t):
+            return (from?.letterbox ?? .black).mixed(with: to?.letterbox ?? .black, t: t)
+        }
+    }
+
+    /// Màu của phần tử đầu tiên nếu là màu phủ kín khung vẽ (luôn đục).
+    static func coveringColor(_ layer: RenderLayer, canvas: PixelSize) -> RGBA? {
+        guard layer.kind == .background,
+            case .color(let color, let frame)? = layer.items.first,
             frame.x <= 0, frame.y <= 0,
-            frame.x + frame.width >= scene.canvasSize.width,
-            frame.y + frame.height >= scene.canvasSize.height
-        else { return .black }
+            frame.x + frame.width >= canvas.width,
+            frame.y + frame.height >= canvas.height
+        else { return nil }
         var opaque = color
         opaque.alpha = 255
         return opaque
     }
 
-    static func scissor(_ rect: CGRect, targetSize: CGSize) -> MTLScissorRect {
+    static func scissor(_ rect: CGRect, targetSize: CGSize) -> MTLScissorRect? {
         let bounds = CGRect(origin: .zero, size: targetSize)
         let clipped = rect.integral.intersection(bounds)
         guard !clipped.isNull, clipped.width > 0, clipped.height > 0 else {
-            return MTLScissorRect(x: 0, y: 0, width: 1, height: 1)
+            return nil
         }
         return MTLScissorRect(
             x: Int(clipped.minX),

@@ -131,7 +131,10 @@ enum OffscreenRenderer {
         }
         compositor.encode(into: commandBuffer, target: target, time: time)
 
-        if let blit = commandBuffer.makeBlitCommandEncoder() {
+        guard let blit = commandBuffer.makeBlitCommandEncoder() else {
+            throw RenderEngineError.textureUnavailable
+        }
+        do {
             blit.copy(
                 from: target,
                 sourceSlice: 0,

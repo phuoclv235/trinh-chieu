@@ -319,6 +319,21 @@ struct GoldenSceneTests {
         #expect(image.color(760, 270).isClose(to: SceneKit.blue))
     }
 
+    @Test("Khung 4:3, nền màu đang hoà tan: phần thừa đổi màu cùng nhịp")
+    func letterboxFollowsDissolve() async throws {
+        let canvas = PixelSize(width: 1440, height: 1080)
+        let from = SceneKit.scene([SceneKit.background(SceneKit.red, id: 1, canvas: canvas)], canvas: canvas)
+        let to = SceneKit.scene(
+            [SceneKit.background(SceneKit.blue, id: 2, canvas: canvas)],
+            canvas: canvas,
+            transition: TransitionSpec(kind: .dissolve, duration: 1)
+        )
+        let image = try await render("ti-le-4-3-hoa-tan", to, after: from, at: 0.5)
+        let middle = RGBA(red: 128, green: 0, blue: 128)
+        #expect(image.color(60, 270).isClose(to: middle, tolerance: 3))
+        #expect(image.color(480, 270).isClose(to: middle, tolerance: 3))
+    }
+
     // MARK: - Chuyển cảnh
 
     private let dissolve = TransitionSpec(kind: .dissolve, duration: 1)
