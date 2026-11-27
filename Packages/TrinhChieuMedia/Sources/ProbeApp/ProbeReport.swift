@@ -112,7 +112,11 @@ struct ProbeReport {
             options.fullScreenMode
             ? "toàn màn hình AppKit (enterFullScreenMode)"
             : options.nativeFullScreen ? "toàn màn hình gốc (toggleFullScreen)" : "cửa sổ không viền mức screenSaver"
-        let blank = options.blankOtherScreens ? "; màn không đo phủ đen" : ""
+        var blank = options.blankOtherScreens ? "; màn không đo phủ đen" : ""
+        if let keeper = options.keeperFrameRate {
+            let keeperRate = keeper > 0 ? "\(Int(keeper)) khung/giây" : "tần số gốc"
+            blank += "; cửa sổ giữ nhịp 320x180 trên màn không đo, \(keeperRate)"
+        }
         lines.append("| Chế độ cửa sổ | \(windowMode)\(blank) |")
         for media in mediaDescriptions {
             lines.append("| Media | \(media) |")

@@ -166,6 +166,21 @@ final class ProbeController {
                 blankWindows.append(blank)
             }
         }
+        // Cửa sổ nhỏ có display link riêng trên các màn không đo (giống lớp xem trước của giao diện điều khiển).
+        var keepers: [KeeperWindow] = []
+        if let keeperRate = options.keeperFrameRate {
+            for screen in NSScreen.screens where !screens.contains(where: { $0 === screen }) {
+                let keeper = KeeperWindow(
+                    screen: screen,
+                    gpu: gpu,
+                    compositor: compositor,
+                    logo: logo,
+                    frameRate: keeperRate > 0 ? keeperRate : nil
+                )
+                keeper.show()
+                keepers.append(keeper)
+            }
+        }
         outputs.first?.window.window.makeKey()
         NSApp.activate()
         installKeyMonitor()
@@ -218,6 +233,9 @@ final class ProbeController {
         for output in outputs {
             output.loop.stop()
             output.window.close()
+        }
+        for keeper in keepers {
+            keeper.close()
         }
         for blank in blankWindows {
             blank.orderOut(nil)
