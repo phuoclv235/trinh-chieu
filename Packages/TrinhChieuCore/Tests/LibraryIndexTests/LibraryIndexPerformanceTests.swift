@@ -5,6 +5,10 @@ import Testing
 
 /// Số đo yêu cầu ở đặc tả T1.1: chèn 5.000 bài hát và 31.102 câu dưới 5 giây; truy vấn 2 từ dưới 20 ms (p95 của
 /// 100 lần). Số đo thật ghi ra luồng lỗi chuẩn (dòng "ĐO HIỆU NĂNG") để chép vào PR.
+///
+/// Đặc tả đo ngưỡng trên Linux CI, nên ngưỡng đặc tả chỉ áp ở Linux. Máy macOS của GitHub Actions là máy ảo dùng
+/// SQLite của hệ thống, đo chậm hơn Linux khoảng 2 lần với cùng dữ liệu; ở đó chỉ áp ngưỡng chặn thoái lui rộng hơn
+/// (gấp 2,5 lần) và vẫn ghi số đo ra log.
 @Suite("LibraryIndex: hiệu năng", .serialized)
 struct LibraryIndexPerformanceTests {
     static let songCount = 5_000
@@ -51,6 +55,14 @@ struct LibraryIndexPerformanceTests {
         return (songs, verses)
     }
 
+    #if os(Linux)
+        static let insertBudget: Duration = .seconds(5)
+        static let queryBudget: Duration = .milliseconds(20)
+    #else
+        static let insertBudget: Duration = .milliseconds(12_500)
+        static let queryBudget: Duration = .milliseconds(50)
+    #endif
+
     static func p95(_ samples: [Duration]) -> Duration {
         let sorted = samples.sorted()
         return sorted[Int((Double(sorted.count) * 0.95).rounded(.up)) - 1]
@@ -74,7 +86,7 @@ struct LibraryIndexPerformanceTests {
         #expect(try await index.count(kind: .presentation) == Self.songCount)
         #expect(try await index.count(kind: .verse) == Self.verseCount)
         reportMeasurement("chèn \(Self.songCount) bài + \(Self.verseCount) câu: \(Self.milliseconds(insertTime)) ms")
-        #expect(insertTime < .seconds(5), "Chèn mất \(insertTime)")
+        #expect(insertTime < Self.insertBudget, "Chèn mất \(insertTime)")
 
         let scopes: [(name: String, kinds: Set<IndexKind>)] = [
             ("mọi loại", Set(IndexKind.allCases)),
@@ -93,7 +105,7 @@ struct LibraryIndexPerformanceTests {
             let p95 = Self.p95(samples)
             reportMeasurement("tìm \"chua la\" (\(scope.name)): p95 \(Self.milliseconds(p95)) ms, \(hitCount) kết quả")
             #expect(hitCount == 50)
-            #expect(p95 < .milliseconds(20), "p95 \(scope.name) là \(p95)")
+            #expect(p95 < Self.queryBudget, "p95 \(scope.name) là \(p95)")
         }
     }
 }
