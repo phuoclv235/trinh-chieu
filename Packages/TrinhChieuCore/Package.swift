@@ -17,14 +17,28 @@ let package = Package(
         .library(name: "LibraryStore", targets: ["LibraryStore"]),
         .library(name: "Importers", targets: ["Importers"]),
     ],
+    dependencies: [
+        // Thư viện ngoài đã duyệt (docs/kien-truc.md mục 6). Chỉ LibraryIndex và Scripture dùng.
+        .package(url: "https://github.com/groue/GRDB.swift", from: "7.12.0")
+    ],
     targets: [
         .target(name: "VietText", swiftSettings: commonSettings),
         .testTarget(name: "VietTextTests", dependencies: ["VietText"], swiftSettings: commonSettings),
         .target(name: "CoreModel", dependencies: ["VietText"], swiftSettings: commonSettings),
-        .testTarget(name: "CoreModelTests", dependencies: ["CoreModel"], swiftSettings: commonSettings),
-        .target(name: "Scripture", dependencies: ["CoreModel"], swiftSettings: commonSettings),
+        .testTarget(
+            name: "CoreModelTests", dependencies: ["CoreModel"], exclude: ["Fixtures"], swiftSettings: commonSettings
+        ),
+        .target(
+            name: "Scripture",
+            dependencies: ["CoreModel", .product(name: "GRDB", package: "GRDB.swift")],
+            swiftSettings: commonSettings
+        ),
         .testTarget(name: "ScriptureTests", dependencies: ["Scripture"], swiftSettings: commonSettings),
-        .target(name: "LibraryIndex", dependencies: ["Scripture"], swiftSettings: commonSettings),
+        .target(
+            name: "LibraryIndex",
+            dependencies: ["Scripture", "VietText", .product(name: "GRDB", package: "GRDB.swift")],
+            swiftSettings: commonSettings
+        ),
         .testTarget(name: "LibraryIndexTests", dependencies: ["LibraryIndex"], swiftSettings: commonSettings),
         .target(name: "LibraryStore", dependencies: ["LibraryIndex"], swiftSettings: commonSettings),
         .testTarget(name: "LibraryStoreTests", dependencies: ["LibraryStore"], swiftSettings: commonSettings),

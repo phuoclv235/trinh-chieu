@@ -199,7 +199,9 @@ CREATE VIRTUAL TABLE items_fts USING fts5(
 );
 ```
 
-Truy vấn: chuỗi người dùng gõ cũng gộp dấu, mỗi từ thêm `*` để khớp tiền tố. Xếp hạng `bm25(items_fts, 10.0, 5.0, 1.0)`.
+Truy vấn: chuỗi người dùng gõ cũng gộp dấu, mỗi từ thêm `*` để khớp tiền tố. Xếp hạng `bm25(items_fts, 0.0, 0.0, 10.0, 5.0, 1.0)`: trọng số của `bm25` tính theo thứ tự mọi cột của bảng FTS, kể cả hai cột `UNINDEXED` đứng đầu, nên hai số 0 đầu dành cho `id` và `kind`; tên nặng 10, phụ đề 5, nội dung 1. (Bản đầu ghi `bm25(items_fts, 10.0, 5.0, 1.0)`, cách đó làm phụ đề và nội dung cùng nặng 1, sửa ở T1.1.)
+
+`rowid` của `items_fts` luôn bằng `rowid` của `items`. Câu Kinh Thánh nằm trong dải `rowid >= 2^40`, các loại khác nằm dưới dải đó, để tìm không gồm câu chỉ quét phần chỉ mục dưới dải câu (FTS5 đẩy điều kiện `rowid` xuống danh sách tài liệu) và không chậm đi vì hàng chục nghìn câu.
 
 ## 7. Gói mang đi (`.tcbundle`)
 

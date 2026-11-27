@@ -1,0 +1,40 @@
+{
+  "date" : "2026-11-30",
+  "id" : "6A1E0000-0000-4000-8000-000000000190",
+  "items" : [
+    {
+      "id" : "6A1E0000-0000-4000-8000-000000000191",
+      "title" : "Thờ phượng",
+      "type" : "header"
+    },
+    {
+      "arrangementID" : "6A1E0000-0000-4000-8000-000000000028",
+      "id" : "6A1E0000-0000-4000-8000-000000000192",
+      "plannedDuration" : 300,
+      "presentationID" : "6A1E0000-0000-4000-8000-000000000001",
+      "themeID" : "6A1E0000-0000-4000-8000-00000000012C",
+      "type" : "presentation"
+    },
+    {
+      "id" : "6A1E0000-0000-4000-8000-000000000193",
+      "plannedDuration" : 120,
+      "reference" : "Giăng 3:16-18",
+      "translation" : "vi1925",
+      "type" : "scripture"
+    },
+    {
+      "id" : "6A1E0000-0000-4000-8000-000000000194",
+      "mediaID" : "99aa88bb77cc",
+      "type" : "media"
+    },
+    {
+      "id" : "6A1E0000-0000-4000-8000-000000000195",
+      "plannedDuration" : 30,
+      "text" : "Mời Hội Thánh đứng",
+      "type" : "note"
+    }
+  ],
+  "plannedStart" : "09:00",
+  "schemaVersion" : 1,
+  "title" : "Chúa Nhật 30/11/2026"
+}
