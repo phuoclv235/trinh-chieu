@@ -79,6 +79,6 @@ Quy tắc điều phối:
 | --- | --- | --- |
 | T0.1 | Xong, chờ Phuoc duyệt PR | #2 |
 | T0.3 | Xong (mẫu tự duyệt theo lời Phuoc 2026-11-27) | #3 |
-| T0.4 | Mã xong, chờ số đo trên Mac của Phuoc | #4 |
+| T0.4 | Cổng chưa đạt (lần đo 2026-11-27), chờ quyết định | #4 |
 | T0.5 | Chưa bắt đầu | |
 | T1.1 đến T1.11 | Chưa bắt đầu | |

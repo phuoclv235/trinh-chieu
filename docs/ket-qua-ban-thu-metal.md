@@ -46,4 +46,43 @@ Nếu tiêu chí 1 hoặc 2 không đạt: dừng, báo coordinator kèm số đ
 
 ## Các lần chạy
 
-Chưa có lần chạy nào trên máy thật.
+### Lần chạy 1 (2026-11-27, 00:5x UTC): không hợp lệ
+
+Mac đang khoá màn hình (`CGSSessionScreenIsLocked = true`) nên 0 khung lên màn; GPU vẫn dựng khung khoảng 3 ms. Sau lần này bản thử tự báo "lần chạy không hợp lệ" khi có màn không nhận khung nào.
+
+### Lần chạy 2 (2026-11-27 07:59 đến 08:12, giờ Việt Nam), commit e4ec7e1
+
+| Mục | Giá trị |
+| --- | --- |
+| Model máy | MacBookPro18,1, Apple M1 Pro, 32 GB |
+| macOS | 27.0.1 (26A434); chỉ có Command Line Tools (Swift 6.3.3), chưa cài Xcode |
+| Màn 0 | Màn tích hợp Liquid Retina XDR, drawable 4112x2658, 120 Hz (ProMotion) |
+| Màn 1 | LG ULTRAWIDE 2560x1080, 60 Hz |
+| Cấu hình | Display link 60 khung/giây, trễ 1 khung; nền 1080p H.264 30 khung/giây; khung phụ 4K HEVC 30 khung/giây; chữ đổi mỗi 2 giây, hoà tan 0.35 giây; khởi động 5 giây; chạy dưới `caffeinate -dimsu` |
+
+Cột: khung lên màn, khung rớt (không lên / trễ), rớt TB mỗi phút, phút tệ nhất, GPU TB, GPU p99, trễ đổi cảnh p50, p95, lớn nhất.
+
+| Lần đo | Màn | Lên màn | Rớt | Rớt/phút | Phút tệ nhất | GPU TB | GPU p99 | Trễ p50 | Trễ p95 | Trễ max |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Release 10 phút | 0 (120 Hz) | 35348 | 709 (0 / 709) | 70.90 | 170 | 0.88 ms | 1.09 ms | 18.64 ms | 31.53 ms | 54.77 ms |
+| Release 10 phút | 1 (60 Hz) | 35984 | 16 (2 / 14) | 1.60 | 6 | 0.33 ms | 1.02 ms | 45.24 ms | 47.63 ms | 47.90 ms |
+| Release 30 giây | 0 | 1742 | 53 (0 / 53) | 105.99 | 53 | 0.90 ms | 1.92 ms | 28.57 ms | 49.63 ms | 49.63 ms |
+| Release 30 giây | 1 | 1797 | 3 (1 / 2) | 6.00 | 3 | 0.35 ms | 1.36 ms | 37.65 ms | 42.03 ms | 42.03 ms |
+| Debug + TSan 2 phút | 0 | 7059 | 73 (0 / 73) | 36.50 | 69 | 0.89 ms | 1.21 ms | 20.12 ms | 31.04 ms | 54.62 ms |
+| Debug + TSan 2 phút | 1 | 7180 | 20 (2 / 18) | 10.00 | 15 | 0.32 ms | 1.07 ms | 37.93 ms | 40.05 ms | 40.90 ms |
+
+Tiến trình (release 10 phút): CPU TB 16.0%, lớn nhất 20.3% một nhân; RAM TB 264 MB, lớn nhất 274 MB. Bản TSan: CPU 23.2%, RAM 423 MB.
+
+| Tiêu chí | Kết quả |
+| --- | --- |
+| 1. Dưới 1 khung rớt mỗi phút mỗi màn | **KHÔNG ĐẠT**: màn 0 70.90/phút, màn 1 1.60/phút |
+| 2. Trễ đổi cảnh p95 dưới 33.33 ms | **KHÔNG ĐẠT** ở màn 1 (47.63 ms); màn 0 đạt sát (31.53 ms) |
+| 3. Dấu chồng không bị cắt | Test `TextRasterizerTests` xanh trên CI macOS; chưa kiểm bằng mắt trên máy thật |
+| 4. Không cảnh báo TSan 2 phút | **ĐẠT**: 0 cảnh báo, có khung lên màn cả hai màn |
+
+Nhận xét (chưa kiểm chứng, cần đo thêm):
+
+- GPU rất nhẹ (dưới 1 ms mỗi khung, p99 khoảng 1 ms trên ngân sách 16.7 ms), nên rớt khung không đến từ tải GPU.
+- Màn 0 là màn ProMotion 120 Hz, không phải màn 1080p 60 Hz như đặc tả. Mọi khung rớt ở màn này là khung "trễ" (không có khung "không lên"). Có thể display link 60 khung/giây lệch nhịp với màn 120 Hz. Cần đo lại với màn tích hợp ghim 60 Hz (Cài đặt hệ thống, Màn hình, Tần số làm tươi) để tách lỗi đo khỏi lỗi thật.
+- Màn 1 (60 Hz, gần với điều kiện đặc tả) rớt 1.60 khung/phút, gần ngưỡng. Độ trễ đổi cảnh ổn định quanh 45 ms (khoảng 2.7 khung), cao hơn hẳn màn 0 dù cùng `preferredFrameLatency = 1`. Có thể có thêm một khung trễ do bộ ghép hình của hệ thống trên màn ngoài.
+- Theo tiêu chí 5: dừng, báo coordinator kèm số đo, không tự đổi kiến trúc.
