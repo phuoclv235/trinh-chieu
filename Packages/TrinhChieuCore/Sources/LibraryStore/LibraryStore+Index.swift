@@ -135,8 +135,10 @@ extension LibraryStore {
                 start = end
             }
         }
+        // Tắt cờ ngay trong chuỗi việc chỉ mục, để `waitForIndexing()` trả về thì `isIndexing` đã là `false`
+        // (trước đây cờ tắt trong một Task riêng, chạy đua với `waitForIndexing()`).
         let chain = indexChain
-        Task { [weak self] in
+        indexChain = Task { [weak self] in
             await chain?.value
             self?.isIndexing = false
         }
