@@ -28,6 +28,9 @@ struct ProbeLoopConfig: Sendable {
     var onDemand = false
     /// B1 khi cảnh đứng yên: `true` cho display link nghỉ (`isPaused`), `false` để link chạy tiếp và chỉ bỏ nhịp.
     var idlePause = true
+    /// B1 khi cảnh đứng yên: số dương n thì cứ n nhịp present lại một khung giống hệt (giữ đường trình chiếu
+    /// "ấm"), display link không nghỉ. 0 là tắt.
+    var idleKeepAliveEvery = 0
     /// B2: luồng vẽ theo chính sách thời gian thực của Mach.
     var realtime = false
     /// B5: tạo lại display link ở lần đổi cảnh kế tiếp khi đường ống dài ra.
@@ -65,6 +68,7 @@ final class ProbeFrameLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked Sen
     private var previousTarget: Double = 0
     private var recentCallToTarget: [Double] = []
     private var recoverArmed = false
+    private var idleTicks = 0
     /// Cảnh mới nằm trong một khung không lên màn: chuyển thời điểm gửi sang khung lên màn kế tiếp, vì đó mới là
     /// lúc khán giả thấy cảnh mới. Chỉ handler `presented` (theo thứ tự khung) đọc ghi.
     private let carriedScene = OSAllocatedUnfairLock<CarriedScene?>(initialState: nil)
@@ -203,10 +207,16 @@ final class ProbeFrameLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked Sen
         if config.onDemand {
             switch renderer.demand(at: targetTime) {
             case .render:
-                break
+                idleTicks = 0
             case .skip:
                 loadStats.recordSkip()
                 return
+            case .idle where config.idleKeepAliveEvery > 0:
+                idleTicks += 1
+                guard idleTicks % config.idleKeepAliveEvery == 0 else {
+                    loadStats.recordSkip()
+                    return
+                }
             case .idle:
                 loadStats.recordSkip()
                 if config.idlePause {
@@ -267,7 +277,8 @@ final class ProbeFrameLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked Sen
                 carried = nil
                 return value
             }
-            guard let sceneTime = carried?.postedAt ?? postedAt else { return }
+            // Cảnh của chính khung này mới hơn cảnh mang sang (cảnh mang sang chưa từng hiện, đã bị thay).
+            guard let sceneTime = postedAt ?? carried?.postedAt else { return }
             stats.recordSceneLatency(presentedTime - sceneTime)
             if afterIdle || carried?.afterIdle == true {
                 loadStats.recordFirstAfterIdle(presentedTime - sceneTime)

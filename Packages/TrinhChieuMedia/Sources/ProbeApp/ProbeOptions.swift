@@ -49,6 +49,8 @@ struct ProbeOptions: Sendable {
     var onDemand = false
     /// B1 biến thể: cảnh đứng yên thì bỏ nhịp nhưng display link vẫn chạy (không `isPaused`).
     var onDemandSkip = false
+    /// B1 biến thể: cảnh đứng yên thì cứ n nhịp present lại một khung (0 là tắt).
+    var idleKeepAliveEvery = 0
     /// B2: luồng vẽ thời gian thực và `beginActivity(.latencyCritical)`.
     var realtime = false
     /// B3: lặp video bằng `AVPlayerLooper`.
@@ -91,6 +93,7 @@ struct ProbeOptions: Sendable {
         Cờ thử T0.6 (đo dưới tải):
           --on-demand             B1: chỉ dựng khi cảnh đổi, đang hoà tan hoặc có khung video mới
           --on-demand-skip        B1 biến thể: như --on-demand nhưng display link không nghỉ, chỉ bỏ nhịp
+          --idle-present-every <n>  B1 biến thể: cảnh đứng yên thì cứ n nhịp present lại một khung
           --realtime              B2: luồng vẽ thời gian thực, tiến trình giữ latencyCritical
           --looper                B3: lặp video bằng AVPlayerLooper
           --decode-size <native|output>  B4: cỡ giải mã video, mặc định native
@@ -183,6 +186,13 @@ struct ProbeOptions: Sendable {
                 options.screenIndices = indices
             case "--on-demand":
                 options.onDemand = true
+            case "--idle-present-every":
+                guard let text = value(flag), let number = Int(text), (1...600).contains(number) else {
+                    return .failure("--idle-present-every cần số nguyên từ 1 đến 600")
+                }
+                options.onDemand = true
+                options.onDemandSkip = true
+                options.idleKeepAliveEvery = number
             case "--on-demand-skip":
                 options.onDemand = true
                 options.onDemandSkip = true
@@ -244,7 +254,8 @@ struct ProbeOptions: Sendable {
     var measures: String {
         let flags = [
             ("B1", onDemand && !onDemandSkip),
-            ("B1 (không nghỉ link)", onDemandSkip),
+            ("B1 (không nghỉ link)", onDemandSkip && idleKeepAliveEvery == 0),
+            ("B1 (giữ ấm mỗi \(idleKeepAliveEvery) nhịp)", idleKeepAliveEvery > 0),
             ("B2", realtime),
             ("B3", looper),
             ("B4 (cỡ đầu ra)", decodeToOutputSize),
