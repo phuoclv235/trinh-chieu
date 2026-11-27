@@ -182,7 +182,7 @@ struct LibraryIndexWriteTests {
 
         try await index.remove(ids: ["rock", "khong-co"])
         #expect(try await index.count(kind: .presentation) == 5)
-        #expect(try await index.search("chua la da", kinds: [.presentation]).isEmpty)
+        #expect(try await index.search("muon doi", kinds: [.presentation]).isEmpty)
 
         try await index.removeAll(kind: .verse)
         #expect(try await index.count(kind: .verse) == 0)

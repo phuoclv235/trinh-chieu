@@ -20,6 +20,9 @@ public actor LibraryIndex {
     /// Điểm của kết quả có `subtitle` bắt đầu bằng số người dùng gõ nhưng dài hơn (gõ "12" ra "125").
     public static let numberPrefixScore = 500_000.0
 
+    /// Collation so sánh tên theo chữ đã gộp dấu ("Ân" đứng trước "Ca", "Đấng" sau "Ca").
+    static let foldedCollationName = "vietfold"
+
     /// Dải `rowid` dành cho câu Kinh Thánh.
     static let verseRowIDBase: Int64 = 1 << 40
 
@@ -183,6 +186,14 @@ public actor LibraryIndex {
     private static func openAndMigrate(at url: URL, indexVersion: Int) throws -> DatabaseQueue {
         var configuration = Configuration()
         configuration.label = "LibraryIndex"
+        configuration.prepareDatabase { db in
+            db.add(
+                collation: DatabaseCollation(foldedCollationName) { lhs, rhs in
+                    let left = VietText.fold(lhs)
+                    let right = VietText.fold(rhs)
+                    return left == right ? .orderedSame : (left < right ? .orderedAscending : .orderedDescending)
+                })
+        }
         let queue = try DatabaseQueue(path: url.path, configuration: configuration)
         try queue.write { db in
             if try storedVersion(db) == String(indexVersion), try db.tableExists("items"),
@@ -296,11 +307,14 @@ public actor LibraryIndex {
     {
         let filter = kindFilter(kinds, rowidColumn: "items_fts.rowid")
         // Trọng số bm25 tính cả hai cột UNINDEXED đứng đầu (id, kind), nên đặt 0 cho chúng.
+        // Hoà điểm thì xếp theo tên đã gộp dấu bằng collation `vietfold` trên `items.title`, không đọc
+        // `items_fts.title_f`: đọc cột đó buộc FTS5 nạp cả dòng nội dung (gồm lời bài hát) cho mọi mục khớp, chậm
+        // gần gấp đôi khi truy vấn khớp hàng nghìn mục. Collation chỉ chạy khi hai mục cùng điểm.
         let sql = """
             SELECT i.id, i.kind, i.title, i.subtitle, bm25(items_fts, 0.0, 0.0, 10.0, 5.0, 1.0) AS rank
             FROM items_fts JOIN items i ON i.rowid = items_fts.rowid
             WHERE items_fts MATCH ?\(filter.sql)
-            ORDER BY rank, items_fts.title_f, i.title, i.id
+            ORDER BY rank, i.title COLLATE \(foldedCollationName), i.title, i.id
             LIMIT \(limit)
             """
         var arguments: StatementArguments = [match]
