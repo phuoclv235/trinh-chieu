@@ -27,3 +27,6 @@ jobs:
             core-build-${{ runner.os }}-
       - name: Kiểm nhanh
         run: scripts/check.sh --quick
+      - name: Test lặp 3 lần và độ phủ CoreModel/Show
+        if: always()
+        run: scripts/coverage.sh Sources/CoreModel/Show 90

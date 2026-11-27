@@ -1,0 +1,169 @@
+{
+  "activeArrangementID" : "6A1E0000-0000-4000-8000-000000000029",
+  "arrangements" : [
+    {
+      "groupIDs" : [
+        "6A1E0000-0000-4000-8000-00000000000A",
+        "6A1E0000-0000-4000-8000-000000000014",
+        "6A1E0000-0000-4000-8000-00000000001E"
+      ],
+      "id" : "6A1E0000-0000-4000-8000-000000000028",
+      "name" : "Mặc định"
+    },
+    {
+      "groupIDs" : [
+        "6A1E0000-0000-4000-8000-00000000000A",
+        "6A1E0000-0000-4000-8000-000000000014",
+        "6A1E0000-0000-4000-8000-000000000014",
+        "6A1E0000-0000-4000-8000-00000000001E"
+      ],
+      "id" : "6A1E0000-0000-4000-8000-000000000029",
+      "name" : "Chúa Nhật"
+    }
+  ],
+  "createdAt" : "2026-11-26T10:00:00Z",
+  "groups" : [
+    {
+      "id" : "6A1E0000-0000-4000-8000-00000000000A",
+      "label" : {
+        "kind" : "verse",
+        "number" : 1
+      },
+      "slides" : [
+        {
+          "background" : {
+            "kind" : "none"
+          },
+          "elements" : [
+            {
+              "frame" : [
+                0,
+                0,
+                0,
+                0
+              ],
+              "id" : "6A1E0000-0000-4000-8000-00000000000C",
+              "slot" : "body",
+              "text" : "Dòng 1 câu 1\nDòng 2 câu 1",
+              "type" : "text"
+            }
+          ],
+          "enabled" : true,
+          "id" : "6A1E0000-0000-4000-8000-00000000000B",
+          "notes" : "Mời Hội Thánh đứng"
+        },
+        {
+          "background" : {
+            "kind" : "none"
+          },
+          "elements" : [
+            {
+              "frame" : [
+                0,
+                0,
+                0,
+                0
+              ],
+              "id" : "6A1E0000-0000-4000-8000-00000000000E",
+              "slot" : "body",
+              "text" : "Dòng 3 câu 1\nDòng 4 câu 1",
+              "type" : "text"
+            }
+          ],
+          "enabled" : true,
+          "id" : "6A1E0000-0000-4000-8000-00000000000D",
+          "notes" : ""
+        }
+      ]
+    },
+    {
+      "color" : "#E0A040FF",
+      "id" : "6A1E0000-0000-4000-8000-000000000014",
+      "label" : {
+        "kind" : "chorus"
+      },
+      "slides" : [
+        {
+          "background" : {
+            "color" : "#102030FF",
+            "kind" : "color"
+          },
+          "elements" : [
+            {
+              "frame" : [
+                0,
+                0,
+                0,
+                0
+              ],
+              "id" : "6A1E0000-0000-4000-8000-000000000016",
+              "slot" : "body",
+              "style" : {
+                "fontWeight" : 700,
+                "transform" : "uppercase"
+              },
+              "text" : "Điệp khúc dòng 1\nĐiệp khúc dòng 2",
+              "type" : "text"
+            }
+          ],
+          "enabled" : true,
+          "id" : "6A1E0000-0000-4000-8000-000000000015",
+          "label" : "Điệp khúc",
+          "notes" : ""
+        }
+      ]
+    },
+    {
+      "id" : "6A1E0000-0000-4000-8000-00000000001E",
+      "label" : {
+        "custom" : "Đoạn kết",
+        "kind" : "custom"
+      },
+      "slides" : [
+        {
+          "background" : {
+            "kind" : "none"
+          },
+          "elements" : [
+            {
+              "frame" : [
+                0,
+                0,
+                0,
+                0
+              ],
+              "id" : "6A1E0000-0000-4000-8000-000000000020",
+              "slot" : "body",
+              "text" : "Câu kết",
+              "type" : "text"
+            }
+          ],
+          "enabled" : false,
+          "id" : "6A1E0000-0000-4000-8000-00000000001F",
+          "notes" : "Bỏ qua nếu thiếu giờ"
+        }
+      ]
+    }
+  ],
+  "id" : "6A1E0000-0000-4000-8000-000000000001",
+  "kind" : "song",
+  "modifiedAt" : "2026-11-27T08:30:15Z",
+  "schemaVersion" : 1,
+  "song" : {
+    "authors" : [
+      "Tác giả A",
+      "Người dịch B"
+    ],
+    "copyright" : "Phạm vi công cộng",
+    "hymnal" : "Thánh Ca",
+    "key" : "G",
+    "number" : "123",
+    "tempo" : 72
+  },
+  "tags" : [
+    "thánh ca",
+    "ngợi khen"
+  ],
+  "themeID" : "6A1E0000-0000-4000-8000-00000000012C",
+  "title" : "Chúa Là Đá Muôn Đời"
+}
