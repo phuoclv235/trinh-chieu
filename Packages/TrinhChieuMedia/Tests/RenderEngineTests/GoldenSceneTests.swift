@@ -31,7 +31,7 @@ enum Golden {
         return FileManager.default.temporaryDirectory.appendingPathComponent("TrinhChieuGolden", isDirectory: true)
     }
 
-    static var hasAnyGolden: Bool {
+    static var hasReferenceImages: Bool {
         let files = (try? FileManager.default.contentsOfDirectory(atPath: directory.path)) ?? []
         return files.contains { $0.hasSuffix(".png") }
     }
@@ -45,7 +45,7 @@ enum Golden {
         let actualURL = outputDirectory.appendingPathComponent("\(name).png")
         guard let golden = PNG.read(url) else {
             try PNG.write(image, to: actualURL)
-            if hasAnyGolden {
+            if hasReferenceImages {
                 Issue.record(
                     "Thiếu ảnh chuẩn \(name).png. Chạy scripts/update-golden.sh. Ảnh thật: \(actualURL.path)",
                     sourceLocation: sourceLocation
