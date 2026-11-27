@@ -22,3 +22,13 @@ jobs:
         run: brew install xcodegen
       - name: Kiểm đầy đủ
         run: scripts/check.sh --full
+        env:
+          TRINHCHIEU_GOLDEN_OUTPUT: ${{ runner.temp }}/anh-test-render
+      # Ảnh thật của test ảnh RenderEngine khi lệch hoặc thiếu ảnh chuẩn, để xem và so.
+      - name: Tải ảnh test render
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: anh-test-render
+          path: ${{ runner.temp }}/anh-test-render
+          if-no-files-found: ignore

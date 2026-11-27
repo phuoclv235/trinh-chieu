@@ -26,7 +26,12 @@ let package = Package(
             resources: [.process("Shaders")],
             swiftSettings: commonSettings
         ),
-        .testTarget(name: "RenderEngineTests", dependencies: ["RenderEngine"], swiftSettings: commonSettings),
+        .testTarget(
+            name: "RenderEngineTests",
+            dependencies: ["RenderEngine"],
+            exclude: ["Fixtures"],
+            swiftSettings: commonSettings
+        ),
         .target(name: "MediaImport", dependencies: [coreModel], swiftSettings: commonSettings),
         .testTarget(name: "MediaImportTests", dependencies: ["MediaImport"], swiftSettings: commonSettings),
         // Bản thử Metal (T0.4): `swift run -c release ProbeApp --help`.

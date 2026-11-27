@@ -10,6 +10,7 @@ public enum RenderEngineError: Error, Equatable, Sendable {
     case pipelineUnavailable(String)
     case textureCacheUnavailable(Int32)
     case textureUnavailable
+    case gpuFailed(String)
 }
 
 /// Thiết bị Metal dùng chung cho toàn ứng dụng. Tạo một lần, chia sẻ cho mọi đầu ra.
