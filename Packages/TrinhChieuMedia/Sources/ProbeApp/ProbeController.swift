@@ -338,7 +338,8 @@ final class ProbeController {
         await Task.detached {
             let process = Process()
             process.executableURL = URL(fileURLWithPath: "/usr/bin/top")
-            process.arguments = ["-l", "1", "-o", "cpu", "-n", "8"]
+            // Mẫu đầu của top luôn ghi CPU 0%: lấy hai mẫu cách 1 giây và giữ mẫu sau.
+            process.arguments = ["-l", "2", "-s", "1", "-o", "cpu", "-n", "8"]
             let pipe = Pipe()
             process.standardOutput = pipe
             process.standardError = Pipe()
@@ -349,7 +350,9 @@ final class ProbeController {
             }
             let data = pipe.fileHandleForReading.readDataToEndOfFile()
             process.waitUntilExit()
-            return String(decoding: data, as: UTF8.self)
+            let text = String(decoding: data, as: UTF8.self)
+            guard let range = text.range(of: "Processes:", options: .backwards) else { return text }
+            return String(text[range.lowerBound...])
         }.value
     }
 

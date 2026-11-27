@@ -213,7 +213,7 @@ struct ProbeReport {
         lines.append("| 3. Dấu chồng không bị cắt | Kiểm bằng mắt trên màn và test `TextRasterizerTests` |")
         lines.append("| 4. Thread Sanitizer | Chạy riêng bản debug `--sanitize=thread` |")
         lines.append("")
-        lines.append("### Máy lúc đo (`top -l 1 -o cpu -n 8`)")
+        lines.append("### Máy lúc đo (`top -l 2 -s 1 -o cpu -n 8`, mẫu sau)")
         lines.append("")
         for (title, text) in [("Trước khi đo", topBefore), ("Sau khi đo", topAfter)] where !text.isEmpty {
             lines.append(title + ":")
