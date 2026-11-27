@@ -186,7 +186,7 @@ struct ProbeReport {
         for (screen, output) in zip(screens, outputs) {
             let verdict = evaluate(output)
             let framesResult = verdict.framesPassed ? "ĐẠT" : "KHÔNG ĐẠT"
-            let latencyResult = verdict.latencyPassed ? "ĐẠT" : "KHÔNG ĐẠT"
+            let latencyResult = Self.result(verdict.latencyPassed, applicable: !output.sceneLatencies.isEmpty)
             let rateText = Self.format(verdict.averageDropsPerMinute, digits: 2)
             let limit = Self.ms(output.nominalPeriod * 2)
             lines.append("| 1. Dưới 1 khung rớt mỗi phút, màn \(screen.index) | \(framesResult) (\(rateText)/phút) |")
@@ -199,7 +199,7 @@ struct ProbeReport {
             let verdict = evaluate(output)
             let period = output.nominalPeriod
             let pipelineResult = verdict.pipelinePassed ? "ĐẠT" : "KHÔNG ĐẠT"
-            let endResult = verdict.endToEndPassed ? "ĐẠT" : "KHÔNG ĐẠT"
+            let endResult = Self.result(verdict.endToEndPassed, applicable: !output.sceneLatencies.isEmpty)
             lines.append(
                 "| 2a (đề xuất). Trễ đường ống p99 ≤ 2 chu kỳ + 2 ms, màn \(screen.index) | "
                     + "\(pipelineResult) (\(Self.ms(verdict.pipelineP99)) so với \(Self.ms(period * 2 + 0.002))) |"
@@ -378,6 +378,12 @@ struct ProbeReport {
             lines.append("")
         }
         return lines
+    }
+
+    /// Chữ kết quả của một tiêu chí; tiêu chí trễ đổi cảnh không áp dụng khi chạy chữ tĩnh.
+    static func result(_ passed: Bool, applicable: Bool) -> String {
+        guard applicable else { return "KHÔNG ÁP DỤNG (không đổi chữ)" }
+        return passed ? "ĐẠT" : "KHÔNG ĐẠT"
     }
 
     /// Phần tử gần `value` nhất trong `values`.

@@ -150,3 +150,38 @@ Nhận xét:
 - **Chạy một màn: rớt theo nhịp khoảng 4 giây.** Ở R2, R4 và R5, khoảng cách giữa hai lần rớt thường là 3.98 đến 4.05 giây. Các lần rớt hay đi thành cặp "không lên" rồi "trễ", cách nhau 16 đến 34 ms. Nhịp 4 giây gần bằng hai lần đổi chữ (2 giây cộng ngẫu nhiên tối đa 1 chu kỳ). Giả thuyết cần kiểm: mỗi lần đổi chữ có việc chặn luồng vẽ (ví dụ đổi texture, `mailbox.latest()` hoặc `textCache.texture(for:)` khoá), hoặc có tác vụ định kỳ khác. Chưa kiểm chứng.
 - QuickTime phát video trên màn tích hợp (R3) không làm xấu hơn R2. Chạy trong gói `.app` (R4) và toàn màn hình gốc (R5) rớt nhiều hơn, chủ yếu do tăng khung "không lên".
 - Theo chỉ dẫn của rà soát: không đổi kiến trúc, không merge. Số đo chuyển cho thread rà soát kiến trúc.
+
+### Lần chạy 5 (2026-11-27, commit 1654052): vòng loại trừ
+
+Cùng máy, cả hai màn 60 Hz, `CAMetalDisplayLink` theo tần số gốc, trễ 1 khung, bản release dưới `caffeinate -dimsu`. Lượt đầu (10:00 đến 10:15 giờ Việt Nam) bị bỏ vì máy quá tải: đang cài Xcode, chạy máy ảo, nhiều `headless_shell`, node và next-server, load 28 đến 46, đang swap. Phuoc đã tắt các việc nền đó. Lượt dưới đây chạy 10:53 đến 13:37 giờ Việt Nam. Trước mỗi lần, máy được chờ tới khi lặng: Spotlight dưới 10% CPU, load 1 phút dưới 6, không có `Runner.Worker` của GitHub Actions. Riêng E0-v1 đo khi máy chưa lặng hẳn (mds 59%, load 8.6). Trên màn tích hợp vẫn mở các ứng dụng thường ngày (Zalo, WhatsApp, Activity Monitor, Claude). Cả 13 lần có mã thoát 1.
+
+| Lần | Cấu hình | Màn | Rớt/phút (không lên / trễ) | Đường ống p99 | Trễ đổi cảnh p95 | Lần gọi vẽ > 4 ms |
+| --- | --- | --- | --- | --- | --- | --- |
+| E0-v1 | chỉ màn LG, đủ nội dung (máy chưa lặng) | 1 | 6.66 (14 / 6) | 32.85 ms | 47.69 ms | 3 |
+| E0-v2 | như trên | 1 | 26.66 (49 / 31) | 32.86 ms | 47.30 ms | 7 |
+| E1-v1 | chỉ màn LG, chữ tĩnh | 1 | 33.64 (11 / 90) | 32.81 ms | không áp dụng | 61 |
+| E1-v2 | như trên | 1 | 22.00 (41 / 25) | 32.84 ms | không áp dụng | 17 |
+| E2-v1 | chỉ màn LG, không video | 1 | 17.00 (12 / 39) | 32.62 ms | 48.27 ms | 13 |
+| E2-v2 | như trên | 1 | 22.99 (15 / 54) | 45.43 ms | 47.97 ms | 0 |
+| E3-v1 | chỉ màn LG, không video, chữ tĩnh | 1 | 19.32 (20 / 38) | 32.75 ms | không áp dụng | 14 |
+| E3-v2 | như trên | 1 | 19.32 (21 / 37) | 32.87 ms | không áp dụng | 0 |
+| E4-v1 | chỉ màn LG, chỉ video nền | 1 | 44.97 (23 / 112) | 32.94 ms | 48.06 ms | 38 |
+| E4-v2 | như trên | 1 | 7.00 (4 / 17) | 32.76 ms | 47.52 ms | 10 |
+| E5 | 2 màn, không video, chữ tĩnh, 5 phút | 0 | 1.80 (3 / 6) | 32.91 ms | không áp dụng | 0 |
+| E5 | | 1 | 0.80 (2 / 2) | 32.92 ms | không áp dụng | 0 |
+| E6 | 2 màn, đủ nội dung, mỗi màn một command queue, 5 phút | 0 | **0.20** (0 / 1) | 32.90 ms | 47.67 ms | 1 |
+| E6 | | 1 | **0.20** (0 / 1) | 32.80 ms | 46.90 ms | 27 |
+| E7 | chỉ màn LG, như E3, `CADisplayLink` của NSView | 1 | 1.33 (0 / 4) | 49.20 ms | không áp dụng | (*) |
+
+(*) Với `CADisplayLink` của view, lần gọi vẽ chờ `nextDrawable()` gần trọn một chu kỳ (p50 16.59 ms) trên luồng chính, nên gần như mọi lần gọi đều vượt 4 ms. Đó là thời gian chờ, không phải tải vẽ.
+
+Kết luận:
+
+- **Rớt khung không do việc dựng hình của bản thử.** E3-v2 (nền màu, chữ tĩnh, không video) không có lần gọi vẽ nào trên 4 ms; lần lâu nhất là 1.94 ms, đường ống đều 2 chu kỳ. Vậy mà vẫn rớt 19.32 khung/phút. Bỏ video hay bỏ đổi chữ không làm hết rớt.
+- **Khi chạy một màn, rớt theo nhịp khoảng 2.0 đến 2.2 giây**, kể cả khi chữ tĩnh (E1-v2: các lần rớt cách nhau 2.000, 2.017, 2.033 giây). Nhịp này không gắn với lúc đổi chữ hay vị trí video. Nhịp 4 giây ở lần chạy 4 là cùng hiện tượng (bỏ sót một nhịp).
+- **Khi chạy hai màn, cả hai màn gần như sạch**: E5 0.8 đến 1.8 khung/phút, E6 0.20 khung/phút cả hai màn, với đủ video và đổi chữ. Đây là kết quả tốt nhất từ đầu. Giả thuyết (chưa kiểm chứng): khi chỉ có màn ngoài chạy bản thử, màn tích hợp còn hiện các ứng dụng tự cập nhật (Zalo Helper GPU 55% CPU, WhatsApp, Activity Monitor). WindowServer phải ghép lại màn đó theo nhịp riêng và làm lỡ nhịp màn ngoài. Khi chạy hai màn, cửa sổ bản thử ở mức screenSaver che kín màn tích hợp nên không còn bị.
+- **Mỗi màn một command queue (E6)** cho kết quả tốt nhất nhưng mới chạy một lần 5 phút; chưa tách được phần do hàng đợi riêng và phần do dao động giữa các lần.
+- **Trễ:** đường ống p99 luôn khoảng 32.9 ms (2 chu kỳ); riêng E2-v2 có lúc lên 3 chu kỳ (45.4 ms). Trễ đổi cảnh p95 47 đến 48 ms. Tiêu chí 2a và 2b đạt ở mọi lần có đổi chữ, trừ những lúc đường ống lên 3 chu kỳ. Tiêu chí 2 cũ không thể đạt với kiến trúc này.
+- **`CADisplayLink` của view (E7)** rớt ít nhưng đường ống 3 chu kỳ (49.2 ms) và chiếm luồng chính. Không nên dùng.
+- E5 có một cụm rớt ở giây 16.5 đến 17.5, cùng lúc trên cả hai màn: có lẽ do một sự kiện hệ thống.
+- Đã sửa báo cáo: khi chữ tĩnh, tiêu chí trễ đổi cảnh ghi "không áp dụng" thay vì chấm không đạt.
