@@ -79,7 +79,7 @@ Quy tắc điều phối:
 | --- | --- | --- |
 | T0.1 | Xong, chờ Phuoc duyệt PR | #2 |
 | T0.3 | Xong (mẫu tự duyệt theo lời Phuoc 2026-11-27) | #3 |
-| T0.4 | Xong, cổng đạt có điều kiện (còn nợ lần đo sạch) | #4 |
+| T0.4 | Xong, cổng đạt có điều kiện (đo dưới tải ở T0.6) | #4 |
 | T0.5 | Xong | #5 |
 | T1.1 | Xong | #6 |
 | T1.2 | Xong | #7 |
