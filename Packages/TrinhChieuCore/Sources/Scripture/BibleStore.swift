@@ -86,6 +86,8 @@ public enum ScriptureError: Error, Sendable, Equatable, LocalizedError, CustomSt
     case chapterOutOfRange(book: String, chapter: Int, chapterCount: Int)
     case verseOutOfRange(book: String, chapter: Int, verse: Int, verseCount: Int)
     case invalidData(String)
+    /// Địa chỉ tự dựng (không qua ``ReferenceParser``) có số 0, số âm hoặc đoạn ngược.
+    case invalidReference(reason: String)
 
     /// Thông điệp tiếng Việt.
     public var message: String {
@@ -104,6 +106,8 @@ public enum ScriptureError: Error, Sendable, Equatable, LocalizedError, CustomSt
             return "\(book) \(chapter) chỉ có \(verseCount) câu."
         case .invalidData(let detail):
             return "Dữ liệu bản dịch không hợp lệ: \(detail)"
+        case .invalidReference(let reason):
+            return reason
         }
     }
 
@@ -320,6 +324,9 @@ public final class BibleTranslation: Sendable {
     public func verses(_ ref: ScriptureReference) throws -> [Verse] {
         var bounds: [Bound] = []
         for range in ref.ranges {
+            if let failure = NumberParser.validate(range) {
+                throw ScriptureError.invalidReference(reason: failure.reason)
+            }
             guard let book = booksByOSIS[range.book] else {
                 let name = BookCatalog.standard.book(osis: range.book)?.nameVi ?? range.book
                 throw ScriptureError.bookNotInTranslation(book: name, translation: info.name)

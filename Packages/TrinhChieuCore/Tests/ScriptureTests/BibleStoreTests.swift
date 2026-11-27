@@ -66,6 +66,20 @@ struct BibleStoreTests {
         }
     }
 
+    @Test("Địa chỉ tự dựng sai (đoạn ngược, số 0) báo lỗi thay vì trả rỗng")
+    func handBuiltInvalidReference() async throws {
+        let dir = try TemporaryDirectory()
+        let bible = try await FakeBible.makeStore(dir).open(FakeBible.code)
+        let reversed = ScriptureReference(ranges: [.verses("John", 3, 18, 16)])
+        #expect(throws: ScriptureError.invalidReference(reason: "Câu cuối (16) nhỏ hơn câu đầu (18).")) {
+            try bible.verses(reversed)
+        }
+        let backwards = ScriptureReference(ranges: [.chapters("John", 4, 3)])
+        #expect(throws: ScriptureError.self) { try bible.verses(backwards) }
+        let zero = ScriptureReference(ranges: [.verse("John", 0, 1)])
+        #expect(throws: ScriptureError.self) { try bible.verses(zero) }
+    }
+
     @Test("Mở bản dịch không có hoặc mã sai")
     func openErrors() async throws {
         let dir = try TemporaryDirectory()
