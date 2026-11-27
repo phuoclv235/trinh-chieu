@@ -23,6 +23,15 @@ struct FrameHealth: Equatable, Sendable {
         let droppedLastMinute: Int
         let gpuMilliseconds: Double
         let latencyMilliseconds: Double
+        /// Lần đo gần nhất từ lúc gửi cảnh mới tới lúc lên màn (ms), giữ qua các giây không có cảnh mới.
+        let sceneLatencyMilliseconds: Double?
+        let refreshRate: Double
+
+        /// Trễ cảnh mới tính bằng số khung của màn.
+        var sceneLatencyFrames: Double? {
+            guard let sceneLatencyMilliseconds, refreshRate > 0 else { return nil }
+            return sceneLatencyMilliseconds * refreshRate / 1_000
+        }
     }
 
     static let window = 60
@@ -32,6 +41,7 @@ struct FrameHealth: Equatable, Sendable {
     /// Số khung rớt mỗi giây (cộng mọi đầu ra), cũ trước mới sau, tối đa 60 giây.
     private(set) var droppedPerSecond: [Int] = []
     private var droppedByOutput: [OutputID: [Int]] = [:]
+    private var lastSceneLatency: [OutputID: Double] = [:]
     private(set) var outputs: [OutputSummary] = []
 
     mutating func record(_ statistics: RenderStatistics) {
@@ -47,6 +57,11 @@ struct FrameHealth: Equatable, Sendable {
             history[output.id] = Array(series.suffix(Self.window))
         }
         droppedByOutput = history
+        var latencies: [OutputID: Double] = [:]
+        for output in statistics.outputs {
+            latencies[output.id] = output.sceneLatencyMax ?? lastSceneLatency[output.id]
+        }
+        lastSceneLatency = latencies
         outputs = statistics.outputs.map { output in
             OutputSummary(
                 id: output.id,
@@ -54,7 +69,9 @@ struct FrameHealth: Equatable, Sendable {
                 framesPerSecond: output.framesPresented,
                 droppedLastMinute: history[output.id]?.reduce(0, +) ?? 0,
                 gpuMilliseconds: output.gpuTimeP95 * 1_000,
-                latencyMilliseconds: output.pipelineLatencyP99 * 1_000
+                latencyMilliseconds: output.pipelineLatencyP99 * 1_000,
+                sceneLatencyMilliseconds: latencies[output.id].map { $0 * 1_000 },
+                refreshRate: output.refreshRate
             )
         }
     }

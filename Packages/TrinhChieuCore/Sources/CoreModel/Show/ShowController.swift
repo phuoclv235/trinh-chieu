@@ -155,7 +155,7 @@ public enum IgnoreReason: Sendable, Equatable {
         guard let sequence = provider.sequence(for: live.source) else {
             return .ignored(.notFound)
         }
-        let current = sequence.index(ofSlide: live.slideID) ?? live.slideIndex
+        let current = sequence.index(of: live) ?? live.slideIndex
         if let index = sequence.slides.indices.first(where: { $0 > current && sequence.slides[$0].slide.enabled }) {
             goLive(sequence, at: index)
             return .applied
@@ -187,7 +187,7 @@ public enum IgnoreReason: Sendable, Equatable {
         guard let sequence = provider.sequence(for: live.source) else {
             return .ignored(.notFound)
         }
-        let current = sequence.index(ofSlide: live.slideID) ?? live.slideIndex
+        let current = sequence.index(of: live) ?? live.slideIndex
         let candidates = sequence.slides.indices.filter { $0 < current && sequence.slides[$0].slide.enabled }
         guard let index = candidates.last else {
             return .ignored(.atStart)
@@ -232,7 +232,7 @@ public enum IgnoreReason: Sendable, Equatable {
             return .applied
         }
         let index: Int
-        if let found = sequence.index(ofSlide: live.slideID) {
+        if let found = sequence.index(of: live) {
             index = found
         } else if sequence.slides.indices.contains(live.slideIndex) {
             index = live.slideIndex

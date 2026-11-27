@@ -183,7 +183,8 @@ final class RenderLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked Sendabl
             framesPresented: snapshot.framesPresented,
             droppedFrames: snapshot.droppedFrames,
             gpuTimeP95: Percentile.value(snapshot.gpuTimes, 0.95),
-            pipelineLatencyP99: Percentile.value(snapshot.pipelineLatencies, 0.99)
+            pipelineLatencyP99: Percentile.value(snapshot.pipelineLatencies, 0.99),
+            sceneLatencyMax: snapshot.sceneLatencies.max()
         )
     }
 }

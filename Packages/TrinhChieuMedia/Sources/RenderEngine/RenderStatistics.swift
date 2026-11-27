@@ -13,10 +13,13 @@ public struct OutputStatistics: Sendable, Equatable {
     public let gpuTimeP95: Double
     /// Trễ đường ống (từ lúc gọi vẽ tới lúc lên màn), phân vị 99 (giây).
     public let pipelineLatencyP99: Double
+    /// Trễ lớn nhất từ lúc gửi cảnh mới (`setScene`) tới lúc khung có cảnh đó lên màn, trong chu kỳ (giây).
+    /// `nil` khi chu kỳ không có cảnh mới. Dùng để đo "bấm thẻ đến lên màn" (T1.8 tiêu chí 2).
+    public let sceneLatencyMax: Double?
 
     public init(
         id: OutputID, role: OutputRole, refreshRate: Double, framesPresented: Int, droppedFrames: Int,
-        gpuTimeP95: Double, pipelineLatencyP99: Double
+        gpuTimeP95: Double, pipelineLatencyP99: Double, sceneLatencyMax: Double? = nil
     ) {
         self.id = id
         self.role = role
@@ -25,6 +28,7 @@ public struct OutputStatistics: Sendable, Equatable {
         self.droppedFrames = droppedFrames
         self.gpuTimeP95 = gpuTimeP95
         self.pipelineLatencyP99 = pipelineLatencyP99
+        self.sceneLatencyMax = sceneLatencyMax
     }
 }
 

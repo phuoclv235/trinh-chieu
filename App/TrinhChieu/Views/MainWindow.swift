@@ -116,7 +116,11 @@ struct MainWindowView: View {
             WarningBanner()
             Group {
                 switch mode {
-                case .live: LiveWorkspace(showsRightRail: showsRightRail)
+                case .live:
+                    LiveWorkspace(showsRightRail: showsRightRail) { presentationID in
+                        environment.editingPresentationID = presentationID
+                        modeRaw = WorkspaceMode.editor.rawValue
+                    }
                 case .editor: EditorWorkspace()
                 }
             }

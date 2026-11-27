@@ -1,4 +1,5 @@
 import AppKit
+import CoreModel
 import RenderEngine
 import SwiftUI
 
@@ -90,13 +91,46 @@ struct OutputPreviewCard: View {
                     .aspectRatio(16 / 9, contentMode: .fit)
                     .clipShape(RoundedRectangle(cornerRadius: Metrics.radius))
                     .overlay(
-                        RoundedRectangle(cornerRadius: Metrics.radius).strokeBorder(Palette.lineStrong, lineWidth: 1)
+                        RoundedRectangle(cornerRadius: Metrics.radius).strokeBorder(frameTint, lineWidth: 1)
                     )
+                    .overlay(alignment: .bottomLeading) {
+                        if let badge {
+                            Pill(text: badge.text, foreground: badge.tint, background: badge.soft)
+                                .padding(6)
+                        }
+                    }
                     .accessibilityElement()
                     .accessibilityLabel(Text(verbatim: role.localizedName))
+                    .accessibilityValue(Text(verbatim: badge?.text ?? ""))
             }
         }
         .padding(16)
+    }
+
+    private struct Badge {
+        let text: String
+        let tint: Color
+        let soft: Color
+    }
+
+    /// Nhãn trên bản xem trước đầu ra chính: tập dượt (đầu ra không đổi) hoặc đóng băng.
+    private var badge: Badge? {
+        guard role == .program, let state = environment.show?.state else { return nil }
+        if state.isRehearsal {
+            return Badge(
+                text: String(localized: "Rehearsing, output unchanged"), tint: Palette.warn, soft: Palette.warnSoft)
+        }
+        if state.isFrozen {
+            return Badge(text: String(localized: "Frozen"), tint: Palette.freeze, soft: Palette.freezeSoft)
+        }
+        return nil
+    }
+
+    private var frameTint: Color {
+        guard let state = environment.show?.state, role == .program else { return Palette.lineStrong }
+        if state.isRehearsal { return Palette.warn }
+        if state.isFrozen { return Palette.freeze }
+        return Palette.lineStrong
     }
 
     private var isReceiving: Bool {
