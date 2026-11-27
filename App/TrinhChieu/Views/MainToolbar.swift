@@ -162,7 +162,7 @@ struct RehearsalToggle: View {
         .disabled(environment.show == nil)
         .help(Text("Run the show while the main output stays unchanged") + Text(verbatim: " (⌘R)"))
         .accessibilityLabel(Text("Rehearsal"))
-        .accessibilityValue(Text(isOn ? "On" : "Off"))
+        .accessibilityValue(Text(isOn ? LocalizedStringKey("On") : LocalizedStringKey("Off")))
     }
 }
 
@@ -184,7 +184,7 @@ struct FreezeToggle: View {
         .disabled(environment.show == nil)
         .help(Text("Hold the picture currently shown") + Text(verbatim: " (⌘⇧F)"))
         .accessibilityLabel(Text("Freeze"))
-        .accessibilityValue(Text(isOn ? "On" : "Off"))
+        .accessibilityValue(Text(isOn ? LocalizedStringKey("On") : LocalizedStringKey("Off")))
     }
 }
 

@@ -58,7 +58,7 @@ enum RoleChoice: Hashable {
         return nil
     }
 
-    static let all: [SegmentedChoice<RoleChoice>.Option] = [
+    @MainActor static let all: [SegmentedChoice<RoleChoice>.Option] = [
         .init(value: .role(.program), title: OutputRole.program.localizedName),
         .init(value: .role(.stage), title: OutputRole.stage.localizedName),
         .init(value: .unused, title: String(localized: "Not used")),

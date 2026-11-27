@@ -65,3 +65,7 @@ final class LibraryMediaLocator: MediaLocator {
         latestPreview = publication
     }
 }
+
+/// `LibraryContentProvider` của `LibraryStore`. Tệp nào import SwiftUI hay AppKit thì tên này trùng với giao thức
+/// `LibraryContentProvider` của Xcode (DeveloperToolsSupport), nên đặt bí danh ở tệp chỉ import gói lõi.
+typealias LibraryProvider = LibraryContentProvider

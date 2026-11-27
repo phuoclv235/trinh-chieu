@@ -43,6 +43,17 @@ struct AppSettingsTests {
         #expect(!settings.welcomeDismissed)
     }
 
+    @Test("Một trường sai kiểu chỉ trường đó về mặc định, không mất các trường khác")
+    func malformedFieldKeepsOthers() throws {
+        let json = #"{"libraryPath":"/tmp/thu-vien","advanceToNextItem":"có","appearance":"xanh","#
+            + #""outputAssignments":[{"displayUUID":"A","role":"program","displayName":"LED"}]}"#
+        let settings = try JSONDecoder().decode(AppSettings.self, from: Data(json.utf8))
+        #expect(settings.libraryPath == "/tmp/thu-vien")
+        #expect(settings.advanceToNextItem)
+        #expect(settings.appearance == .dark)
+        #expect(settings.role(forDisplay: "A") == .program)
+    }
+
     @Test("SettingsStore ghi vào khoá app.settings.v1 và đọc lại được")
     @MainActor func storePersists() throws {
         let suite = "app.trinhchieu.tests.\(UUID().uuidString)"

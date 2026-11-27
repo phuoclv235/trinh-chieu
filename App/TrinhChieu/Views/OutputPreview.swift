@@ -40,6 +40,9 @@ final class PreviewHostView: NSView {
 
     func host(_ preview: CALayer) {
         guard hosted !== preview || preview.superlayer !== layer else { return }
+        if let previous = hosted, previous !== preview, previous.superlayer === layer {
+            previous.removeFromSuperlayer()
+        }
         hosted = preview
         layer?.addSublayer(preview)
         needsLayout = true

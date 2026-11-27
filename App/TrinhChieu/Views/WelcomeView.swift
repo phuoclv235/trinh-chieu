@@ -46,7 +46,7 @@ struct WelcomeView: View {
                     Button {
                         environment.settings.value.welcomeDismissed = true
                     } label: {
-                        Text(allDone ? "Start" : "Skip")
+                        Text(allDone ? LocalizedStringKey("Start") : LocalizedStringKey("Skip"))
                     }
                     .buttonStyle(ControlButtonStyle(kind: allDone ? .primary : .quiet))
                     .keyboardShortcut(.cancelAction)
@@ -108,7 +108,7 @@ struct WelcomeView: View {
         }
         .padding(.vertical, 12)
         .accessibilityElement(children: .combine)
-        .accessibilityValue(Text(done ? "Done" : "Not done"))
+        .accessibilityValue(Text(done ? LocalizedStringKey("Done") : LocalizedStringKey("Not done")))
     }
 
     private func chooseScreens() {

@@ -38,7 +38,7 @@ enum WorkspaceMode: String, CaseIterable, Sendable {
     private(set) var engine: RenderEngine?
     private(set) var library: LibraryStore?
     private(set) var bible: BibleStore?
-    private(set) var content: LibraryContentProvider?
+    private(set) var content: LibraryProvider?
     private(set) var show: ShowController?
     /// Bản dịch Kinh Thánh đã mở được, theo tên.
     private(set) var translations: [TranslationInfo] = []
@@ -88,7 +88,7 @@ enum WorkspaceMode: String, CaseIterable, Sendable {
             let store = try await LibraryStore.open(
                 at: url, fileWatcher: FSEventsWatcher(), configuration: LibraryStoreConfiguration(log: log))
             let bible = BibleStore(directory: url.appendingPathComponent("bibles", isDirectory: true))
-            let content = LibraryContentProvider(store: store, log: log)
+            let content = LibraryProvider(store: store, log: log)
             let sink = AppSceneSink(engine: engine)
             let clock = SystemShowClock()
             let show = ShowController(

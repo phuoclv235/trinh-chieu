@@ -49,21 +49,20 @@ struct AppSettings: Codable, Equatable, Sendable {
         self.welcomeDismissed = welcomeDismissed
     }
 
+    /// Mỗi trường đọc riêng: một trường hỏng hoặc sai kiểu chỉ trường đó về mặc định, các trường khác giữ nguyên.
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let defaults = AppSettings()
-        libraryPath = try container.decodeIfPresent(String.self, forKey: .libraryPath)
-        outputAssignments =
-            try container.decodeIfPresent([OutputAssignment].self, forKey: .outputAssignments)
-            ?? defaults.outputAssignments
-        audioOutputDeviceID = try container.decodeIfPresent(String.self, forKey: .audioOutputDeviceID)
-        defaultTranslation = try container.decodeIfPresent(String.self, forKey: .defaultTranslation)
-        advanceToNextItem =
-            try container.decodeIfPresent(Bool.self, forKey: .advanceToNextItem) ?? defaults.advanceToNextItem
-        appearance =
-            (try? container.decodeIfPresent(AppearancePreference.self, forKey: .appearance)) ?? defaults.appearance
-        welcomeDismissed =
-            try container.decodeIfPresent(Bool.self, forKey: .welcomeDismissed) ?? defaults.welcomeDismissed
+        func field<T: Decodable>(_ key: CodingKeys, _ fallback: T) -> T {
+            ((try? container.decodeIfPresent(T.self, forKey: key)) ?? nil) ?? fallback
+        }
+        libraryPath = field(.libraryPath, defaults.libraryPath)
+        outputAssignments = field(.outputAssignments, defaults.outputAssignments)
+        audioOutputDeviceID = field(.audioOutputDeviceID, defaults.audioOutputDeviceID)
+        defaultTranslation = field(.defaultTranslation, defaults.defaultTranslation)
+        advanceToNextItem = field(.advanceToNextItem, defaults.advanceToNextItem)
+        appearance = field(.appearance, defaults.appearance)
+        welcomeDismissed = field(.welcomeDismissed, defaults.welcomeDismissed)
     }
 
     /// Thư mục thư viện mặc định.
