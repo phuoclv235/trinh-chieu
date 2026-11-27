@@ -12,7 +12,8 @@ threshold="${2:-90}"
 
 for run in 1 2 3; do
   echo "=== Test lần $run/3 ==="
-  swift test --package-path "$package" --enable-code-coverage
+  # Test hiệu năng chạy riêng trong scripts/check.sh (đo thời gian thật, không chạy chung với test khác).
+  swift test --package-path "$package" --enable-code-coverage --skip PerformanceTests
 done
 
 bin_path="$(swift build --package-path "$package" --show-bin-path)"

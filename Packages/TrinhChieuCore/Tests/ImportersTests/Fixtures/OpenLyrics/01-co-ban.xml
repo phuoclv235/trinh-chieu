@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<song xmlns="http://openlyrics.info/namespace/2009/song" version="0.9" createdIn="Thử" modifiedIn="Thử" modifiedDate="2026-11-27T10:00:00">
+  <properties>
+    <titles>
+      <title>Bài OpenLyrics Cơ Bản</title>
+      <title lang="en">Basic Song</title>
+    </titles>
+    <authors>
+      <author>Người Viết Thử</author>
+    </authors>
+    <copyright>Dữ liệu thử của Hệ thống</copyright>
+    <verseOrder>v1 c v2 c</verseOrder>
+    <songbooks>
+      <songbook name="Thánh Ca" entry="12"/>
+    </songbooks>
+  </properties>
+  <lyrics>
+    <verse name="v1">
+      <lines>Câu một dòng một<br/>Câu một dòng hai</lines>
+    </verse>
+    <verse name="c">
+      <lines>Điệp khúc dòng một<br/>Điệp khúc dòng hai</lines>
+    </verse>
+    <verse name="v2">
+      <lines>Câu hai dòng một<br/>
+        Câu hai dòng hai</lines>
+    </verse>
+  </lyrics>
+</song>

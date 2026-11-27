@@ -62,7 +62,7 @@ public actor LibraryIndex {
             )
 
             for entry in entries {
-                let modifiedAt = entry.modifiedAt.map { $0.ISO8601Format() }
+                let modifiedAt = entry.modifiedAt.map(LibraryIndex.modificationStamp)
                 var rowID = try Int64.fetchOne(findRowID, arguments: [entry.id])
                 if let existing = rowID {
                     try deleteFTS.execute(arguments: [existing])
@@ -163,6 +163,27 @@ public actor LibraryIndex {
             }
             return hits
         }
+    }
+
+    /// `id` và `modifiedAt` đã ghi (chuỗi rỗng nếu không có) của mọi mục thuộc một loại. `LibraryStore` dùng để
+    /// so với tệp khi mở thư viện và chỉ cập nhật phần chênh.
+    public func modificationStamps(kind: IndexKind) throws -> [String: String] {
+        try dbQueue.read { db in
+            let rows = try Row.fetchAll(
+                db, sql: "SELECT id, modifiedAt FROM items WHERE kind = ?", arguments: [kind.rawValue])
+            var stamps: [String: String] = [:]
+            for row in rows {
+                let id: String = row["id"]
+                let modifiedAt: String? = row["modifiedAt"]
+                stamps[id] = modifiedAt ?? ""
+            }
+            return stamps
+        }
+    }
+
+    /// Chuỗi `modifiedAt` như chỉ mục ghi cho một ngày giờ (ISO 8601 UTC, tới giây).
+    public static func modificationStamp(_ date: Date) -> String {
+        date.ISO8601Format()
     }
 
     // MARK: - Mở và lược đồ

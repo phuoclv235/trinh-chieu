@@ -45,7 +45,7 @@ Tối đa 2 chuỗi code song song (xem `plans/giai-doan-0-1/README.md`).
 | Lệnh phát hành | Chưa có (giai đoạn 8) |
 | CI | GitHub Actions: `core.yml` chạy Ubuntu mỗi lần đẩy; `macos.yml` chạy macOS chỉ khi PR không còn nháp. Sổ cách ly test: `docs/so-cach-ly-test.md` |
 | Màu chủ đạo, font, quy tắc giao diện | Chốt sau khi Phuoc duyệt mẫu ở task T0.3; ghi vào `docs/ui-rules.md` |
-| Thiết bị Phuoc dùng để thử | Mac Apple Silicon (giả định 16 GB), 3 đầu ra: LED qua bộ xử lý nhận HDMI, máy chiếu phụ, màn hình nhắc |
+| Thiết bị Phuoc dùng để thử | Phát triển và đo: MacBook Pro M1 Pro 32 GB (tối đa 2 màn ngoài). Buổi nhóm thật: Mac mini M4 base, 3 màn (màn điều khiển, LED qua bộ xử lý nhận HDMI, màn hình nhắc); máy chiếu phụ lặp màn LED bằng bộ chia HDMI |
 | Bản đồ mã nguồn | `docs/kien-truc.md` mục "Bản đồ module"; Graphify khi repo đã được lập chỉ mục |
 | Tệp nguy hiểm | `Packages/TrinhChieuCore/Sources/CoreModel/ShowCommand.swift`, `ShowState.swift`, `Packages/TrinhChieuCore/Sources/CoreModel/Document/*` (định dạng tệp), `Packages/TrinhChieuCore/Sources/CoreModel/RenderScene.swift` (hợp đồng giữa lõi và lõi dựng hình), `docs/thuat-ngu.md` |
 | Nơi lưu kế hoạch, mẫu, hàng đợi góp ý | `plans/`, `design/`, `plans/feedback-queue.md` |

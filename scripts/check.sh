@@ -39,7 +39,11 @@ lint_swift() {
 
 step "Định dạng (swift format lint)" lint_swift
 step "Build TrinhChieuCore" swift build --package-path Packages/TrinhChieuCore
-step "Test TrinhChieuCore" swift test --package-path Packages/TrinhChieuCore
+# Test đo hiệu năng (tên suite có "PerformanceTests") đo thời gian thật, nên chạy riêng, tuần tự, sau các test
+# khác: chạy chung thì các test nặng tranh CPU và luồng chính của nhau, số đo lệch và test hẹn giờ trễ.
+step "Test TrinhChieuCore" swift test --package-path Packages/TrinhChieuCore --skip PerformanceTests
+step "Test hiệu năng TrinhChieuCore" swift test --package-path Packages/TrinhChieuCore --filter PerformanceTests \
+  --no-parallel
 
 if [[ "$mode" == "--full" ]]; then
   step "Build TrinhChieuMedia" swift build --package-path Packages/TrinhChieuMedia

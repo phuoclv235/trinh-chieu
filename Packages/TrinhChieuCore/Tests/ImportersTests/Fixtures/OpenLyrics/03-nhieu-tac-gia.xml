@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<song xmlns="http://openlyrics.info/namespace/2009/song" version="0.9">
+  <properties>
+    <titles><title>  Bài   Nhiều Tác Giả  </title></titles>
+    <authors>
+      <author type="words">Tác Giả Lời</author>
+      <author type="music">Tác Giả Nhạc</author>
+      <author type="translation" lang="vi">Người Dịch</author>
+      <author type="music">Tác Giả Nhạc</author>
+    </authors>
+    <copyright>2026 Dữ liệu thử</copyright>
+    <ccliNo>1234567</ccliNo>
+    <tempo type="bpm">72</tempo>
+    <key>D</key>
+  </properties>
+  <lyrics>
+    <verse name="v1"><lines>Lời câu một</lines></verse>
+  </lyrics>
+</song>
