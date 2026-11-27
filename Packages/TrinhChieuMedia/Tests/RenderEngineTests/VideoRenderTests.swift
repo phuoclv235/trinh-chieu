@@ -183,6 +183,17 @@ struct VideoMutingTests {
         #expect(VideoPlayerPool.shouldMute(video, programLastUse: 10, now: 10))
     }
 
+    @Test("Cùng playbackID mà đổi tắt tiếng thì đặt lại tiếng; đổi lặp hoặc tệp thì dựng lại player")
+    func settingsChange() {
+        let base = TestVideo.ref()
+        #expect(VideoPlayerPool.settingsChange(from: base, to: base) == .none)
+        var unmuted = base
+        unmuted.muted = false
+        #expect(VideoPlayerPool.settingsChange(from: base, to: unmuted) == .muted)
+        #expect(VideoPlayerPool.settingsChange(from: base, to: TestVideo.ref(loop: false)) == .loop)
+        #expect(VideoPlayerPool.settingsChange(from: base, to: TestVideo.ref(TestVideo.missingID)) == .loop)
+    }
+
     @Test("Bản xem trước vai chính không ghi lần dùng của vai chính, nên không làm video phát tiếng")
     func previewNeverUnmutes() {
         var video = TestVideo.ref()

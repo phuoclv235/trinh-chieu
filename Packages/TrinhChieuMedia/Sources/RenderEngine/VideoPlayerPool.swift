@@ -39,8 +39,20 @@ final class VideoPlayerPool: VideoFrameProvider, @unchecked Sendable {
         return roleLastUse.updateValue(now, forKey: consumer.role) == nil
     }
 
+    /// Cảnh mới giữ `playbackID` nhưng đổi cài đặt video: tắt tiếng thì đặt lại tiếng, lặp thì dựng lại player.
+    enum SettingsChange: Equatable {
+        case none
+        case muted
+        case loop
+    }
+
+    static func settingsChange(from old: VideoRef, to new: VideoRef) -> SettingsChange {
+        if old.loop != new.loop || old.media != new.media { return .loop }
+        return old.muted != new.muted ? .muted : .none
+    }
+
     private final class Entry: @unchecked Sendable {
-        let video: VideoRef
+        var video: VideoRef
         var player: AVQueuePlayer?
         var looper: AVPlayerLooper?
         var observations: [NSKeyValueObservation] = []
@@ -83,6 +95,7 @@ final class VideoPlayerPool: VideoFrameProvider, @unchecked Sendable {
             case none
             case createPlayer
             case refresh
+            case rebuild
         }
         let (result, action): (VideoAvailability, Action) = entries.withLockUnchecked { entries in
             guard let entry = entries[video.playbackID] else {
@@ -93,8 +106,19 @@ final class VideoPlayerPool: VideoFrameProvider, @unchecked Sendable {
                 return (.pending, .createPlayer)
             }
             entry.lastUse = now
-            if entry.failed { return (.failed, .none) }
             var action = Action.none
+            switch Self.settingsChange(from: entry.video, to: video) {
+            case .none:
+                break
+            case .muted:
+                entry.video = video
+                action = .refresh
+            case .loop:
+                entry.video = video
+                entry.failed = false
+                action = .rebuild
+            }
+            if entry.failed { return (.failed, .none) }
             if Self.noteUse(&entry.roleLastUse, by: consumer, now: now) { action = .refresh }
             guard let tap = entry.taps[consumer] else {
                 entry.taps[consumer] = PoolTap(textureCache: gpu.textureCache)
@@ -113,8 +137,12 @@ final class VideoPlayerPool: VideoFrameProvider, @unchecked Sendable {
             DispatchQueue.main.async { [self] in
                 MainActor.assumeIsolated { refresh(video.playbackID) }
             }
+        case .rebuild:
+            DispatchQueue.main.async { [self] in
+                MainActor.assumeIsolated { rebuildPlayer(video.playbackID) }
+            }
         }
-        if result == .pending, action != .createPlayer, let tap = tap(video.playbackID, consumer),
+        if result == .pending, action != .createPlayer, action != .rebuild, let tap = tap(video.playbackID, consumer),
             tap.frame(forHostTime: now) != nil
         {
             // Khung đầu tiên vừa tới: nhận ngay ở khung này.
@@ -192,6 +220,35 @@ final class VideoPlayerPool: VideoFrameProvider, @unchecked Sendable {
         player.play()
     }
 
+    /// Bỏ player cũ (giữ khung cuối ở các bên dùng) rồi tạo player mới theo cài đặt hiện tại của video.
+    @MainActor
+    private func rebuildPlayer(_ playbackID: UUID) {
+        guard let entry = entries.withLockUnchecked({ $0[playbackID] }) else { return }
+        let (observations, looper, player) = entries.withLockUnchecked { _ in
+            let old = (entry.observations, entry.looper, entry.player)
+            entry.observations = []
+            entry.looper = nil
+            entry.player = nil
+            return old
+        }
+        Self.tearDown(observations: observations, looper: looper, player: player)
+        createPlayer(playbackID)
+    }
+
+    @MainActor
+    private static func tearDown(
+        observations: [NSKeyValueObservation],
+        looper: AVPlayerLooper?,
+        player: AVQueuePlayer?
+    ) {
+        for observation in observations {
+            observation.invalidate()
+        }
+        looper?.disableLooping()
+        player?.pause()
+        player?.removeAllItems()
+    }
+
     /// Gắn output cho mọi item đang trong hàng đợi của player, báo item đang phát cho từng bên dùng, đặt tiếng.
     @MainActor
     private func refresh(_ playbackID: UUID) {
@@ -244,12 +301,7 @@ final class VideoPlayerPool: VideoFrameProvider, @unchecked Sendable {
             let (observations, looper, player) = entries.withLockUnchecked { _ in
                 (entry.observations, entry.looper, entry.player)
             }
-            for observation in observations {
-                observation.invalidate()
-            }
-            looper?.disableLooping()
-            player?.pause()
-            player?.removeAllItems()
+            Self.tearDown(observations: observations, looper: looper, player: player)
         }
         let live: [(AVQueuePlayer, Bool)] = entries.withLockUnchecked { entries in
             entries.values.compactMap { entry -> (AVQueuePlayer, Bool)? in

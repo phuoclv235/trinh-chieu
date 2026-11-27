@@ -179,6 +179,10 @@ public final class RenderEngine {
             preview.loop.stop()
         }
         previews.removeAll()
+        for window in identifyWindows {
+            window.close()
+        }
+        identifyWindows.removeAll()
         videoPool.invalidate()
         statisticsTimer?.invalidate()
         statisticsTimer = nil
