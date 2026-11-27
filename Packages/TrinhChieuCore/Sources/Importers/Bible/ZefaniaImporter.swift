@@ -26,6 +26,7 @@ public struct ZefaniaImporter: BibleImporter {
         parser.shouldResolveExternalEntities = false
         parser.delegate = handler
         guard parser.parse() else { throw XMLText.parseError(parser, filename: filename) }
+        guard handler.isComplete else { throw XMLText.truncatedError(parser, filename: filename) }
         handler.flushVerse()
         guard handler.sawRoot else {
             throw ImportError.invalidContent(filename: filename, reason: "phần tử gốc không phải <XMLBIBLE>.")
@@ -40,6 +41,9 @@ private final class ZefaniaHandler: NSObject, XMLParserDelegate {
     private(set) var sawRoot = false
 
     private var skipDepth = 0
+    private var depth = 0
+    /// Mọi phần tử đã mở đều đã đóng.
+    var isComplete: Bool { depth == 0 }
     private var inInformation = false
     private var informationField: String?
     private var informationText = ""
@@ -59,6 +63,7 @@ private final class ZefaniaHandler: NSObject, XMLParserDelegate {
         attributes: [String: String] = [:]
     ) {
         let name = XMLText.localName(elementName).uppercased()
+        depth += 1
         if skipDepth > 0 {
             skipDepth += 1
             return
@@ -104,6 +109,7 @@ private final class ZefaniaHandler: NSObject, XMLParserDelegate {
         _ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?
     ) {
         let name = XMLText.localName(elementName).uppercased()
+        depth -= 1
         if skipDepth > 0 {
             skipDepth -= 1
             return

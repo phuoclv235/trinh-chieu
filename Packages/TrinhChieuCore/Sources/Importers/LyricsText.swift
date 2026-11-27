@@ -79,6 +79,8 @@ public struct ParsedLyrics: Sendable, Hashable {
 
 /// Phân tích và dựng lại lời bài hát dạng văn bản. Dùng cho bộ nhập tệp `.txt` và ô soạn lời dạng văn bản (T1.9).
 ///
+/// Nhãn không có ngoặc vuông ("Câu 1", "ĐK:", "1. lời") chỉ được nhận khi văn bản không có nhãn ngoặc vuông nào.
+///
 /// Cú pháp:
 ///
 /// ```
@@ -269,7 +271,12 @@ private struct LyricsParser {
 
     mutating func run(maxLinesPerSlide: Int) -> ParsedLyrics {
         let bodyStart = readHeader()
-        let kinds = (bodyStart..<lines.count).map { (index: $0, kind: Self.classify(lines[$0])) }
+        // Văn bản đã dùng nhãn trong ngoặc vuông (như `render` ghi) thì dòng không có ngoặc luôn là lời: một dòng lời
+        // đúng bằng "Điệp khúc" hay "Kết" không bị nhận nhầm là nhãn.
+        let allowsBareLabels = !(bodyStart..<lines.count).contains { Self.isBracketLabel(lines[$0]) }
+        let kinds = (bodyStart..<lines.count).map { index in
+            (index: index, kind: Self.classify(lines[index], allowsBareLabels: allowsBareLabels))
+        }
         let hasLabels = kinds.contains { item in
             switch item.kind {
             case .label, .labelWithText:
@@ -329,14 +336,20 @@ private struct LyricsParser {
 
     // MARK: Phân loại dòng
 
-    static func classify(_ raw: String) -> LineKind {
+    static func isBracketLabel(_ raw: String) -> Bool {
+        let line = raw.trimmingCharacters(in: .whitespaces)
+        return line.hasPrefix("[") && line.hasSuffix("]") && line.count > 2
+    }
+
+    static func classify(_ raw: String, allowsBareLabels: Bool) -> LineKind {
         let line = raw.trimmingCharacters(in: .whitespaces)
         if line.isEmpty { return .blank }
-        if line.hasPrefix("["), line.hasSuffix("]"), line.count > 2 {
+        if isBracketLabel(line) {
             let inner = String(line.dropFirst().dropLast()).trimmingCharacters(in: .whitespaces)
             if let label = LyricsText.knownLabel(inner) { return .label(label) }
             return .label(GroupLabel(kind: .custom, custom: inner))
         }
+        guard allowsBareLabels else { return .text(line) }
         if let label = wholeLineLabel(line) { return .label(label) }
         if let (label, text) = inlineLabel(line) { return .labelWithText(label, text) }
         return .text(line)

@@ -27,6 +27,7 @@ public struct OSISImporter: BibleImporter {
         parser.shouldResolveExternalEntities = false
         parser.delegate = handler
         guard parser.parse() else { throw XMLText.parseError(parser, filename: filename) }
+        guard handler.isComplete else { throw XMLText.truncatedError(parser, filename: filename) }
         handler.flushVerse()
         guard handler.sawOSISRoot else {
             throw ImportError.invalidContent(filename: filename, reason: "phần tử gốc không phải <osis>.")
@@ -41,6 +42,8 @@ private final class OSISHandler: NSObject, XMLParserDelegate {
     private(set) var sawOSISRoot = false
 
     private var depth = 0
+    /// Mọi phần tử đã mở đều đã đóng.
+    var isComplete: Bool { depth == 0 }
     /// Mức lồng của phần tử bị bỏ nội dung (`note`, `title`); 0 là không bỏ.
     private var skipDepth = 0
     private var book: String?

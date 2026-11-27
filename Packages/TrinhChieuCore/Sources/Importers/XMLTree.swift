@@ -69,6 +69,7 @@ final class XMLTreeNode {
         guard parser.parse(), let root = builder.root else {
             throw XMLText.parseError(parser, filename: filename)
         }
+        guard builder.isComplete else { throw XMLText.truncatedError(parser, filename: filename) }
         return root
     }
 }
@@ -94,6 +95,13 @@ enum XMLText {
             return .invalidXML(filename: filename, line: line, reason: "cấu trúc XML không hợp lệ (mã lỗi \(code)).")
         }
         return .invalidXML(filename: filename, line: line, reason: "tệp không có phần tử gốc.")
+    }
+
+    /// Lỗi cho tệp bị cắt dở: bộ phân tích tới cuối tệp mà còn phần tử chưa đóng (Foundation trên Linux không tự
+    /// báo lỗi này).
+    static func truncatedError(_ parser: XMLParser, filename: String) -> ImportError {
+        let line = parser.lineNumber > 0 ? parser.lineNumber : nil
+        return .invalidXML(filename: filename, line: line, reason: "tệp bị cắt dở, còn phần tử chưa đóng.")
     }
 
     /// Thoát ký tự đặc biệt cho chữ và giá trị thuộc tính XML.
@@ -122,6 +130,9 @@ enum XMLText {
 private final class XMLTreeBuilder: NSObject, XMLParserDelegate {
     private(set) var root: XMLTreeNode?
     private var stack: [XMLTreeNode] = []
+
+    /// Mọi phần tử đã mở đều đã đóng.
+    var isComplete: Bool { stack.isEmpty }
 
     func parser(
         _ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?,
