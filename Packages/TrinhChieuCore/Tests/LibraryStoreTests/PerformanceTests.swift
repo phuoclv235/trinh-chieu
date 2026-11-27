@@ -10,7 +10,7 @@ import Testing
 @Suite("LibraryStore: hiệu năng", .serialized)
 @MainActor
 struct PerformanceTests {
-    static let songCount = 5_000
+    nonisolated static let songCount = 5_000
 
     #if os(Linux)
         static let openBudget: Duration = .seconds(2)
@@ -22,16 +22,13 @@ struct PerformanceTests {
         Double(duration.components.seconds) * 1_000 + Double(duration.components.attoseconds) / 1e15
     }
 
-    @Test("Mở thư viện 5.000 bài hát dưới 2 giây")
-    func openFiveThousandSongs() async throws {
-        let dir = try TemporaryDirectory()
-        let clock = FakeClock()
+    nonisolated static func writeSongs(to root: URL) throws {
         let verse = (1...4).map { "Câu thứ \($0): Chúa là Đấng chăn giữ tôi, tôi chẳng thiếu thốn gì" }
             .joined(separator: "\n")
         let encoder = DocumentCoding.makeEncoder()
-        let presentations = dir.url.appendingPathComponent("presentations")
+        let presentations = root.appendingPathComponent("presentations")
         try FileManager.default.createDirectory(at: presentations, withIntermediateDirectories: true)
-        for number in 1...Self.songCount {
+        for number in 1...songCount {
             var song = makeSong(number, lyrics: verse)
             let extra = (2...6).map { index in
                 Slide(elements: [.text(TextElement(slot: .body, text: "Đoạn \(index) bài \(number)\n" + verse))])
@@ -39,6 +36,15 @@ struct PerformanceTests {
             song.groups[0].slides.append(contentsOf: extra)
             try encoder.encode(song).write(to: presentations.appendingPathComponent("\(song.id.uuidString).json"))
         }
+    }
+
+    @Test("Mở thư viện 5.000 bài hát dưới 2 giây")
+    func openFiveThousandSongs() async throws {
+        let dir = try TemporaryDirectory()
+        let clock = FakeClock()
+        // Dựng dữ liệu ngoài luồng chính để không chặn test khác chạy trên luồng chính.
+        let root = dir.url
+        try await Task.detached { try Self.writeSongs(to: root) }.value
 
         let start = ContinuousClock.now
         let store = try await LibraryStore.open(
