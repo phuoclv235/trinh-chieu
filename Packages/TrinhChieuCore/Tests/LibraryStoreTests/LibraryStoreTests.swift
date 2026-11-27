@@ -93,7 +93,7 @@ struct LibraryStoreTests {
         #expect(await reopened.search("ngoi khen", kinds: [.presentation]).map(\.id) == [edited.id.uuidString])
         #expect(await reopened.search("thanh ca 2", kinds: [.presentation]).allSatisfy { $0.title != "Thánh ca 2" })
         #expect(await reopened.search("thanh ca", kinds: [.presentation]).count == 18)
-        let themeHits = await reopened.search("mau co ban", kinds: [.theme])
+        let themeHits = await reopened.search("kinh thanh", kinds: [.theme])
         #expect(themeHits.count == 1)
         await reopened.close()
 

@@ -49,7 +49,8 @@ import Testing
         let second = Slide(id: fixedID(2), elements: [Self.body(52, "Ngợi khen Chúa đời đời")])
         let cornerFrame = PixelRect(x: 1700, y: 40, width: 180, height: 120)
         let corner = ImageElement(id: fixedID(54), frame: cornerFrame, mediaID: image)
-        let third = Slide(id: fixedID(3), background: .media(image), elements: [Self.body(53, "A-men"), .image(corner)])
+        let third = Slide(
+            id: fixedID(3), background: .media(image), elements: [Self.body(53, "A-men"), .image(corner)])
         let song = Presentation(
             id: fixedID(100), kind: .song, title: "Chúa Là Đá Muôn Đời", createdAt: created, modifiedAt: created,
             groups: [

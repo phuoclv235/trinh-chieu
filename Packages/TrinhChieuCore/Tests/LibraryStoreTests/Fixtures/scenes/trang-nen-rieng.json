@@ -1,0 +1,336 @@
+{
+  "program" : {
+    "canvasSize" : [
+      1920,
+      1080
+    ],
+    "layers" : [
+      {
+        "contentID" : "00000000-0000-4000-8000-000000000003",
+        "items" : [
+          {
+            "fit" : "fill",
+            "frame" : [
+              0,
+              0,
+              1920,
+              1080
+            ],
+            "media" : {
+              "id" : "71a5f60d7367"
+            },
+            "type" : "image"
+          }
+        ],
+        "kind" : "background"
+      },
+      {
+        "contentID" : "00000000-0000-4000-8000-000000000003",
+        "items" : [
+          {
+            "frame" : [
+              120,
+              120,
+              1680,
+              840
+            ],
+            "text" : {
+              "autoFit" : {
+                "minScale" : 0.6,
+                "mode" : "shrink"
+              },
+              "string" : "A-men",
+              "style" : {
+                "alignment" : "center",
+                "box" : {
+                  "color" : "#00000000",
+                  "cornerRadius" : 0,
+                  "padding" : [
+                    0,
+                    0,
+                    0,
+                    0
+                  ]
+                },
+                "color" : "#FFFFFFFF",
+                "fontFamily" : "system",
+                "fontSize" : 76,
+                "fontWeight" : 600,
+                "letterSpacing" : 0,
+                "lineHeight" : 1.2,
+                "shadow" : {
+                  "color" : "#00000080",
+                  "offset" : [
+                    0,
+                    2
+                  ],
+                  "radius" : 8
+                },
+                "stroke" : {
+                  "color" : "#000000FF",
+                  "width" : 0
+                },
+                "verticalAlignment" : "middle"
+              }
+            },
+            "type" : "text"
+          },
+          {
+            "fit" : "fit",
+            "frame" : [
+              1700,
+              40,
+              180,
+              120
+            ],
+            "media" : {
+              "id" : "71a5f60d7367"
+            },
+            "type" : "image"
+          }
+        ],
+        "kind" : "slide"
+      }
+    ],
+    "revision" : 0,
+    "transition" : {
+      "duration" : 0.35,
+      "kind" : "dissolve"
+    }
+  },
+  "stage" : {
+    "canvasSize" : [
+      1920,
+      1080
+    ],
+    "layers" : [
+      {
+        "contentID" : "D17D8C87-A4AA-872D-88C6-056334B1732C",
+        "items" : [
+          {
+            "color" : "#000000FF",
+            "frame" : [
+              0,
+              0,
+              1920,
+              1080
+            ],
+            "type" : "color"
+          }
+        ],
+        "kind" : "background"
+      },
+      {
+        "contentID" : "00000000-0000-4000-8000-000000000003",
+        "items" : [
+          {
+            "frame" : [
+              48,
+              32,
+              1200,
+              56
+            ],
+            "text" : {
+              "autoFit" : {
+                "minScale" : 1,
+                "mode" : "none"
+              },
+              "maxLines" : 1,
+              "string" : "Chúa Là Đá Muôn Đời · Điệp khúc",
+              "style" : {
+                "alignment" : "left",
+                "box" : {
+                  "color" : "#00000000",
+                  "cornerRadius" : 0,
+                  "padding" : [
+                    0,
+                    0,
+                    0,
+                    0
+                  ]
+                },
+                "color" : "#FFFFFFB3",
+                "fontFamily" : "system",
+                "fontSize" : 40,
+                "fontWeight" : 500,
+                "letterSpacing" : 0,
+                "lineHeight" : 1.15,
+                "shadow" : {
+                  "color" : "#00000000",
+                  "offset" : [
+                    0,
+                    0
+                  ],
+                  "radius" : 0
+                },
+                "stroke" : {
+                  "color" : "#000000FF",
+                  "width" : 0
+                },
+                "verticalAlignment" : "middle"
+              }
+            },
+            "type" : "text"
+          },
+          {
+            "frame" : [
+              48,
+              120,
+              1824,
+              560
+            ],
+            "text" : {
+              "autoFit" : {
+                "minScale" : 0.5,
+                "mode" : "shrink"
+              },
+              "string" : "A-men",
+              "style" : {
+                "alignment" : "left",
+                "box" : {
+                  "color" : "#00000000",
+                  "cornerRadius" : 0,
+                  "padding" : [
+                    0,
+                    0,
+                    0,
+                    0
+                  ]
+                },
+                "color" : "#FFFFFFFF",
+                "fontFamily" : "system",
+                "fontSize" : 64,
+                "fontWeight" : 600,
+                "letterSpacing" : 0,
+                "lineHeight" : 1.15,
+                "shadow" : {
+                  "color" : "#00000000",
+                  "offset" : [
+                    0,
+                    0
+                  ],
+                  "radius" : 0
+                },
+                "stroke" : {
+                  "color" : "#000000FF",
+                  "width" : 0
+                },
+                "verticalAlignment" : "top"
+              }
+            },
+            "type" : "text"
+          },
+          {
+            "frame" : [
+              48,
+              712,
+              1824,
+              240
+            ],
+            "text" : {
+              "autoFit" : {
+                "minScale" : 0.5,
+                "mode" : "shrink"
+              },
+              "string" : "Tiếp theo: Giăng 3:16–18 (THU)",
+              "style" : {
+                "alignment" : "left",
+                "box" : {
+                  "color" : "#00000000",
+                  "cornerRadius" : 0,
+                  "padding" : [
+                    0,
+                    0,
+                    0,
+                    0
+                  ]
+                },
+                "color" : "#FFFFFF8C",
+                "fontFamily" : "system",
+                "fontSize" : 44,
+                "fontWeight" : 500,
+                "letterSpacing" : 0,
+                "lineHeight" : 1.15,
+                "shadow" : {
+                  "color" : "#00000000",
+                  "offset" : [
+                    0,
+                    0
+                  ],
+                  "radius" : 0
+                },
+                "stroke" : {
+                  "color" : "#000000FF",
+                  "width" : 0
+                },
+                "verticalAlignment" : "top"
+              }
+            },
+            "type" : "text"
+          }
+        ],
+        "kind" : "slide"
+      },
+      {
+        "contentID" : "C6AAE06F-F1FF-8EAD-93C9-7D3BAEC2F70E",
+        "items" : [
+          {
+            "frame" : [
+              1392,
+              32,
+              480,
+              56
+            ],
+            "text" : {
+              "autoFit" : {
+                "minScale" : 1,
+                "mode" : "none"
+              },
+              "maxLines" : 1,
+              "string" : "15:00:05",
+              "style" : {
+                "alignment" : "right",
+                "box" : {
+                  "color" : "#00000000",
+                  "cornerRadius" : 0,
+                  "padding" : [
+                    0,
+                    0,
+                    0,
+                    0
+                  ]
+                },
+                "color" : "#FFFFFFFF",
+                "fontFamily" : "system-monospaced-digits",
+                "fontSize" : 48,
+                "fontWeight" : 600,
+                "letterSpacing" : 0,
+                "lineHeight" : 1.15,
+                "shadow" : {
+                  "color" : "#00000000",
+                  "offset" : [
+                    0,
+                    0
+                  ],
+                  "radius" : 0
+                },
+                "stroke" : {
+                  "color" : "#000000FF",
+                  "width" : 0
+                },
+                "verticalAlignment" : "middle"
+              }
+            },
+            "type" : "text"
+          }
+        ],
+        "kind" : "overlay"
+      }
+    ],
+    "revision" : 0,
+    "transition" : {
+      "duration" : 0,
+      "kind" : "cut"
+    }
+  }
+}

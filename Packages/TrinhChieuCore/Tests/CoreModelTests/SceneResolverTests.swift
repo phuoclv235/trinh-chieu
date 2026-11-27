@@ -29,10 +29,10 @@ import Testing
         theme.transition = .cut
         theme.background = .media(bgVideo)
         self.theme = theme
+        let bigger = TextStyleOverride(fontSize: 90)
         let s1 = Slide(
-            id: fixedID(1), notes: "Chậm lại", elements: [
-                .text(TextElement(slot: .body, text: "Chúa là đá\nmuôn đời", style: TextStyleOverride(fontSize: 90)))
-            ])
+            id: fixedID(1), notes: "Chậm lại",
+            elements: [.text(TextElement(slot: .body, text: "Chúa là đá\nmuôn đời", style: bigger))])
         let s2 = Slide(
             id: fixedID(2),
             elements: [
@@ -324,7 +324,8 @@ struct SceneResolverProgramTests {
         let live = LivePosition(source: library.songSource, slideIndex: 0, slideID: fixedID(999), wentLiveAt: Date())
         let state = ShowState(live: live, layers: [.slide: .slide(slideID: fixedID(999))])
         let scene = SceneResolver().resolve(state: state, provider: library.provider, now: Date()).program
-        #expect(scene.layers == RenderScene.empty(canvas: library.defaultTheme.canvasSize).layers)
+        // Khung vẽ vẫn theo mẫu của chuỗi đang chiếu.
+        #expect(scene.layers == RenderScene.empty(canvas: library.theme.canvasSize).layers)
     }
 }
 
