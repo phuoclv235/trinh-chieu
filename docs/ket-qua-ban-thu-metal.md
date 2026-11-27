@@ -185,3 +185,34 @@ Kết luận:
 - **`CADisplayLink` của view (E7)** chỉ rớt 4 khung trong 3 phút (1.33/phút, 2 khung ở 3 giây đầu) dù chạy một màn với cùng ứng dụng trên màn tích hợp như E3 (19.32/phút). Nhưng đường ống 3 chu kỳ (49.2 ms): `targetTimestamp` chỉ cách lần gọi 1 chu kỳ, còn khung thật lên màn sau đó 2 chu kỳ nữa. Lần gọi chờ `nextDrawable()` gần trọn chu kỳ trên luồng chính. Khác biệt rớt khung giữa E3 và E7 là manh mối đáng xem: có thể một khung đệm thêm trong đường ống che được nhịp lỡ của WindowServer.
 - E5 có một cụm rớt ở giây 16.5 đến 17.5, cùng lúc trên cả hai màn: có lẽ do một sự kiện hệ thống.
 - Đã sửa báo cáo: khi chữ tĩnh, tiêu chí trễ đổi cảnh ghi "không áp dụng" thay vì chấm không đạt.
+
+### Lần chạy 6 (2026-11-27, commit 71d6c41): vòng xác nhận cổng
+
+Chạy từ 13:42 đến 14:38 giờ Việt Nam. Máy lặng trước mỗi lần (load 1 phút 2.5 đến 5.3), không có `Runner.Worker`, và màn không khoá lần nào. Màn tích hợp có cửa sổ của Cloudflare WARP, Dock, Finder, Google Chrome, Passwords, Safari, Screenshot và TextEdit. Zalo đang chạy nhưng không có cửa sổ hiện. Không đóng ứng dụng nào. Cả 8 lần có mã thoát 1. TSan: 0 cảnh báo.
+
+| Lần | Cấu hình | Màn | Rớt/phút (không lên / trễ) | Đường ống p99 | Trễ đổi cảnh p95 / lớn nhất | Lần gọi vẽ > 4 ms |
+| --- | --- | --- | --- | --- | --- | --- |
+| G1a | 2 màn, mỗi màn một command queue, 10 phút | 0 | 111.28 (110 / 1003) | 47.27 ms | 47.72 / 68.30 ms | 723 |
+| G1a | | 1 | 96.38 (99 / 865) | 33.06 ms | 47.67 / 71.39 ms | 316 |
+| G1b | như G1a | 0 | 58.78 (66 / 522) | 33.16 ms | 47.94 / 56.17 ms | 194 |
+| G1b | | 1 | 85.36 (76 / 778) | 33.13 ms | 47.39 / 59.88 ms | 406 |
+| TSan | như G1a, bản debug, 2 phút | 0 | 47.98 (18 / 78) | 32.91 ms | 47.04 / 52.69 ms | 35 |
+| TSan | | 1 | 89.47 (25 / 154) | 33.09 ms | 53.33 / 63.53 ms | 316 |
+| G2 | chỉ màn LG, phủ đen màn tích hợp, 5 phút | 1 | 70.78 (40 / 314) | 33.12 ms | 46.75 / 48.07 ms | 156 |
+| G3 | 2 màn, một command queue chung, 10 phút | 0 | 95.10 (116 / 835) | 33.22 ms | 48.08 / 62.94 ms | 689 |
+| G3 | | 1 | 93.00 (116 / 814) | 33.06 ms | 47.33 / 67.22 ms | 415 |
+| G5a | chỉ màn LG, cửa sổ giữ nhịp 320x180 theo tần số gốc trên màn tích hợp, 5 phút | 1 | 6.20 (4 / 27) | 32.93 ms | 47.99 / 48.97 ms | 18 |
+| G5b | như G5a | 1 | 2.00 (2 / 8) | 32.94 ms | 48.11 / 48.73 ms | 90 |
+| G6 | như G5a, cửa sổ giữ nhịp 15 khung/giây | 1 | 1.40 (2 / 5) | 32.86 ms | 45.87 / 48.16 ms | 51 |
+
+G4 (thoát Zalo, WhatsApp và Activity Monitor) chưa chạy: cần Phuoc đồng ý thoát ứng dụng.
+
+Nhận xét:
+
+- **Cổng chưa đạt.** G1 trượt tiêu chí 1 ở cả hai lần (59 đến 111 khung/phút). Tiêu chí 2b cũng trượt ở vài màn vì có mẫu trễ lớn nhất trên 66.67 ms.
+- **Hai màn tệ đi hẳn so với lần chạy 5 chỉ 1.5 giờ trước** (E6 0.20/phút, E5 0.8 đến 1.8/phút). Đường mặc định của bản thử không đổi giữa hai lần: từ 1654052 tới 71d6c41 chỉ thêm `--blank-other-screens` và `--keeper`. Vậy nhiều khả năng nguyên nhân là môi trường máy.
+- Ở các lần tệ (G1a, G1b, TSan, G2, G3), 30 đến 50 giây đầu gần như sạch, sau đó rớt liên tục, cùng thời điểm trên cả hai màn. Khoảng cách giữa hai lần gọi vẽ có lúc lên tới khoảng 300 ms, và số lần gọi vẽ trên 4 ms lên hàng trăm. Luồng vẽ bị chậm vì cả máy bận, không phải vì tải vẽ.
+- **Tương quan với Zalo:** mẫu `top` sau khi đo ở cả 5 lần tệ đều có "Zalo Helper (GPU)" 54 đến 58% CPU và `kernel_task` 26 đến 39%. Ở 3 lần tốt (G5a, G5b, G6), Zalo không có trong `top` và `kernel_task` chỉ khoảng 10%. Điểm chung của 5 lần tệ là màn tích hợp bị che kín bởi cửa sổ toàn màn hình (đầu ra hoặc tấm phủ đen). Có thể Zalo phản ứng với việc đó, nhưng E5 và E6 trước đây cũng có Zalo GPU khoảng 55% mà vẫn sạch. Vì vậy đây mới là tương quan, chưa phải nguyên nhân.
+- **Cửa sổ giữ nhịp giúp rõ khi chỉ chạy màn ngoài:** G5 và G6 rớt 1.4 đến 6.2 khung/phút, so với 7 đến 45 khung/phút ở E0 đến E4. Cửa sổ chỉ cập nhật 15 khung/giây (G6, giống PreviewPublisher của T1.6) cho kết quả tốt nhất, nhưng vẫn chưa dưới 1 khung/phút. Phủ đen tĩnh (G2) không giúp.
+- Trễ đổi cảnh p95 vẫn khoảng 46 đến 48 ms ở mọi lần. Đường ống p99 khoảng 33 ms, trừ G1a màn 0 lên 3 chu kỳ.
+- **Kết luận cho rà soát:** số đo rớt khung trên chiếc Mac dùng hằng ngày này dao động từ 0.2 lên tới 111 khung/phút giữa các lần chạy cùng cấu hình, tuỳ các ứng dụng đang chạy nền. Muốn chấm cổng đáng tin cần một môi trường đo cố định: thoát các ứng dụng nền (Zalo, trình duyệt, WARP), hoặc dùng một tài khoản người dùng sạch, hoặc đo trên máy dùng cho buổi nhóm thật.
