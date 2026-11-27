@@ -183,7 +183,7 @@ final class VideoPlayerPool: VideoFrameProvider, @unchecked Sendable {
     /// Gắn output cho mọi item đang trong hàng đợi của player, báo item đang phát cho từng bên dùng, đặt tiếng.
     @MainActor
     private func refresh(_ playbackID: UUID) {
-        let snapshot: (Entry, AVQueuePlayer, [PoolTap], Set<OutputRole>)? = entries.withLockUnchecked { entries in
+        let snapshot: (Entry, AVQueuePlayer, [PoolTap], CFTimeInterval?)? = entries.withLockUnchecked { entries in
             guard let entry = entries[playbackID], let player = entry.player else { return nil }
             return (entry, player, Array(entry.taps.values), entry.roleLastUse[.program])
         }
@@ -240,7 +240,7 @@ final class VideoPlayerPool: VideoFrameProvider, @unchecked Sendable {
             player?.removeAllItems()
         }
         let live: [(AVQueuePlayer, Bool)] = entries.withLockUnchecked { entries in
-            entries.values.compactMap { entry in
+            entries.values.compactMap { entry -> (AVQueuePlayer, Bool)? in
                 guard let player = entry.player else { return nil }
                 let mute = Self.shouldMute(entry.video, programLastUse: entry.roleLastUse[.program], now: now)
                 return (player, mute)
