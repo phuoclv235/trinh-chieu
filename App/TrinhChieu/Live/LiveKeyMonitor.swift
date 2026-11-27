@@ -21,6 +21,8 @@ enum LiveKey: Equatable, Sendable {
     case undo
     /// `⇧⌘Z` ngoài ô nhập chữ.
     case redo
+    /// `⌫`, `⌦`: bỏ mục đang chọn khỏi chương trình buổi nhóm.
+    case delete
 }
 
 enum LiveKeyMap {
@@ -38,6 +40,8 @@ enum LiveKeyMap {
     static let f3: UInt16 = 99
     static let f4: UInt16 = 118
     static let z: UInt16 = 6
+    static let backspace: UInt16 = 51
+    static let forwardDelete: UInt16 = 117
 
     /// Phím ứng với một lần bấm. Bỏ qua cờ `fn` và bàn phím số: `F2` gõ thẳng hay giữ `fn` đều là `F2`
     /// (máy đặt phím F làm phím đặc biệt thì phải giữ `fn`).
@@ -58,6 +62,7 @@ enum LiveKeyMap {
         case f2: return .clearText
         case f3: return .clearBackground
         case f4: return .clearAudio
+        case backspace, forwardDelete: return .delete
         default: return nil
         }
     }

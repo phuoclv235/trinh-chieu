@@ -40,6 +40,9 @@ struct LiveKeyMapTests {
         #expect(LiveKeyMap.key(keyCode: LiveKeyMap.z, modifiers: .command) == .undo)
         #expect(LiveKeyMap.key(keyCode: LiveKeyMap.z, modifiers: [.command, .shift]) == .redo)
         #expect(LiveKeyMap.key(keyCode: LiveKeyMap.z, modifiers: []) == nil)
+        #expect(LiveKeyMap.key(keyCode: LiveKeyMap.backspace, modifiers: []) == .delete)
+        #expect(LiveKeyMap.key(keyCode: LiveKeyMap.forwardDelete, modifiers: .function) == .delete)
+        #expect(LiveKeyMap.key(keyCode: LiveKeyMap.backspace, modifiers: .command) == nil)
     }
 }
 

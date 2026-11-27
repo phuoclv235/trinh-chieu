@@ -52,6 +52,14 @@ struct SlideStage: View {
             }
         }
         .background(Palette.bgStage)
+        .dropDestination(for: String.self) { values, _ in
+            // Thả một dòng thư viện vào giữa: xem lưới trang của nó (chưa lên màn).
+            guard let row = values.lazy.compactMap({ LibraryDrag.row(from: $0, environment: environment) }).first,
+                let source = row.source
+            else { return false }
+            environment.send(.selectItem(source))
+            return true
+        }
     }
 
     /// Cỡ thẻ càng lớn, càng ít cột: 3 → 8 cột, 8 → 3 cột.

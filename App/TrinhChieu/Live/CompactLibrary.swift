@@ -57,7 +57,7 @@ struct CompactLibrary: View {
         VStack(spacing: 0) {
             LibraryTabs(selection: Binding(get: { tab }, set: { tabRaw = $0.rawValue }))
             if tab == .scripture {
-                ScriptureLookupPlaceholder()
+                ScripturePanel()
             } else {
                 SearchField(
                     text: $query, prompt: "Search without accents", isFocused: $searchFocused
@@ -85,6 +85,7 @@ struct CompactLibrary: View {
                         LibraryRowView(row: row, isSelected: isSelected(row))
                             .onTapGesture(count: 2) { onAdd?(row) }
                             .simultaneousGesture(TapGesture().onEnded { select(row) })
+                            .libraryDrag(row)
                     }
                 }
                 .padding(.top, 4)
@@ -161,17 +162,6 @@ struct CompactLibrary: View {
         case .media: return "Media you import into the library appears here."
         case .themes, .scripture: return "Themes control how slides look on the main output."
         }
-    }
-}
-
-/// Tab Kinh Thánh: tra câu theo địa chỉ (làm cùng chương trình buổi nhóm).
-private struct ScriptureLookupPlaceholder: View {
-    var body: some View {
-        EmptyStateView(
-            systemImage: "book", title: "Bible lookup",
-            message: "Type a reference such as John 3:16 to see the verses. Arrives with the service plan."
-        )
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
@@ -410,6 +400,17 @@ struct SearchField: View {
                     .allowsHitTesting(false)
                     .accessibilityHidden(true)
             }
+        }
+    }
+}
+
+extension View {
+    /// Kéo dòng thư viện vào chương trình buổi nhóm hoặc lưới trang (mẫu trình bày không kéo được).
+    @ViewBuilder func libraryDrag(_ row: LibraryRow) -> some View {
+        if let payload = LibraryDrag.payload(for: row) {
+            onDrag { NSItemProvider(object: payload as NSString) }
+        } else {
+            self
         }
     }
 }
