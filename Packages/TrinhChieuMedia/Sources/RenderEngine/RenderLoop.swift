@@ -6,9 +6,10 @@ import os
 
 /// Vòng vẽ của một đầu ra (hoặc một bản xem trước) của `RenderEngine`.
 ///
-/// Một `CAMetalDisplayLink` trên luồng riêng ưu tiên cao, chạy theo tần số gốc của màn đang chứa lớp.
+/// Một `CAMetalDisplayLink` trên luồng riêng ưu tiên cao, tần số do bên tạo chọn (đầu ra tối đa 60 khung/giây).
 /// Mỗi đầu ra có `MTLCommandQueue` riêng (cùng `MTLDevice`) và bộ trộn lớp riêng. Chỉ vẽ và present trong
 /// nhịp display link. Mỗi khung lấy cảnh mới nhất của vai từ hộp thư; chưa có cảnh thì tô đen.
+/// Đầu ra thật vẽ theo nhu cầu dạng giữ ấm (`FramePacer`); bản xem trước vẽ mỗi nhịp (kiêm lớp giữ nhịp).
 final class RenderLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked Sendable {
     let label: String
     let role: OutputRole
@@ -19,6 +20,8 @@ final class RenderLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked Sendabl
     private let compositor: LayerCompositor
     private let mailbox: SceneMailbox<RenderScene>
     private let frameRate: Float
+    /// `nil`: vẽ mỗi nhịp (bản xem trước).
+    private let pacer: FramePacer?
     private let logger = Logger(subsystem: "app.trinhchieu.RenderEngine", category: "RenderLoop")
 
     private let stopped = OSAllocatedUnfairLock(initialState: false)
@@ -26,10 +29,12 @@ final class RenderLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked Sendabl
     private var thread: Thread?
     /// Chỉ đọc ghi trên luồng vẽ.
     private var lastRevision: UInt64 = 0
+    private var lastTargetSize: CGSize = .zero
 
     /// - Parameters:
-    ///   - frameRate: tần số display link (tần số gốc của màn cho đầu ra; 15 cho bản xem trước).
+    ///   - frameRate: tần số display link (đầu ra: tối đa 60; bản xem trước: 15).
     ///   - audible: đầu ra thật thì `true`; bản xem trước thì `false` để không làm video phát tiếng.
+    ///   - onDemand: vẽ theo nhu cầu dạng giữ ấm (đầu ra thật); `false` thì vẽ mỗi nhịp (bản xem trước).
     init(
         label: String,
         role: OutputRole,
@@ -40,7 +45,8 @@ final class RenderLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked Sendabl
         video: any VideoFrameProvider,
         mailbox: SceneMailbox<RenderScene>,
         frameRate: Float,
-        audible: Bool
+        audible: Bool,
+        onDemand: Bool
     ) throws {
         guard let queue = gpu.device.makeCommandQueue() else {
             throw RenderEngineError.commandQueueUnavailable
@@ -60,6 +66,7 @@ final class RenderLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked Sendabl
         )
         self.mailbox = mailbox
         self.frameRate = max(1, frameRate)
+        pacer = onDemand ? FramePacer() : nil
         stats = FrameStats(label: label, nominalPeriod: 1 / Double(max(1, frameRate)))
         super.init()
     }
@@ -111,13 +118,28 @@ final class RenderLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked Sendabl
         let targetSize = CGSize(width: texture.width, height: texture.height)
 
         var postedAt: CFTimeInterval?
+        var active = false
         if let entry = mailbox.latest() {
+            let sizeChanged = targetSize != lastTargetSize
+            lastTargetSize = targetSize
             if entry.revision != lastRevision {
                 lastRevision = entry.revision
                 postedAt = entry.postedAt
             }
-            // Gọi mỗi khung: lớp nào chưa dựng xong (chữ, ảnh, khung video đầu) được thử lại, lớp cũ giữ nguyên.
-            compositor.update(scene: entry.scene, targetSize: targetSize, time: targetTime)
+            // Cảnh mới, đổi cỡ, đang hoà tan hay có video, hoặc còn lớp chưa dựng xong (chữ, ảnh, khung video đầu):
+            // dựng lại; lớp cũ giữ nguyên tới khi lớp mới xong.
+            let changed = postedAt != nil || sizeChanged
+            if changed || pacer == nil || compositor.isAnimating || compositor.hasPendingLayers {
+                compositor.update(scene: entry.scene, targetSize: targetSize, time: targetTime)
+            }
+            active = changed || compositor.isAnimating || compositor.hasPendingLayers
+        }
+        let paced: FramePacer.Frame?
+        if let pacer {
+            guard let frame = pacer.tick(active: active) else { return }
+            paced = frame
+        } else {
+            paced = nil
         }
         guard let commandBuffer = commandQueue.makeCommandBuffer() else { return }
         commandBuffer.label = "Frame.\(label)"
@@ -125,12 +147,21 @@ final class RenderLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked Sendabl
         let encodeEnd = CACurrentMediaTime()
 
         let stats = stats
+        let pacer = pacer
+        let scenePostedAt = postedAt
         drawable.addPresentedHandler { presented in
             let presentedTime = presented.presentedTime
-            stats.recordPresented(presentedTime, now: CACurrentMediaTime())
+            if let paced, let pacer {
+                pacer.presented(paced, presentedTime: presentedTime)
+            }
+            if paced?.afterGap == true {
+                stats.recordPresentedAfterGap(presentedTime, now: CACurrentMediaTime())
+            } else {
+                stats.recordPresented(presentedTime, now: CACurrentMediaTime())
+            }
             stats.recordFrameTiming(callback: callbackTime, target: targetTime, presented: presentedTime)
-            if let postedAt, presentedTime > 0 {
-                stats.recordSceneLatency(presentedTime - postedAt)
+            if let scenePostedAt, presentedTime > 0 {
+                stats.recordSceneLatency(presentedTime - scenePostedAt)
             }
         }
         commandBuffer.addCompletedHandler { buffer in

@@ -104,11 +104,15 @@ final class LayerCompositor {
     /// Có lớp nào đang hoà tan không.
     var isTransitioning: Bool { slots.values.contains { $0.transition != nil } }
 
+    /// Sau lần `update` gần nhất còn lớp chưa dựng xong (chữ, ảnh, khung video đầu): phải thử lại ở nhịp sau.
+    private(set) var hasPendingLayers = false
+
     /// Nhận cảnh mới nhất cho khung ở thời điểm `time`, cho đầu ra có kích thước `targetSize` (điểm ảnh).
     func update(scene: RenderScene, targetSize: CGSize, time: Double) {
         self.scene = scene
         let layout = CanvasLayout(canvasSize: scene.canvasSize.cgSize, targetSize: targetSize)
         var present: Set<LayerKind> = []
+        var pending = false
         for layer in scene.layers {
             if !present.insert(layer.kind).inserted {
                 logger.warning("Cảnh có hai lớp \(layer.kind.rawValue, privacy: .public): chỉ vẽ lớp sau")
@@ -119,7 +123,9 @@ final class LayerCompositor {
                 spec: scene.transition,
                 time: time
             ) { resolve($0, canvas: scene.canvasSize, layout: layout) }
+            if slots[layer.kind]?.target.source != source { pending = true }
         }
+        hasPendingLayers = pending
         for kind in slots.keys where !present.contains(kind) {
             slots[kind]?.update(source: nil, spec: scene.transition, time: time) { _ in nil }
             if slots[kind]?.isIdle == true {
@@ -266,9 +272,10 @@ final class LayerCompositor {
                     continue
                 }
             case .video(let ref, let frame, let fit):
-                switch video.availability(of: ref, for: consumer) {
+                let rect = Self.scaled(frame, scale)
+                switch video.availability(of: ref, for: consumer, frame: rect.size, fit: fit) {
                 case .ready:
-                    commands.append(DrawCommand(video: ref, rect: Self.scaled(frame, scale), fit: fit))
+                    commands.append(DrawCommand(video: ref, rect: rect, fit: fit))
                 case .pending:
                     // Chưa có khung đầu tiên: giữ lớp cũ. Dựng ngoài màn hình thì bỏ qua thay vì chờ mãi.
                     if blocking { continue }

@@ -7,7 +7,7 @@ import QuartzCore
 
 /// Lõi dựng hình: nhận cảnh cho từng vai, vẽ ra các đầu ra trên màn và các bản xem trước.
 ///
-/// Mỗi đầu ra có cửa sổ, vòng vẽ (display link theo tần số gốc của màn) và command queue riêng; mọi đầu ra
+/// Mỗi đầu ra có cửa sổ, vòng vẽ (display link tối đa 60 khung/giây) và command queue riêng; mọi đầu ra
 /// dùng chung thiết bị Metal, đệm texture và bể video. Nguồn lỗi không bao giờ hiện lên đầu ra: lớp giữ hình
 /// cuối, cảnh báo đi qua `statistics`.
 @MainActor
@@ -15,6 +15,8 @@ public final class RenderEngine {
     /// Cỡ bản xem trước (điểm ảnh, tỉ lệ 16:9) và tần số cập nhật.
     public static let previewSize = PixelSize(width: 640, height: 360)
     public static let previewFrameRate: Float = 15
+    /// Tần số tối đa của đầu ra: 60 khung/giây khớp HDMI tới LED và máy chiếu, nửa tải so với màn 120 Hz (T0.6).
+    public static let outputFrameRate: Float = 60
 
     let gpu: GPUContext
     let pipelines: Compositor
@@ -89,8 +91,9 @@ public final class RenderEngine {
             cache: cache,
             video: videoPool,
             mailbox: mailbox,
-            frameRate: Float(max(1, screen.maximumFramesPerSecond)),
-            audible: true
+            frameRate: min(Self.outputFrameRate, Float(max(1, screen.maximumFramesPerSecond))),
+            audible: true,
+            onDemand: true
         )
         displays[id] = DisplayOutput(window: window, loop: loop, screenNumber: Self.screenNumber(screen))
         window.show()
@@ -135,7 +138,8 @@ public final class RenderEngine {
                 video: videoPool,
                 mailbox: mailbox,
                 frameRate: Self.previewFrameRate,
-                audible: false
+                audible: false,
+                onDemand: false
             )
         {
             previews[role] = (layer, loop)

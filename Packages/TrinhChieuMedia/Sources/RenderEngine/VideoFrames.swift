@@ -37,7 +37,15 @@ struct VideoConsumer: Hashable, Sendable {
 
 /// Nguồn khung video cho bộ trộn lớp. Gọi từ luồng vẽ; không bao giờ chặn.
 protocol VideoFrameProvider: AnyObject, Sendable {
-    func availability(of video: VideoRef, for consumer: VideoConsumer) -> VideoAvailability
+    /// - Parameters:
+    ///   - frame: cỡ khung vẽ của video trên đầu ra (điểm ảnh), để giải mã đúng cỡ.
+    ///   - fit: cách đặt video trong khung.
+    func availability(
+        of video: VideoRef,
+        for consumer: VideoConsumer,
+        frame: CGSize,
+        fit: ContentFit
+    ) -> VideoAvailability
     /// Khung ứng với thời điểm `time` của vòng vẽ (đầu ra thật: thời điểm lên màn theo `CACurrentMediaTime`).
     /// Chưa có khung mới thì trả khung trước; chưa từng có thì `nil`.
     func frame(of video: VideoRef, for consumer: VideoConsumer, at time: Double) -> VideoFrame?
@@ -107,7 +115,12 @@ final class StillVideoProvider: VideoFrameProvider, @unchecked Sendable {
         return try? await generator.image(at: cmTime).image
     }
 
-    func availability(of video: VideoRef, for consumer: VideoConsumer) -> VideoAvailability {
+    func availability(
+        of video: VideoRef,
+        for consumer: VideoConsumer,
+        frame: CGSize,
+        fit: ContentFit
+    ) -> VideoAvailability {
         if frames[video.playbackID] != nil { return .ready }
         return failed.contains(video.playbackID) ? .failed : .pending
     }
