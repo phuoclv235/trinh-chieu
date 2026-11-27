@@ -57,7 +57,8 @@ final class VideoPlayerPool: VideoFrameProvider, @unchecked Sendable {
     static func decodeSize(video: CGSize, frame: CGSize, fit: ContentFit) -> CGSize {
         guard video.width > 0, video.height > 0, frame.width > 0, frame.height > 0 else { return video }
         func even(_ value: CGFloat) -> CGFloat {
-            max(2, (value / 2).rounded(.up) * 2)
+            // Bỏ sai số dấu phẩy động (1000.0000001 không thành 1002).
+            max(2, (value / 2 - 1e-6).rounded(.up) * 2)
         }
         let scaleX = frame.width / video.width
         let scaleY = frame.height / video.height
