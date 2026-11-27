@@ -27,6 +27,8 @@ Quy tắc ghi:
 - JSON mã hoá với `.prettyPrinted, .sortedKeys`, ngày giờ ISO 8601 UTC, để diff được và đồng bộ ít xung đột.
 - Xoá = chuyển vào `.trash/` kèm thời điểm xoá trong tên. Dọn sau 30 ngày khi mở ứng dụng.
 - Media trùng nội dung chỉ lưu một bản (theo SHA-256).
+- Tên tệp phụ (T1.3): ghi dở là `<tên>.json.tmp`, dọn khi mở thư viện; bản sao trước khi chuyển đổi định dạng là `<tên>.json.bak` (đã có thì `<tên>.json.<thời điểm>.bak`); thùng rác là `.trash/<uuid>.<thời điểm>.json` (trùng thì thêm `-<n>` sau thời điểm); bản trên đĩa bị đổi ngoài Hệ thống khi còn thay đổi chưa ghi là `<thư mục loại>/<uuid>.conflict-<thời điểm>.json`. `<thời điểm>` là `yyyyMMdd'T'HHmmss'Z'` theo UTC. Chỉ tệp tên đúng `<uuid>.json` (hoặc `<mã media>.json` trong `media/`) được nạp làm tài liệu.
+- `modifiedAt` và `createdAt` của bộ trình chiếu được làm tròn xuống giây khi lưu, để đọc lại so bằng nhau chính xác và khớp cột `modifiedAt` của chỉ mục.
 - **Media liên kết** (NAS, Phuoc yêu cầu 2026-11-26): không có tệp trong `media/`, chỉ có `media/<id>.json` với `"origin": {"kind": "linked", "url": "https://...", "provider": "slate", "etag": "..."}` (`provider` và `etag` không bắt buộc; với Slate, `url` là đường dẫn `/d/...`, không phải URL ký sẵn); `id` là `l-` + 10 ký tự hex đầu của SHA-256 của URL. Bản tải về nằm ở `.cache/media/<id>.<ext>`, xoá được. Media chép vào thư viện có `"origin": {"kind": "copied"}`. Trường `origin` có từ schemaVersion 1 (giai đoạn 1 chỉ cần đọc ghi trường này; chức năng liên kết làm ở giai đoạn 2b).
 
 ## 2. `Presentation` (bộ trình chiếu)
@@ -206,6 +208,14 @@ Truy vấn: chuỗi người dùng gõ cũng gộp dấu, mỗi từ thêm `*` �
 ## 7. Gói mang đi (`.tcbundle`)
 
 Tệp ZIP chứa `manifest.json` (loại: `plan` hoặc `presentation`, `schemaVersion`, danh sách tệp), cùng các tệp JSON và media liên quan theo đúng cấu trúc thư mục ở mục 1. Mở gói: chép vào thư viện, bỏ qua media đã có (cùng SHA-256), hỏi khi trùng `id` mà nội dung khác ("Giữ cả hai", "Thay bản trong thư viện", "Bỏ qua").
+
+```json
+{ "schemaVersion": 1, "kind": "plan", "createdAt": "2026-11-27T01:00:00Z", "rootIDs": ["UUID"],
+  "files": ["media/0cd0bf930677.jpg", "media/0cd0bf930677.json", "plans/UUID.json", "presentations/UUID.json", "themes/UUID.json"],
+  "bibleTranslations": ["vi1925"] }
+```
+
+Chi tiết (T1.3): JSON nén deflate, media lưu nguyên. Chỉ đọc đường dẫn liệt kê trong `files` và đúng cấu trúc thư viện; vị trí ghi tính từ mã đã kiểm, không từ đường dẫn trong ZIP. Media nhập từ gói được kiểm lại SHA-256 khớp mã. Trùng `id` mà nội dung giống hệt thì bỏ qua, không hỏi. "Giữ cả hai" cấp mã mới cho bản trong gói, thêm " (bản sao)" vào tên, và sửa tham chiếu tới nó trong các tài liệu cùng gói; "Thay bản trong thư viện" chuyển bản cũ vào thùng rác trước.
 
 ## 8. Nhật ký buổi nhóm (`logs/*.json`)
 

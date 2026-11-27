@@ -74,7 +74,8 @@ Mọi target  ← App
 | Giao diện, `ShowController` | `@MainActor` |
 | `RenderEngine` | Mỗi đầu ra có vòng `CAMetalDisplayLink` trên luồng riêng. Cảnh mới được giao qua một hộp thư khoá nhẹ (`OSAllocatedUnfairLock`), vòng vẽ lấy cảnh mới nhất mỗi khung |
 | Dựng chữ (Core Text) | Hàng đợi nền, kết quả lưu đệm theo khoá nội dung; vòng vẽ không bao giờ chờ dựng chữ: chưa có thì vẽ khung trước |
-| `LibraryStore`, `LibraryIndex` | `actor` riêng; đọc ghi đĩa không chạm luồng chính |
+| `LibraryStore` | Dữ liệu trong bộ nhớ ở `@MainActor` (`@Observable`) để `ShowController` đọc đồng bộ; đọc, ghi, băm, nén chạy ngoài luồng chính (`Task.detached`), thứ tự ghi giữ bằng khoá theo đường dẫn (sửa ở T1.3 cho khớp đặc tả T1.3) |
+| `LibraryIndex` | `actor` riêng; đọc ghi đĩa không chạm luồng chính |
 
 Nguyên tắc "không bao giờ đen màn": khi một nguồn lỗi (video hỏng, ảnh mất), lõi dựng hình giữ texture cuối của lớp đó và ghi log, không hiện màn đen hay chữ lỗi lên đầu ra. Lỗi chỉ hiện trên màn điều khiển.
 
