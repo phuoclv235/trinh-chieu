@@ -222,7 +222,9 @@ final class VideoPlayerPool: VideoFrameProvider, @unchecked Sendable {
             let (observations, looper, player) = entries.withLockUnchecked { _ in
                 (entry.observations, entry.looper, entry.player)
             }
-            observations.forEach { $0.invalidate() }
+            for observation in observations {
+                observation.invalidate()
+            }
             looper?.disableLooping()
             player?.pause()
             player?.removeAllItems()

@@ -149,15 +149,21 @@ public final class RenderEngine {
 
     /// Vẽ số thứ tự lớn lên giữa từng màn trong `duration` giây (cho Cài đặt chọn màn).
     public func identifyScreens(_ screens: [NSScreen], duration: TimeInterval) {
-        identifyWindows.forEach { $0.close() }
+        for window in identifyWindows {
+            window.close()
+        }
         identifyWindows = screens.enumerated().map { index, screen in
             Self.makeIdentifyWindow(number: index + 1, screen: screen)
         }
-        identifyWindows.forEach { $0.orderFrontRegardless() }
+        for window in identifyWindows {
+            window.orderFrontRegardless()
+        }
         let windows = identifyWindows
         Task { @MainActor [weak self] in
             try? await Task.sleep(for: .seconds(max(0.1, duration)))
-            windows.forEach { $0.close() }
+            for window in windows {
+                window.close()
+            }
             self?.identifyWindows.removeAll { window in windows.contains { $0 === window } }
         }
     }
@@ -200,9 +206,8 @@ public final class RenderEngine {
 
     private func publishStatistics() {
         let now = CACurrentMediaTime()
-        let outputs = displays
-            .sorted { $0.key.rawValue < $1.key.rawValue }
-            .map { id, output in output.loop.takeStatistics(id: id, now: now) }
+        let sorted = displays.sorted { $0.key.rawValue < $1.key.rawValue }
+        let outputs = sorted.map { id, output in output.loop.takeStatistics(id: id, now: now) }
         let statistics = RenderStatistics(outputs: outputs, warnings: health.drain())
         statisticsStream.continuation.yield(statistics)
     }
