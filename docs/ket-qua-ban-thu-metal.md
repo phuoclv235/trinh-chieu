@@ -120,3 +120,33 @@ Kết luận chẩn đoán:
 ### Kiểm bằng mắt tiêu chí 3 (Phuoc, 2026-11-27)
 
 Dấu tiếng Việt hiển thị đúng, không bị cắt. Nhưng viền "cắt nét" chữ: viền kiểu Core Text (`kCTStrokeWidthAttributeName` âm) nằm giữa đường bao nên ăn vào trong nét, làm nét chữ mảnh đi. Đã sửa trong bản thử: vẽ viền trước với độ dày gấp đôi rồi tô chữ đè lên, nên viền chỉ nằm ngoài nét; chừa thêm lề bằng độ dày viền. Có test `strokeOutsideGlyph`. Cần Phuoc kiểm lại bằng mắt ở lần chạy 4.
+
+### Lần chạy 4 (2026-11-27, commit 0827322): phép đo đề xuất của rà soát kiến trúc
+
+Cùng máy, cả hai màn 60 Hz, display link theo tần số gốc của từng màn (ra 60), trễ 1 khung, bản release dưới `caffeinate -dimsu`, kiểm màn không khoá trước mỗi lần. Cả 5 lần có mã thoát 1. Không chụp được HUD của Metal (Terminal không có quyền ghi màn hình).
+
+| Lần | Cấu hình | Màn | Rớt (không lên / trễ) | Rớt/phút | Gọi tới đích p50 / p99 | Đích tới thật p99 | Đường ống p50 / p99 / max | Trễ đổi cảnh min / p50 / p95 / max |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| R1 | 2 màn, 10 phút | 0 | 147 (25 / 122) | 14.69 | 49.74 / 49.94 ms | 16.58 ms | 49.57 / 49.89 / 116.56 ms | 32.95 / 55.37 / 65.61 / 113.33 ms |
+| R1 | 2 màn, 10 phút | 1 | 143 (28 / 115) | 14.30 | 49.75 / 49.94 ms | 0.00 ms | 49.57 / 49.89 / 116.56 ms | 32.72 / 55.11 / 65.61 / 113.33 ms |
+| R2 | chỉ màn LG, màn tích hợp để yên, 10 phút | 1 | 86 (44 / 42) | 8.60 | 32.65 / 32.92 ms | 0.00 ms | 32.59 / 32.84 / 99.48 ms | 31.39 / 37.44 / 47.58 / 54.15 ms |
+| R3 | như R2, QuickTime phát lặp video trên màn tích hợp, 5 phút | 1 | 45 (14 / 31) | 8.99 | 32.70 / 32.98 ms | 0.00 ms | 32.64 / 32.89 / 149.45 ms | 31.20 / 37.63 / 48.37 / 48.62 ms |
+| R4 | như R2, chạy trong gói `.app` tối thiểu, 5 phút | 1 | 133 (78 / 55) | 26.60 | 32.62 / 32.94 ms | 0.00 ms | 32.56 / 32.86 / 131.61 ms | 31.07 / 38.90 / 48.33 / 59.66 ms |
+| R5 | như R2, `--native-fullscreen`, 3 phút | 1 | 68 (32 / 36) | 22.65 | 32.62 / 32.92 ms | 0.00 ms | 32.56 / 32.85 / 115.92 ms | 25.12 / 38.12 / 47.16 / 48.70 ms |
+
+Chu kỳ làm tươi đo được: 16.6665 ms (R1, cả hai màn) và 16.6667 ms (R2 đến R5). GPU dưới 1.3 ms mỗi khung (p99 dưới 2.4 ms). CPU 9 đến 14%; RAM 80 MB một màn, 353 MB hai màn.
+
+| Tiêu chí | R1 màn 0 | R1 màn 1 | R2 | R3 | R4 | R5 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1. Rớt dưới 1/phút | Không | Không | Không | Không | Không | Không |
+| 2 (cũ). Trễ đổi cảnh p95 dưới 2 chu kỳ | Không | Không | Không | Không | Không | Không |
+| 2a (đề xuất). Đường ống p99 ≤ 2 chu kỳ + 2 ms (35.33 ms) | Không (49.89) | Không (49.89) | Đạt (32.84) | Đạt (32.89) | Đạt (32.86) | Đạt (32.85) |
+| 2b (đề xuất). Trễ đổi cảnh p95 ≤ 51 ms, max ≤ 66.67 ms | Không | Không | Đạt | Đạt | Đạt | Đạt |
+
+Nhận xét:
+
+- **Đường ống là số nguyên chu kỳ, do display link quyết định.** Chạy một màn: `targetPresentationTimestamp` luôn cách lúc gọi khoảng 2 chu kỳ (32.6 ms), và khung lên màn đúng hạn (đích tới thật p99 là 0.00 ms). Chạy hai màn: khoảng cách này thành 3 chu kỳ (49.7 ms) ở cả hai màn. Trễ đổi cảnh vì vậy bằng thời gian chờ lần gọi kế tiếp (0 đến 1 chu kỳ) cộng 2 hoặc 3 chu kỳ. Tiêu chí 2 cũ (dưới 2 chu kỳ) không thể đạt với đường này.
+- **R1 có một lần khựng toàn hệ thống** ở giây 182 đến 184: cả hai màn bỏ 87 và 97 nhịp (1.5 đến 1.8 giây) cùng lúc. Các lần rớt khác của R1 (141.6, 187.7, 188.8, 208.5, 277.4, 311.9, 403.8 giây...) cũng trùng thời điểm giữa hai màn. Vì vậy nguyên nhân nằm ở phía hệ thống hoặc ở chỗ hai màn dùng chung (hàng đợi lệnh, luồng chính, giải mã video), không phải ở từng màn riêng. Màn 0 có một mẫu "gọi tới đích" âm (-666.58 ms) đúng lúc khựng. Lần F ở lần chạy 3 (cũng hai màn 60 Hz, 3 phút) chỉ rớt 0.33 đến 1.00 khung/phút, nên mức rớt giữa các lần chạy dao động mạnh.
+- **Chạy một màn: rớt theo nhịp khoảng 4 giây.** Ở R2, R4 và R5, khoảng cách giữa hai lần rớt thường là 3.98 đến 4.05 giây. Các lần rớt hay đi thành cặp "không lên" rồi "trễ", cách nhau 16 đến 34 ms. Nhịp 4 giây gần bằng hai lần đổi chữ (2 giây cộng ngẫu nhiên tối đa 1 chu kỳ). Giả thuyết cần kiểm: mỗi lần đổi chữ có việc chặn luồng vẽ (ví dụ đổi texture, `mailbox.latest()` hoặc `textCache.texture(for:)` khoá), hoặc có tác vụ định kỳ khác. Chưa kiểm chứng.
+- QuickTime phát video trên màn tích hợp (R3) không làm xấu hơn R2. Chạy trong gói `.app` (R4) và toàn màn hình gốc (R5) rớt nhiều hơn, chủ yếu do tăng khung "không lên".
+- Theo chỉ dẫn của rà soát: không đổi kiến trúc, không merge. Số đo chuyển cho thread rà soát kiến trúc.
