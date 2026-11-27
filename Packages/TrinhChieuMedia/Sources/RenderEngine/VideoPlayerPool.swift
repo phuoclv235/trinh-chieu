@@ -18,6 +18,14 @@ import os
 /// Luồng vẽ chỉ đọc trạng thái dưới khoá và không bao giờ chờ; tạo, gắn và bỏ player làm trên luồng chính.
 final class VideoPlayerPool: VideoFrameProvider, @unchecked Sendable {
     static let idleTimeout: TimeInterval = 2
+    /// Vai chính không lấy khung quá chừng này giây (đã thôi chiếu video) thì tắt tiếng dù vai nhắc còn chiếu.
+    static let programGrace: TimeInterval = 0.5
+
+    /// Tiếng chỉ phát khi `VideoRef` không tắt tiếng và vai chính đang chiếu video này.
+    static func shouldMute(_ video: VideoRef, programLastUse: CFTimeInterval?, now: CFTimeInterval) -> Bool {
+        guard !video.muted, let programLastUse else { return true }
+        return now - programLastUse > programGrace
+    }
 
     private final class Entry: @unchecked Sendable {
         let video: VideoRef
@@ -25,7 +33,8 @@ final class VideoPlayerPool: VideoFrameProvider, @unchecked Sendable {
         var looper: AVPlayerLooper?
         var observations: [NSKeyValueObservation] = []
         var taps: [VideoConsumer: PoolTap] = [:]
-        var roles: Set<OutputRole> = []
+        /// Lần cuối mỗi vai lấy khung; vai chính thôi lấy quá `programGrace` giây thì tắt tiếng.
+        var roleLastUse: [OutputRole: CFTimeInterval] = [:]
         var failed = false
         var lastUse: CFTimeInterval
 
@@ -66,7 +75,7 @@ final class VideoPlayerPool: VideoFrameProvider, @unchecked Sendable {
         let (result, action): (VideoAvailability, Action) = entries.withLockUnchecked { entries in
             guard let entry = entries[video.playbackID] else {
                 let entry = Entry(video: video, now: now)
-                entry.roles.insert(consumer.role)
+                entry.roleLastUse[consumer.role] = now
                 entry.taps[consumer] = PoolTap(textureCache: gpu.textureCache)
                 entries[video.playbackID] = entry
                 return (.pending, .createPlayer)
@@ -74,7 +83,7 @@ final class VideoPlayerPool: VideoFrameProvider, @unchecked Sendable {
             entry.lastUse = now
             if entry.failed { return (.failed, .none) }
             var action = Action.none
-            if entry.roles.insert(consumer.role).inserted { action = .refresh }
+            if entry.roleLastUse.updateValue(now, forKey: consumer.role) == nil { action = .refresh }
             guard let tap = entry.taps[consumer] else {
                 entry.taps[consumer] = PoolTap(textureCache: gpu.textureCache)
                 return (.pending, .refresh)
@@ -111,6 +120,7 @@ final class VideoPlayerPool: VideoFrameProvider, @unchecked Sendable {
         let tap: PoolTap? = entries.withLockUnchecked { entries in
             guard let entry = entries[video.playbackID] else { return nil }
             entry.lastUse = now
+            entry.roleLastUse[consumer.role] = now
             return entry.taps[consumer]
         }
         return tap?.frame(forHostTime: time)
@@ -175,11 +185,11 @@ final class VideoPlayerPool: VideoFrameProvider, @unchecked Sendable {
     private func refresh(_ playbackID: UUID) {
         let snapshot: (Entry, AVQueuePlayer, [PoolTap], Set<OutputRole>)? = entries.withLockUnchecked { entries in
             guard let entry = entries[playbackID], let player = entry.player else { return nil }
-            return (entry, player, Array(entry.taps.values), entry.roles)
+            return (entry, player, Array(entry.taps.values), entry.roleLastUse[.program])
         }
         guard let snapshot else { return }
-        let (entry, player, taps, roles) = snapshot
-        player.isMuted = entry.video.muted || !roles.contains(.program)
+        let (entry, player, taps, programLastUse) = snapshot
+        player.isMuted = Self.shouldMute(entry.video, programLastUse: programLastUse, now: CACurrentMediaTime())
         let items = player.items()
         for tap in taps {
             tap.sync(items: items, current: player.currentItem)
@@ -228,6 +238,16 @@ final class VideoPlayerPool: VideoFrameProvider, @unchecked Sendable {
             looper?.disableLooping()
             player?.pause()
             player?.removeAllItems()
+        }
+        let live: [(AVQueuePlayer, Bool)] = entries.withLockUnchecked { entries in
+            entries.values.compactMap { entry in
+                guard let player = entry.player else { return nil }
+                let mute = Self.shouldMute(entry.video, programLastUse: entry.roleLastUse[.program], now: now)
+                return (player, mute)
+            }
+        }
+        for (player, mute) in live where player.isMuted != mute {
+            player.isMuted = mute
         }
         if entries.withLockUnchecked({ $0.isEmpty }) {
             sweepTimer?.invalidate()

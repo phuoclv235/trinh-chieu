@@ -5,13 +5,23 @@ import Metal
 
 /// Mã của một đầu ra, do bên gắn đặt (ví dụ mã màn hình). Ổn định trong một phiên chạy.
 public struct OutputID: Hashable, Sendable, Codable, CustomStringConvertible {
-    public var rawValue: String
+    public let rawValue: String
 
     public init(_ rawValue: String) {
         self.rawValue = rawValue
     }
 
     public var description: String { rawValue }
+
+    /// Mã hoá thành chuỗi trơn (như `OutputRole`).
+    public init(from decoder: any Decoder) throws {
+        rawValue = try decoder.singleValueContainer().decode(String.self)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawValue)
+    }
 }
 
 /// Vai của một đầu ra.

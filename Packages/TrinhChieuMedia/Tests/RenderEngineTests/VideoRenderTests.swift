@@ -170,6 +170,20 @@ struct VideoRenderTests {
     }
 }
 
+@Suite("VideoPlayerPool: tiếng")
+struct VideoMutingTests {
+    @Test("Chỉ phát tiếng khi vai chính đang chiếu video; vai chính thôi chiếu thì tắt dù vai nhắc còn")
+    func muteFollowsProgram() {
+        var video = TestVideo.ref()
+        video.muted = false
+        #expect(!VideoPlayerPool.shouldMute(video, programLastUse: 10, now: 10.2))
+        #expect(VideoPlayerPool.shouldMute(video, programLastUse: 10, now: 11))
+        #expect(VideoPlayerPool.shouldMute(video, programLastUse: nil, now: 10))
+        video.muted = true
+        #expect(VideoPlayerPool.shouldMute(video, programLastUse: 10, now: 10))
+    }
+}
+
 @Suite("SourceHealth")
 struct SourceHealthTests {
     @Test("Mỗi vấn đề báo một lần mỗi chu kỳ; lấy xong thì xoá")
