@@ -84,5 +84,6 @@ Quy tắc điều phối:
 | T1.1 | Xong | #6 |
 | T1.2 | Xong | #7 |
 | T1.3 | Xong | #8 |
-| T1.4 | Xong phần không phụ thuộc dữ liệu thật; chờ tệp Bản Hiệu Đính 2010 và xác minh nguồn 1925 (`docs/nguon-kinh-thanh.md`) | (PR này) |
-| T1.5 đến T1.11 | Chưa bắt đầu | |
+| T1.4 | Xong phần không phụ thuộc dữ liệu thật; chờ tệp Bản Hiệu Đính 2010 và xác minh nguồn 1925 (`docs/nguon-kinh-thanh.md`) | #10 |
+| T1.5 | Xong | (PR này) |
+| T1.6 đến T1.11 | Chưa bắt đầu | |

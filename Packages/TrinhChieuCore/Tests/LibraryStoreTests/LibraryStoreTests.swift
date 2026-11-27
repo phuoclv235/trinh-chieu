@@ -18,10 +18,10 @@ struct LibraryStoreTests {
             #expect(fileExists(dir.url.appendingPathComponent(name)), "thiếu thư mục \(name)")
         }
         #expect(fileExists(dir.url.appendingPathComponent("library.json")))
-        #expect(store.themes.count == 1)
-        let theme = try #require(store.themes.values.first)
+        #expect(store.themes.count == 3)
+        let theme = try #require(store.themes[DefaultThemes.lyricsCenterID])
         #expect(store.info.defaultThemeID == theme.id)
-        #expect(store.info.defaultScriptureThemeID == theme.id)
+        #expect(store.info.defaultScriptureThemeID == DefaultThemes.scriptureID)
         #expect(fileExists(dir.url.appendingPathComponent("themes/\(theme.id.uuidString).json")))
         #expect(store.loadProblems.isEmpty)
         await store.close()
@@ -93,7 +93,7 @@ struct LibraryStoreTests {
         #expect(await reopened.search("ngoi khen", kinds: [.presentation]).map(\.id) == [edited.id.uuidString])
         #expect(await reopened.search("thanh ca 2", kinds: [.presentation]).allSatisfy { $0.title != "Thánh ca 2" })
         #expect(await reopened.search("thanh ca", kinds: [.presentation]).count == 18)
-        let themeHits = await reopened.search("mau co ban", kinds: [.theme])
+        let themeHits = await reopened.search("kinh thanh", kinds: [.theme])
         #expect(themeHits.count == 1)
         await reopened.close()
 

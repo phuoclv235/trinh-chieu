@@ -7,8 +7,9 @@ import Testing
 /// 100 lần). Số đo thật ghi ra luồng lỗi chuẩn (dòng "ĐO HIỆU NĂNG") để chép vào PR.
 ///
 /// Đặc tả đo ngưỡng trên Linux CI, nên ngưỡng đặc tả chỉ áp ở Linux. Máy macOS của GitHub Actions là máy ảo dùng
-/// SQLite của hệ thống, đo chậm hơn Linux khoảng 2 lần với cùng dữ liệu; ở đó chỉ áp ngưỡng chặn thoái lui rộng hơn
-/// (gấp 2,5 lần) và vẫn ghi số đo ra log.
+/// SQLite của hệ thống, đo chậm hơn Linux khoảng 2 lần với cùng dữ liệu và dao động mạnh (p95 truy vấn từ 31 đến
+/// 52 ms ngay trên `main`); ở đó chỉ áp ngưỡng chặn thoái lui lớn (gấp 2,5 lần khi chèn, gấp 5 lần khi truy vấn) và
+/// vẫn ghi số đo ra log.
 @Suite("LibraryIndex: hiệu năng", .serialized)
 struct LibraryIndexPerformanceTests {
     static let songCount = 5_000
@@ -60,7 +61,7 @@ struct LibraryIndexPerformanceTests {
         static let queryBudget: Duration = .milliseconds(20)
     #else
         static let insertBudget: Duration = .milliseconds(12_500)
-        static let queryBudget: Duration = .milliseconds(50)
+        static let queryBudget: Duration = .milliseconds(100)
     #endif
 
     static func p95(_ samples: [Duration]) -> Duration {
