@@ -60,7 +60,7 @@ public enum VietText {
                 return .orderedAscending
             case (_, nil):
                 return .orderedDescending
-            case let (l?, r?):
+            case (let l?, let r?):
                 if l != r { return l < r ? .orderedAscending : .orderedDescending }
             }
         }
