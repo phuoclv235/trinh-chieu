@@ -157,8 +157,8 @@ private final class XMLTreeBuilder: NSObject, XMLParserDelegate {
         stack.last?.append(.text(string))
     }
 
-    func parser(_ parser: XMLParser, foundCDATA CDATABlock: Data) {
-        if let string = String(data: CDATABlock, encoding: .utf8) {
+    func parser(_ parser: XMLParser, foundCDATA block: Data) {
+        if let string = String(data: block, encoding: .utf8) {
             stack.last?.append(.text(string))
         }
     }
