@@ -9,7 +9,7 @@ import Testing
 struct OutputPlannerTests {
     private func display(_ uuid: String, x: CGFloat, name: String? = nil) -> DisplayDescriptor {
         DisplayDescriptor(
-            uuid: uuid, displayID: UInt32(x / 100), name: name ?? uuid,
+            uuid: uuid, displayID: UInt32(abs(x) / 100), name: name ?? uuid,
             frame: CGRect(x: x, y: 0, width: 1920, height: 1080), pixelWidth: 1920, pixelHeight: 1080,
             refreshRate: 60, isBuiltIn: false)
     }
