@@ -13,6 +13,19 @@ public struct OutputStatistics: Sendable, Equatable {
     public let gpuTimeP95: Double
     /// Trễ đường ống (từ lúc gọi vẽ tới lúc lên màn), phân vị 99 (giây).
     public let pipelineLatencyP99: Double
+
+    public init(
+        id: OutputID, role: OutputRole, refreshRate: Double, framesPresented: Int, droppedFrames: Int,
+        gpuTimeP95: Double, pipelineLatencyP99: Double
+    ) {
+        self.id = id
+        self.role = role
+        self.refreshRate = refreshRate
+        self.framesPresented = framesPresented
+        self.droppedFrames = droppedFrames
+        self.gpuTimeP95 = gpuTimeP95
+        self.pipelineLatencyP99 = pipelineLatencyP99
+    }
 }
 
 /// Thống kê phát ra mỗi giây qua `RenderEngine.statistics`.
@@ -20,4 +33,9 @@ public struct RenderStatistics: Sendable, Equatable {
     public let outputs: [OutputStatistics]
     /// Cảnh báo mới trong chu kỳ: nguồn lỗi, chữ tràn, phông thiếu, màn bị rút.
     public let warnings: [RenderWarning]
+
+    public init(outputs: [OutputStatistics], warnings: [RenderWarning]) {
+        self.outputs = outputs
+        self.warnings = warnings
+    }
 }

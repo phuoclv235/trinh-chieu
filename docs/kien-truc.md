@@ -52,6 +52,16 @@ Quy tắc bắt buộc:
 | | `MediaImport` | Mac | Nhập PDF (PDFKit), tạo ảnh thu nhỏ, đọc thông tin video |
 | `App` | `TrinhChieu` (ứng dụng) | Mac | Giao diện, cài đặt, bảng lệnh, nối `ShowController` với `RenderEngine` |
 
+Bên trong `App/TrinhChieu` (T1.7):
+
+| Thư mục | Nội dung |
+| --- | --- |
+| `Environment` | `AppEnvironment` (tạo lõi theo thứ tự, giữ suốt phiên), `AppSettings` (khoá `app.settings.v1`), `AppSceneSink`, `LibraryMediaLocator`, `FSEventsWatcher`, `OSLogSink`, thiết bị âm thanh |
+| `Outputs` | `OutputPlanner` (thuần: vai nào lên màn nào, theo UUID màn), `OutputRouter` (gắn, gỡ, theo dõi cắm rút và màn chứa cửa sổ chính) |
+| `Status` | `FrameHealth` (chỉ báo khung hình), `WarningCenter` (thanh cảnh báo) |
+| `Design` | Màu, cỡ chữ, bo góc chép từ `design/tokens.css`; thành phần dùng chung (nút, đèn trạng thái, điều khiển phân đoạn) |
+| `Views`, `Settings` | Cửa sổ chính, thanh công cụ, xem trước, màn chào; bốn tab Cài đặt |
+
 Phụ thuộc giữa target (mũi tên là "dùng"):
 
 ```

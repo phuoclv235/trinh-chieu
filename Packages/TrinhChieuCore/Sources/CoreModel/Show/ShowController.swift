@@ -64,6 +64,14 @@ public enum IgnoreReason: Sendable, Equatable {
         return result
     }
 
+    /// Đổi thiết lập trình chiếu (Cài đặt > Trực tiếp). Không đụng đầu ra; thiết lập có tác dụng từ lệnh kế tiếp.
+    public func updateSettings(_ settings: ShowSettings) {
+        guard state.settings != settings else {
+            return
+        }
+        state.settings = settings
+    }
+
     /// Nhịp mỗi giây: dựng lại cảnh và chỉ xuất khi màn hình nhắc đổi (ví dụ đồng hồ).
     public func tick() {
         let publication = resolver.resolve(state: state, provider: provider, now: clock.now)

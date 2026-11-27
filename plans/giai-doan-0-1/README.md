@@ -86,5 +86,7 @@ Quy tắc điều phối:
 | T1.2 | Xong | #7 |
 | T1.3 | Xong | #8 |
 | T1.4 | Xong phần không phụ thuộc dữ liệu thật; chờ tệp Bản Hiệu Đính 2010 và xác minh nguồn 1925 (`docs/nguon-kinh-thanh.md`) | #10 |
-| T1.5 | Xong | (PR này) |
-| T1.6 đến T1.11 | Chưa bắt đầu | |
+| T1.5 | Xong | #9 |
+| T1.6 | Xong (ảnh chuẩn và số đo tiêu chí 2–6 chuyển T1.11) | #12, #16 |
+| T1.7 | Xong phần code; ảnh chụp cửa sổ cạnh mẫu và thử tay chờ chạy trên Mac | (PR này) |
+| T1.8 đến T1.11 | Chưa bắt đầu | |
