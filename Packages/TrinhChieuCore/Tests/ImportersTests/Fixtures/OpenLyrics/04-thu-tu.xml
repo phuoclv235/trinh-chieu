@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<song xmlns="http://openlyrics.info/namespace/2009/song" version="0.9">
+  <properties>
+    <titles><title>Bài Thứ Tự Hát</title></titles>
+    <verseOrder>v1 p1 c b1 c x9 e</verseOrder>
+  </properties>
+  <lyrics>
+    <verse name="v1">
+      <lines>Trang một câu một</lines>
+      <lines>Trang hai câu một</lines>
+    </verse>
+    <verse name="p1"><lines>Tiền điệp khúc</lines></verse>
+    <verse name="c"><lines>Điệp khúc</lines></verse>
+    <verse name="b1"><lines>Cầu nối</lines></verse>
+    <verse name="e"><lines>A-men</lines></verse>
+  </lyrics>
+</song>

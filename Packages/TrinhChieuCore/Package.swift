@@ -51,7 +51,10 @@ let package = Package(
         .testTarget(
             name: "LibraryStoreTests", dependencies: ["LibraryStore", "ZIPFoundation"], swiftSettings: commonSettings
         ),
-        .target(name: "Importers", dependencies: ["Scripture"], swiftSettings: commonSettings),
-        .testTarget(name: "ImportersTests", dependencies: ["Importers"], swiftSettings: commonSettings),
+        .target(name: "Importers", dependencies: ["CoreModel", "Scripture", "VietText"], swiftSettings: commonSettings),
+        .testTarget(
+            name: "ImportersTests", dependencies: ["Importers", "CoreModel", "Scripture", "VietText"],
+            resources: [.copy("Fixtures")], swiftSettings: commonSettings
+        ),
     ]
 )

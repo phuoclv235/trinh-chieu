@@ -58,6 +58,19 @@ extension LibraryStore {
         return info
     }
 
+    /// Cập nhật thông tin một media đã có (kích thước điểm ảnh, thời lượng do `MediaProbe` đọc được, thẻ). Không đổi
+    /// được mã, loại, đuôi tệp hay nguồn: các trường đó giữ như bản trong thư viện.
+    public func updateMediaInfo(_ info: MediaAssetInfo) async throws {
+        guard let existing = media[info.id] else { throw LibraryStoreError.mediaNotFound(info.id) }
+        var updated = info
+        updated.kind = existing.kind
+        updated.fileExtension = existing.fileExtension
+        updated.origin = existing.origin
+        updated.importedAt = existing.importedAt
+        guard updated != existing else { return }
+        try await addMediaInfo(updated)
+    }
+
     /// Ghi `media/<mã>.json`, cập nhật bộ nhớ, chỉ mục và phát thay đổi.
     func addMediaInfo(_ info: MediaAssetInfo) async throws {
         try await writeDataNow(try DocumentCoding.encode(info), to: LibraryLayout.mediaInfoPath(info.id))
