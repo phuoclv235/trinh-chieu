@@ -169,6 +169,21 @@ public final class FrameStats: Sendable {
         }
     }
 
+    /// Như `recordPresented`, cho khung đến sau một khoảng cố ý không vẽ (vẽ theo nhu cầu, giữ ấm):
+    /// không đo khoảng cách tới khung lên màn trước, nên khoảng nghỉ không bị đếm là rớt khung.
+    public func recordPresentedAfterGap(_ presentedTime: Double, now: Double) {
+        guard presentedTime > 0 else {
+            recordPresented(presentedTime, now: now)
+            return
+        }
+        state.withLock { state in
+            guard state.recording else { return }
+            state.notPresentedSinceLast = 0
+            state.lastPresented = presentedTime
+            state.framesPresented += 1
+        }
+    }
+
     /// Gọi từ `presentedHandler`: ba mốc thời gian của một khung (theo `CACurrentMediaTime`).
     /// `presented == 0` (khung không lên màn) chỉ ghi phần "gọi tới đích".
     public func recordFrameTiming(callback: Double, target: Double, presented: Double) {

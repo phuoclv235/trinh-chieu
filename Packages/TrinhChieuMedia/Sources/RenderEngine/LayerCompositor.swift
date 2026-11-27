@@ -12,11 +12,35 @@ struct LayerTarget: LayerSource {
     var contentID: UUID { layer.contentID }
 }
 
-/// Một lệnh vẽ texture đã sẵn. `rect` tính theo điểm ảnh, gốc ở góc trên trái của khung vẽ (chưa cộng lề).
+/// Một lệnh vẽ. `rect` tính theo điểm ảnh, gốc ở góc trên trái của khung vẽ (chưa cộng lề).
 struct DrawCommand {
-    let texture: any MTLTexture
+    enum Source {
+        /// Texture đã sẵn (màu, ảnh, chữ).
+        case texture(any MTLTexture)
+        /// Video: lấy khung mới mỗi lần vẽ; `rect` là khung của phần tử, cách đặt tính theo cỡ khung video.
+        case video(VideoRef, fit: ContentFit)
+    }
+
+    let source: Source
     let rect: CGRect
     let fit: QuadFit
+
+    init(texture: any MTLTexture, rect: CGRect, fit: QuadFit) {
+        source = .texture(texture)
+        self.rect = rect
+        self.fit = fit
+    }
+
+    init(video: VideoRef, rect: CGRect, fit: ContentFit) {
+        source = .video(video, fit: fit)
+        self.rect = rect
+        self.fit = .stretch
+    }
+
+    var hasVideo: Bool {
+        if case .video = source { return true }
+        return false
+    }
 }
 
 /// Lớp đã dựng xong: giữ texture của chính nó, nên đệm có bỏ bớt cũng không mất hình trên màn.
@@ -24,6 +48,8 @@ struct ResolvedLayer {
     let commands: [DrawCommand]
     /// Màu phủ kín khung vẽ của lớp (chỉ lớp nền dùng để tô phần thừa ngoài khung vẽ).
     var letterbox: RGBA?
+
+    var hasVideo: Bool { commands.contains { $0.hasVideo } }
 }
 
 /// Bộ trộn lớp của một đầu ra: mỗi `LayerKind` một `LayerSlot`, vẽ dưới lên trên, hoà tan theo lớp.
@@ -38,17 +64,38 @@ final class LayerCompositor {
     private let cache: TextureCache
     /// Dựng ngoài màn hình: chờ dựng xong mọi texture thay vì giữ lớp cũ.
     private let blocking: Bool
+    private let video: any VideoFrameProvider
+    private let consumer: VideoConsumer
+    /// Tài nguyên khung video của lần `encode` đang ghi, giữ tới khi GPU dựng xong.
+    private var retainedFrames: [AnyObject] = []
 
     private var slots: [LayerKind: LayerSlot<LayerTarget, ResolvedLayer>] = [:]
     private var scene: RenderScene?
     private var intermediates: [any MTLTexture] = []
     private let logger = Logger(subsystem: "app.trinhchieu.RenderEngine", category: "LayerCompositor")
 
-    init(gpu: GPUContext, pipelines: Compositor, cache: TextureCache, blocking: Bool) {
+    init(
+        gpu: GPUContext,
+        pipelines: Compositor,
+        cache: TextureCache,
+        blocking: Bool,
+        video: any VideoFrameProvider = StillVideoProvider.empty,
+        consumer: VideoConsumer = VideoConsumer(role: .program)
+    ) {
         self.gpu = gpu
         self.pipelines = pipelines
         self.cache = cache
         self.blocking = blocking
+        self.video = video
+        self.consumer = consumer
+    }
+
+    /// Cảnh đang vẽ có video hoặc đang chuyển cảnh: phải vẽ lại mỗi khung.
+    var isAnimating: Bool {
+        isTransitioning
+            || slots.values.contains { slot in
+                (slot.shown.content?.hasVideo ?? false) || (slot.target.content?.hasVideo ?? false)
+            }
     }
 
     /// Cảnh mới nhất đã nhận.
@@ -57,11 +104,15 @@ final class LayerCompositor {
     /// Có lớp nào đang hoà tan không.
     var isTransitioning: Bool { slots.values.contains { $0.transition != nil } }
 
+    /// Sau lần `update` gần nhất còn lớp chưa dựng xong (chữ, ảnh, khung video đầu): phải thử lại ở nhịp sau.
+    private(set) var hasPendingLayers = false
+
     /// Nhận cảnh mới nhất cho khung ở thời điểm `time`, cho đầu ra có kích thước `targetSize` (điểm ảnh).
     func update(scene: RenderScene, targetSize: CGSize, time: Double) {
         self.scene = scene
         let layout = CanvasLayout(canvasSize: scene.canvasSize.cgSize, targetSize: targetSize)
         var present: Set<LayerKind> = []
+        var pending = false
         for layer in scene.layers {
             if !present.insert(layer.kind).inserted {
                 logger.warning("Cảnh có hai lớp \(layer.kind.rawValue, privacy: .public): chỉ vẽ lớp sau")
@@ -72,7 +123,9 @@ final class LayerCompositor {
                 spec: scene.transition,
                 time: time
             ) { resolve($0, canvas: scene.canvasSize, layout: layout) }
+            if slots[layer.kind]?.target.source != source { pending = true }
         }
+        hasPendingLayers = pending
         for kind in slots.keys where !present.contains(kind) {
             slots[kind]?.update(source: nil, spec: scene.transition, time: time) { _ in nil }
             if slots[kind]?.isIdle == true {
@@ -117,8 +170,8 @@ final class LayerCompositor {
                     continue
                 }
                 used += 2
-                drawLayerOffscreen(commandBuffer, layer: from, into: fromTexture)
-                drawLayerOffscreen(commandBuffer, layer: to, into: toTexture)
+                drawLayerOffscreen(commandBuffer, layer: from, into: fromTexture, time: time)
+                drawLayerOffscreen(commandBuffer, layer: to, into: toTexture, time: time)
                 steps.append(.dissolve(from: fromTexture, to: toTexture, t: t))
             }
         }
@@ -140,7 +193,7 @@ final class LayerCompositor {
         for step in steps {
             switch step {
             case .steady(let layer):
-                draw(layer, encoder: encoder, origin: layout.offset, targetSize: targetSize)
+                draw(layer, encoder: encoder, origin: layout.offset, targetSize: targetSize, time: time)
             case .dissolve(let from, let to, let t):
                 pipelines.drawDissolve(
                     encoder,
@@ -153,6 +206,13 @@ final class LayerCompositor {
             }
         }
         encoder.endEncoding()
+        if !retainedFrames.isEmpty {
+            let frames = UncheckedSendableBox(retainedFrames)
+            retainedFrames.removeAll()
+            commandBuffer.addCompletedHandler { _ in
+                withExtendedLifetime(frames) {}
+            }
+        }
     }
 
     // MARK: - Dựng lớp
@@ -211,9 +271,18 @@ final class LayerCompositor {
                 case .failed:
                     continue
                 }
-            case .video:
-                // Video do `VideoPlayerPool` lo ở T1.6 PR 2.
-                continue
+            case .video(let ref, let frame, let fit):
+                let rect = Self.scaled(frame, scale)
+                switch video.availability(of: ref, for: consumer, frame: rect.size, fit: fit) {
+                case .ready:
+                    commands.append(DrawCommand(video: ref, rect: rect, fit: fit))
+                case .pending:
+                    // Chưa có khung đầu tiên: giữ lớp cũ. Dựng ngoài màn hình thì bỏ qua thay vì chờ mãi.
+                    if blocking { continue }
+                    return nil
+                case .failed:
+                    continue
+                }
             }
         }
         return ResolvedLayer(commands: commands, letterbox: Self.coveringColor(target.layer, canvas: canvas))
@@ -246,15 +315,26 @@ final class LayerCompositor {
         _ layer: ResolvedLayer,
         encoder: any MTLRenderCommandEncoder,
         origin: CGPoint,
-        targetSize: CGSize
+        targetSize: CGSize,
+        time: Double
     ) {
         for command in layer.commands {
+            let resolved: DrawCommand
+            switch command.source {
+            case .texture:
+                resolved = command
+            case .video(let ref, let fit):
+                guard let frame = video.frame(of: ref, for: consumer, at: time) else { continue }
+                if let retain = frame.retain { retainedFrames.append(retain) }
+                resolved = Self.imageCommand(frame.texture, rect: command.rect, fit: fit)
+            }
+            guard case .texture(let texture) = resolved.source else { continue }
             pipelines.drawQuad(
                 encoder,
-                texture: command.texture,
-                rect: command.rect.offsetBy(dx: origin.x, dy: origin.y),
+                texture: texture,
+                rect: resolved.rect.offsetBy(dx: origin.x, dy: origin.y),
                 targetSize: targetSize,
-                fit: command.fit
+                fit: resolved.fit
             )
         }
     }
@@ -262,7 +342,8 @@ final class LayerCompositor {
     private func drawLayerOffscreen(
         _ commandBuffer: any MTLCommandBuffer,
         layer: ResolvedLayer?,
-        into texture: any MTLTexture
+        into texture: any MTLTexture,
+        time: Double
     ) {
         let pass = MTLRenderPassDescriptor()
         pass.colorAttachments[0].texture = texture
@@ -273,7 +354,7 @@ final class LayerCompositor {
         encoder.label = "Layer"
         if let layer {
             let size = CGSize(width: texture.width, height: texture.height)
-            draw(layer, encoder: encoder, origin: .zero, targetSize: size)
+            draw(layer, encoder: encoder, origin: .zero, targetSize: size, time: time)
         }
         encoder.endEncoding()
     }

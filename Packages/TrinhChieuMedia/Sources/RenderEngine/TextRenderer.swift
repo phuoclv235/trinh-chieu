@@ -21,9 +21,11 @@ public struct TextRenderResult: Sendable {
     public let usedFallbackFont: Bool
 }
 
-/// Đo, co, căn và vẽ một `TextBlock` bằng Core Text (không hiệu ứng bóng và hộp; viền vẽ ngoài nét chữ).
+/// Đo, co, căn và vẽ một `TextBlock` bằng Core Text, kèm hiệu ứng: viền (vẽ ngoài nét chữ), bóng (làm mờ của
+/// Core Graphics) và hộp nền bo góc. Hiệu ứng dựng một lần vào ảnh chữ rồi nằm trong đệm, không tốn GPU mỗi khung.
 ///
-/// Đơn vị: `fontSize`, `letterSpacing`, `stroke.width` tính theo điểm ảnh của khung vẽ logic; nhân với `scale`
+/// Đơn vị: `fontSize`, `letterSpacing`, `stroke.width`, `shadow.radius`, `shadow.offset`, `box.padding`,
+/// `box.cornerRadius` tính theo điểm ảnh của khung vẽ logic; nhân với `scale`
 /// để ra điểm ảnh đầu ra. `lineHeight` là bội số của chiều cao dòng tự nhiên của phông.
 public enum TextRenderer {
     /// Khoảng chừa quanh khung, theo tỉ lệ cỡ chữ, để dấu chồng ("Ẩ", "Ở", "Người") không bị cắt.
@@ -40,7 +42,10 @@ public enum TextRenderer {
         let baseFontSize = max(1, CGFloat(style.fontSize) * scale)
         let strokeWidth = max(0, CGFloat(style.stroke.width) * scale)
         let hasStroke = strokeWidth > 0 && style.stroke.color.alpha > 0
-        let padding = Int((baseFontSize * paddingRatio + (hasStroke ? strokeWidth : 0)).rounded(.up))
+        let decoration = TextDecoration(style: style, scale: scale)
+        let padding = Int(
+            (baseFontSize * paddingRatio + (hasStroke ? strokeWidth : 0) + decoration.extent).rounded(.up)
+        )
         let string = block.string.precomposedStringWithCanonicalMapping
         let available = CGSize(width: CGFloat(width), height: CGFloat(height))
 
@@ -88,7 +93,9 @@ public enum TextRenderer {
                 area: area,
                 visibleLines: visible,
                 truncateLast: !fits,
-                stroke: hasStroke ? (style.stroke.color, strokeWidth * CGFloat(fontScale)) : nil
+                stroke: hasStroke ? (style.stroke.color, strokeWidth * CGFloat(fontScale)) : nil,
+                shadow: decoration.shadow,
+                box: decoration.box
             )
         }
         return TextRenderResult(
@@ -113,8 +120,14 @@ final class FontSource {
         self.weight = weight
     }
 
+    /// Họ phông hệ thống có chữ số đều (đồng hồ màn hình nhắc), xem `SceneResolver.monospacedDigitFontFamily`.
+    static let monospacedDigitFamily = "system-monospaced-digits"
+
     func font(size: CGFloat) -> CTFont {
         let nsWeight = Self.weight(weight)
+        if family == Self.monospacedDigitFamily {
+            return NSFont.monospacedDigitSystemFont(ofSize: size, weight: nsWeight) as CTFont
+        }
         if family != "system", !family.isEmpty {
             let traits: [CFString: Any] = [kCTFontWeightTrait: nsWeight.rawValue]
             let attributes: [CFString: Any] = [
@@ -265,7 +278,9 @@ struct TextLayout {
         area: CGRect,
         visibleLines: Int,
         truncateLast: Bool,
-        stroke: (color: RGBA, width: CGFloat)?
+        stroke: (color: RGBA, width: CGFloat)?,
+        shadow: TextDecoration.Shadow? = nil,
+        box: TextDecoration.Box? = nil
     ) {
         guard visibleLines > 0 else { return }
         let height = blockHeight(lines: visibleLines)
@@ -293,6 +308,27 @@ struct TextLayout {
         func baseline(_ index: Int) -> CGFloat {
             area.maxY - offset - ascent - CGFloat(index) * lineAdvance
         }
+        if let box {
+            drawBox(
+                box,
+                in: context,
+                lines: fillLines,
+                area: area,
+                top: baseline(0) + ascent,
+                bottom: baseline(fillLines.count - 1) - descent
+            )
+        }
+        if let shadow {
+            context.saveGState()
+            context.setShadow(offset: shadow.offset, blur: shadow.blur, color: shadow.color.cgColor)
+            context.beginTransparencyLayer(auxiliaryInfo: nil)
+        }
+        defer {
+            if shadow != nil {
+                context.endTransparencyLayer()
+                context.restoreGState()
+            }
+        }
         if !strokeLines.isEmpty {
             context.saveGState()
             context.setLineJoin(.round)
@@ -307,6 +343,38 @@ struct TextLayout {
             context.textPosition = CGPoint(x: area.minX + x, y: baseline(index))
             CTLineDraw(line, context)
         }
+    }
+
+    /// Hộp nền bo góc ôm các dòng đã căn, nới theo `box.insets`.
+    private func drawBox(
+        _ box: TextDecoration.Box,
+        in context: CGContext,
+        lines: [(CTLine, CGFloat)],
+        area: CGRect,
+        top: CGFloat,
+        bottom: CGFloat
+    ) {
+        guard !lines.isEmpty else { return }
+        var minX = CGFloat.infinity
+        var maxX = -CGFloat.infinity
+        for (line, x) in lines {
+            let lineWidth = CGFloat(CTLineGetTypographicBounds(line, nil, nil, nil))
+            minX = min(minX, x)
+            maxX = max(maxX, x + lineWidth)
+        }
+        let rect = CGRect(
+            x: area.minX + minX - box.left,
+            y: bottom - box.bottom,
+            width: maxX - minX + box.left + box.right,
+            height: top - bottom + box.top + box.bottom
+        )
+        guard rect.width > 0, rect.height > 0 else { return }
+        let radius = max(0, min(box.cornerRadius, rect.width / 2, rect.height / 2))
+        context.saveGState()
+        context.setFillColor(box.color.cgColor)
+        context.addPath(CGPath(roundedRect: rect, cornerWidth: radius, cornerHeight: radius, transform: nil))
+        context.fillPath()
+        context.restoreGState()
     }
 
     /// Dựng các dòng hiển thị cùng độ dời ngang theo cách căn. Dòng cuối cắt bằng "…" khi `truncateLast`.
@@ -365,5 +433,66 @@ struct TextLayout {
         case .right: flush = 1
         }
         return CGFloat(CTLineGetPenOffsetForFlush(line, flush, Double(width)))
+    }
+}
+
+/// Bóng và hộp nền của một khối chữ, đã nhân tỉ lệ đầu ra (điểm ảnh, toạ độ Core Graphics gốc dưới trái).
+struct TextDecoration {
+    struct Shadow {
+        let color: RGBA
+        let blur: CGFloat
+        /// Độ dời theo Core Graphics: `height` dương là lên trên (ngược `PixelPoint.y`).
+        let offset: CGSize
+    }
+
+    struct Box {
+        let color: RGBA
+        let top: CGFloat
+        let right: CGFloat
+        let bottom: CGFloat
+        let left: CGFloat
+        let cornerRadius: CGFloat
+    }
+
+    let shadow: Shadow?
+    let box: Box?
+
+    init(style: ResolvedTextStyle, scale: CGFloat) {
+        let shadowStyle = style.shadow
+        let blur = max(0, CGFloat(shadowStyle.radius) * scale)
+        let offset = CGSize(
+            width: CGFloat(shadowStyle.offset.x) * scale,
+            height: -CGFloat(shadowStyle.offset.y) * scale
+        )
+        if shadowStyle.color.alpha > 0, blur > 0 || offset != .zero {
+            shadow = Shadow(color: shadowStyle.color, blur: blur, offset: offset)
+        } else {
+            shadow = nil
+        }
+        let boxStyle = style.box
+        if boxStyle.color.alpha > 0 {
+            box = Box(
+                color: boxStyle.color,
+                top: max(0, CGFloat(boxStyle.padding.top) * scale),
+                right: max(0, CGFloat(boxStyle.padding.right) * scale),
+                bottom: max(0, CGFloat(boxStyle.padding.bottom) * scale),
+                left: max(0, CGFloat(boxStyle.padding.left) * scale),
+                cornerRadius: max(0, CGFloat(boxStyle.cornerRadius) * scale)
+            )
+        } else {
+            box = nil
+        }
+    }
+
+    /// Điểm ảnh cần chừa thêm quanh khung để bóng và hộp không bị cắt.
+    var extent: CGFloat {
+        var value: CGFloat = 0
+        if let shadow {
+            value += shadow.blur * 1.5 + max(abs(shadow.offset.width), abs(shadow.offset.height))
+        }
+        if let box {
+            value += max(box.top, box.right, box.bottom, box.left)
+        }
+        return value
     }
 }

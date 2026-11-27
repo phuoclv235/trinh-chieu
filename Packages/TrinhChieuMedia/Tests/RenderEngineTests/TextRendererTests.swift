@@ -1,6 +1,7 @@
 import AppKit
 import CoreGraphics
 import CoreModel
+import CoreText
 import Foundation
 import Testing
 
@@ -173,6 +174,62 @@ struct TextRendererTests {
         #expect(Double(strokedFill) >= Double(plainFill) * 0.9)
         #expect(dark > plainFill / 10)
         #expect(stroked.padding > plain.padding)
+    }
+
+    @Test("Bóng chữ: có điểm ảnh tối lệch theo độ dời, phần chừa nới ra")
+    func shadowDrawn() {
+        let text = "A-men"
+        let plainStyle = SceneKit.style(size: 96)
+        let plain = TextRenderer.render(Self.block(text, style: plainStyle), frameSize: Self.frame, scale: 1)
+        let shadow = TextShadow(color: .black, radius: 6, offset: PixelPoint(x: 8, y: 8))
+        let shadowStyle = SceneKit.style(size: 96, shadow: shadow)
+        let shaded = TextRenderer.render(Self.block(text, style: shadowStyle), frameSize: Self.frame, scale: 1)
+        let dark = Self.count(shaded.bitmap) { $0.alpha > 60 && $0.red < 40 }
+        #expect(dark > 200)
+        #expect(Self.count(plain.bitmap) { $0.alpha > 60 && $0.red < 40 } == 0)
+        #expect(shaded.padding > plain.padding)
+        let plainRows = plain.bitmap.inkRows()
+        let shadedRows = shaded.bitmap.inkRows()
+        #expect(plainRows != nil && shadedRows != nil)
+        if let plainRows, let shadedRows {
+            // Bóng lệch xuống dưới: nét thấp nhất của ảnh có bóng nằm thấp hơn (tính từ đỉnh ảnh).
+            let plainBottom = plainRows.upperBound - plain.padding
+            let shadedBottom = shadedRows.upperBound - shaded.padding
+            #expect(shadedBottom > plainBottom)
+        }
+    }
+
+    @Test("Hộp nền: phủ quanh chữ theo phần nới, góc bo trong suốt")
+    func boxDrawn() throws {
+        let navy = SceneKit.navy
+        let box = TextBox(color: navy, padding: EdgeInsets(top: 20, right: 30, bottom: 20, left: 30), cornerRadius: 24)
+        let style = SceneKit.style(size: 72, box: box)
+        let result = TextRenderer.render(Self.block("Hallelujah", style: style), frameSize: Self.frame, scale: 1)
+        let image = PixelImage(result.bitmap)
+        let filled = Self.count(result.bitmap) { $0.alpha == 255 && $0.isClose(to: navy) }
+        #expect(filled > 10_000)
+        let bounds = try #require(image.inkBounds(background: .clear, threshold: 0))
+        // Góc trên trái của hộp bo tròn: điểm ảnh đúng góc trong suốt, điểm giữa cạnh trái tô màu hộp.
+        let corner = image.color(Int(bounds.minX), Int(bounds.minY))
+        #expect(corner.alpha < 128)
+        let middleLeft = image.color(Int(bounds.minX) + 2, Int(bounds.midY))
+        #expect(middleLeft.isClose(to: navy))
+    }
+
+    @Test("Họ phông chữ số đều: không báo thiếu phông, chữ số rộng bằng nhau")
+    func monospacedDigits() {
+        let fonts = FontSource(family: FontSource.monospacedDigitFamily, weight: 600)
+        let font = fonts.font(size: 80)
+        func width(_ string: String) -> Double {
+            let attributed = NSAttributedString(string: string, attributes: [.font: font as NSFont])
+            return CTLineGetTypographicBounds(CTLineCreateWithAttributedString(attributed), nil, nil, nil)
+        }
+        #expect(!fonts.usedFallback)
+        #expect(abs(width("1111") - width("8888")) < 0.01)
+        let style = SceneKit.style(size: 80, family: FontSource.monospacedDigitFamily)
+        let result = TextRenderer.render(Self.block("10:58", style: style), frameSize: Self.frame, scale: 1)
+        #expect(!result.usedFallbackFont)
+        #expect(result.bitmap.inkRows() != nil)
     }
 
     @Test("Chuỗi rỗng cho ảnh trong suốt")

@@ -184,7 +184,9 @@ enum SceneKit {
         letterSpacing: Double = 0,
         stroke: TextStroke = .none,
         family: String = "system",
-        weight: Int = 600
+        weight: Int = 600,
+        shadow: TextShadow = .none,
+        box: TextBox = .none
     ) -> ResolvedTextStyle {
         ResolvedTextStyle(
             fontFamily: family,
@@ -196,8 +198,8 @@ enum SceneKit {
             lineHeight: lineHeight,
             letterSpacing: letterSpacing,
             stroke: stroke,
-            shadow: .none,
-            box: .none
+            shadow: shadow,
+            box: box
         )
     }
 
