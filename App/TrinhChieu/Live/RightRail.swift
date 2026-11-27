@@ -352,19 +352,47 @@ struct LiveClockBlock: View {
                     .foregroundStyle(Palette.text)
                     .padding(.bottom, 8)
                     .accessibilityLabel(Text("Real time"))
-                if let wentLive = environment.show?.state.live?.wentLiveAt {
-                    ClockRow(title: "Current slide went live", value: LiveClock.shortTime(wentLive))
+                if let item = environment.livePlanItemID, let plan = environment.activePlan,
+                    let actual = environment.actualStart(of: item)
+                {
+                    planRows(item: item, plan: plan, actual: actual)
+                } else if let wentLive = environment.show?.state.live?.wentLiveAt {
+                    ClockRow(
+                        title: String(localized: "Current slide went live"), value: LiveClock.shortTime(wentLive))
                 }
             }
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
     }
+
+    /// Mục chương trình đang chiếu: giờ bắt đầu thật, chênh lệch với dự kiến, giờ kết thúc dự kiến.
+    @ViewBuilder private func planRows(item: UUID, plan: ServicePlan, actual: Date) -> some View {
+        let schedule = PlanSchedule(plan: plan)
+        ClockRow(title: String(localized: "This item started"), value: LiveClock.shortTime(actual))
+        if let planned = schedule.starts[item] {
+            ClockRow(
+                title: String(format: String(localized: "Compared with plan %@"), LiveClock.shortTime(planned)),
+                value: Self.punctualityText(Punctuality(actual: actual, planned: planned)),
+                tint: Punctuality.isLate(actual: actual, planned: planned) ? Palette.late : Palette.ok)
+        }
+        if let end = schedule.end {
+            ClockRow(title: String(localized: "Planned end"), value: LiveClock.shortTime(end))
+        }
+    }
+
+    static func punctualityText(_ punctuality: Punctuality) -> String {
+        switch punctuality {
+        case .onTime: return String(localized: "On time")
+        case .early(let minutes): return String(format: String(localized: "%lld min early"), minutes)
+        case .late(let minutes): return String(format: String(localized: "%lld min late"), minutes)
+        }
+    }
 }
 
 /// Một dòng của khối đồng hồ (`.clock__row`).
 struct ClockRow: View {
-    let title: LocalizedStringKey
+    let title: String
     let value: String
     var tint: Color = Palette.text
 
@@ -372,7 +400,7 @@ struct ClockRow: View {
         VStack(spacing: 0) {
             Hairline()
             HStack {
-                Text(title).font(Typography.caption).foregroundStyle(Palette.text2)
+                Text(verbatim: title).font(Typography.caption).foregroundStyle(Palette.text2)
                 Spacer(minLength: 8)
                 Text(verbatim: value).font(.system(size: 12, weight: .medium, design: .monospaced))
                     .foregroundStyle(tint)

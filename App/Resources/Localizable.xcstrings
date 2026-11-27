@@ -31,6 +31,16 @@
         }
       }
     },
+    "%@: type a chapter number.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@: gõ thêm số chương."
+          }
+        }
+      }
+    },
     "%lld fps": {
       "localizations": {
         "vi": {
@@ -47,6 +57,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rớt %lld khung trong một phút qua"
+          }
+        }
+      }
+    },
+    "%lld min": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld phút"
+          }
+        }
+      }
+    },
+    "%lld min early": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sớm %lld phút"
+          }
+        }
+      }
+    },
+    "%lld min late": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trễ %lld phút"
           }
         }
       }
@@ -87,6 +127,66 @@
           "stringUnit": {
             "state": "translated",
             "value": "Thêm bản dịch Kinh Thánh"
+          }
+        }
+      }
+    },
+    "Add a section heading or a note": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thêm tiêu đề phần hoặc ghi chú"
+          }
+        }
+      }
+    },
+    "Add item": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thêm mục"
+          }
+        }
+      }
+    },
+    "Add note": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thêm ghi chú"
+          }
+        }
+      }
+    },
+    "Add note…": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thêm ghi chú…"
+          }
+        }
+      }
+    },
+    "Add section heading": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thêm tiêu đề phần"
+          }
+        }
+      }
+    },
+    "Add section heading…": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thêm tiêu đề phần…"
           }
         }
       }
@@ -171,6 +271,16 @@
         }
       }
     },
+    "Cancel": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Huỷ"
+          }
+        }
+      }
+    },
     "Cannot be assigned": {
       "localizations": {
         "vi": {
@@ -211,6 +321,26 @@
         }
       }
     },
+    "Change": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đổi"
+          }
+        }
+      }
+    },
+    "Change duration": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đổi thời lượng"
+          }
+        }
+      }
+    },
     "Change folder…": {
       "localizations": {
         "vi": {
@@ -231,12 +361,52 @@
         }
       }
     },
+    "Change song order": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đổi thứ tự hát"
+          }
+        }
+      }
+    },
+    "Change start time": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đổi giờ bắt đầu"
+          }
+        }
+      }
+    },
+    "Change start time…": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đổi giờ bắt đầu…"
+          }
+        }
+      }
+    },
     "Choose a presentation in the library to edit its slides and lyrics.": {
       "localizations": {
         "vi": {
           "stringUnit": {
             "state": "translated",
             "value": "Chọn một bộ trình chiếu trong thư viện để soạn trang chiếu và lời bài hát."
+          }
+        }
+      }
+    },
+    "Choose a service plan": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn chương trình buổi nhóm"
           }
         }
       }
@@ -431,6 +601,16 @@
         }
       }
     },
+    "Compared with plan %@": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "So với dự kiến %@"
+          }
+        }
+      }
+    },
     "Connected screens": {
       "localizations": {
         "vi": {
@@ -447,6 +627,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Không tìm thấy nội dung"
+          }
+        }
+      }
+    },
+    "Create a plan for the coming Lord's Day, then add songs, Bible passages and media.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tạo chương trình cho Chúa Nhật tới, rồi thêm bài hát, đoạn Kinh Thánh và media."
           }
         }
       }
@@ -531,6 +721,16 @@
         }
       }
     },
+    "Double-click a song or media in the library below, or drag it here.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bấm đúp một bài hát hay media ở thư viện bên dưới, hoặc kéo thả vào đây."
+          }
+        }
+      }
+    },
     "Dropped in last minute": {
       "localizations": {
         "vi": {
@@ -547,6 +747,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mỗi màn hiện số lớn trong 3 giây để bạn biết màn nào là màn nào."
+          }
+        }
+      }
+    },
+    "Edit note": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sửa ghi chú"
+          }
+        }
+      }
+    },
+    "Edit note…": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sửa ghi chú…"
           }
         }
       }
@@ -701,6 +921,16 @@
         }
       }
     },
+    "Hours and minutes, for example 8:50.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giờ và phút, ví dụ 8:50."
+          }
+        }
+      }
+    },
     "Hymn %@": {
       "localizations": {
         "vi": {
@@ -717,6 +947,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Nhập"
+          }
+        }
+      }
+    },
+    "Import a translation file in Settings, Library, to look up verses here.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bạn nhập tệp bản dịch ở Cài đặt, mục Thư viện, để tra câu ở đây."
           }
         }
       }
@@ -911,6 +1151,16 @@
         }
       }
     },
+    "Move item": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Di chuyển mục"
+          }
+        }
+      }
+    },
     "Move to the next item after the last slide": {
       "localizations": {
         "vi": {
@@ -931,6 +1181,16 @@
         }
       }
     },
+    "New service plan": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chương trình mới"
+          }
+        }
+      }
+    },
     "Next slide": {
       "localizations": {
         "vi": {
@@ -947,6 +1207,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ở trang cuối, lệnh trang kế chuyển sang mục kế tiếp của chương trình buổi nhóm."
+          }
+        }
+      }
+    },
+    "No Bible translation yet": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa có bản dịch Kinh Thánh"
+          }
+        }
+      }
+    },
+    "No duration": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không đặt thời lượng"
           }
         }
       }
@@ -1061,12 +1341,32 @@
         }
       }
     },
+    "No verses found for this reference in the chosen translation.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bản dịch đang chọn không có câu nào ở địa chỉ này."
+          }
+        }
+      }
+    },
     "Not done": {
       "localizations": {
         "vi": {
           "stringUnit": {
             "state": "translated",
             "value": "Chưa xong"
+          }
+        }
+      }
+    },
+    "Not found": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không tìm thấy"
           }
         }
       }
@@ -1091,6 +1391,16 @@
         }
       }
     },
+    "Note": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ghi chú"
+          }
+        }
+      }
+    },
     "Nothing selected": {
       "localizations": {
         "vi": {
@@ -1107,6 +1417,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Chưa có gì để soạn"
+          }
+        }
+      }
+    },
+    "Now": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bây giờ"
           }
         }
       }
@@ -1147,6 +1467,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Trên màn"
+          }
+        }
+      }
+    },
+    "On time": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đúng giờ"
           }
         }
       }
@@ -1231,6 +1561,36 @@
         }
       }
     },
+    "Planned duration": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thời lượng dự kiến"
+          }
+        }
+      }
+    },
+    "Planned end": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kết thúc dự kiến"
+          }
+        }
+      }
+    },
+    "Planned start time": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giờ bắt đầu dự kiến"
+          }
+        }
+      }
+    },
     "Positions follow the macOS arrangement": {
       "localizations": {
         "vi": {
@@ -1257,6 +1617,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Trình chiếu"
+          }
+        }
+      }
+    },
+    "Press Return to choose": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bấm Return để chọn"
           }
         }
       }
@@ -1321,6 +1691,16 @@
         }
       }
     },
+    "Reference, e.g. John 3:16": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Địa chỉ câu, ví dụ Giăng 3:16"
+          }
+        }
+      }
+    },
     "Rehearsal": {
       "localizations": {
         "vi": {
@@ -1351,12 +1731,82 @@
         }
       }
     },
+    "Remove from service plan": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bỏ khỏi chương trình"
+          }
+        }
+      }
+    },
+    "Remove item": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bỏ mục"
+          }
+        }
+      }
+    },
+    "Rename": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đổi tên"
+          }
+        }
+      }
+    },
+    "Rename item": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đổi tên mục"
+          }
+        }
+      }
+    },
+    "Rename service plan": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đổi tên chương trình"
+          }
+        }
+      }
+    },
+    "Rename…": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đổi tên…"
+          }
+        }
+      }
+    },
     "Run the show while the main output stays unchanged": {
       "localizations": {
         "vi": {
           "stringUnit": {
             "state": "translated",
             "value": "Chạy thật nhưng đầu ra chính không đổi"
+          }
+        }
+      }
+    },
+    "Save": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lưu"
           }
         }
       }
@@ -1427,6 +1877,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tìm không cần dấu"
+          }
+        }
+      }
+    },
+    "Service plan": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chương trình buổi nhóm"
           }
         }
       }
@@ -1771,6 +2231,16 @@
         }
       }
     },
+    "This item started": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mục này bắt đầu"
+          }
+        }
+      }
+    },
     "This screen holds the main window. Move the main window to another screen first.": {
       "localizations": {
         "vi": {
@@ -1781,12 +2251,32 @@
         }
       }
     },
+    "This service plan is empty": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chương trình chưa có mục nào"
+          }
+        }
+      }
+    },
     "Three short steps and the system is ready for the next service.": {
       "localizations": {
         "vi": {
           "stringUnit": {
             "state": "translated",
             "value": "Ba bước ngắn là Hệ thống sẵn sàng cho buổi nhóm kế tiếp."
+          }
+        }
+      }
+    },
+    "Translation": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bản dịch"
           }
         }
       }
@@ -1807,6 +2297,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Thử bớt chữ, hoặc tìm theo số thánh ca."
+          }
+        }
+      }
+    },
+    "Type a book, chapter and verse: \"gi 3 16\", \"Thi 23\", \"Rô 8:28; 12:1-2\".": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gõ sách, chương và câu: \"gi 3 16\", \"Thi 23\", \"Rô 8:28; 12:1-2\"."
           }
         }
       }
@@ -1897,6 +2397,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "đang chứa cửa sổ Hệ thống"
+          }
+        }
+      }
+    },
+    "starts %@": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "bắt đầu %@"
           }
         }
       }

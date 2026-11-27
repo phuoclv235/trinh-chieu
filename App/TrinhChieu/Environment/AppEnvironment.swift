@@ -42,12 +42,16 @@ enum WorkspaceMode: String, CaseIterable, Sendable {
     private(set) var show: ShowController?
     /// Bản dịch Kinh Thánh đã mở được, theo tên.
     private(set) var translations: [TranslationInfo] = []
+    /// Bản dịch đã mở, theo mã viết thường.
+    private(set) var openedTranslations: [String: BibleTranslation] = [:]
     /// Tăng mỗi khi thư viện báo nội dung đổi: giao diện đọc số này để dựng lại lưới trang của nguồn đang xem.
     private(set) var contentRevision = 0
     /// Bộ trình chiếu bạn bấm "Soạn" ở chế độ Trực tiếp; chế độ Soạn thảo mở bộ này (T1.9).
     var editingPresentationID: UUID?
     /// Ảnh thu nhỏ của thẻ trang chiếu.
     let thumbnails: SlideThumbnailCache
+    /// Chương trình buổi nhóm đang mở ở chế độ Trực tiếp.
+    let planEditing = PlanEditing()
 
     @ObservationIgnored private let mediaLocator: LibraryMediaLocator
     @ObservationIgnored private var sink: AppSceneSink?
@@ -107,6 +111,7 @@ enum WorkspaceMode: String, CaseIterable, Sendable {
                 self?.mediaLocator.update(from: self?.library)
                 show?.send(.contentDidChange(ids: change.documentIDs))
                 self?.contentRevision &+= 1
+                self?.syncActivePlan()
             }
             library = store
             self.bible = bible
@@ -141,7 +146,9 @@ enum WorkspaceMode: String, CaseIterable, Sendable {
         clock = nil
         bible = nil
         translations = []
+        openedTranslations = [:]
         editingPresentationID = nil
+        planEditing.reset()
         thumbnails.removeAll()
         mediaLocator.update(from: nil)
     }
@@ -151,16 +158,19 @@ enum WorkspaceMode: String, CaseIterable, Sendable {
         guard let bible, let content else { return }
         let infos = (try? await bible.translations()) ?? []
         var opened: [TranslationInfo] = []
+        var byCode: [String: BibleTranslation] = [:]
         for info in infos {
             do {
                 let translation = try await bible.open(info.code)
                 content.register(translation)
                 opened.append(translation.info)
+                byCode[translation.info.code.lowercased()] = translation
             } catch {
                 logger.error("Không mở được bản dịch \(info.code, privacy: .public): \(String(describing: error))")
             }
         }
         translations = opened
+        openedTranslations = byCode
         let current = settings.value.defaultTranslation
         if !opened.contains(where: { $0.code == current }) {
             settings.value.defaultTranslation = opened.first?.code

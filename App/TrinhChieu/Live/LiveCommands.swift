@@ -54,7 +54,10 @@ extension AppEnvironment {
         switch source {
         case .presentation(let id, _):
             send(.selectItem(.presentation(id: id, arrangementID: arrangementID)))
-        case .planItem, .scripture, .media:
+        case .planItem(_, let itemID):
+            // Thứ tự hát riêng của mục chương trình; lõi điều phối đọc lại nguồn khi nội dung đổi.
+            setArrangement(arrangementID, forPlanItem: itemID)
+        case .scripture, .media:
             break
         }
     }
@@ -108,7 +111,9 @@ extension AppEnvironment {
         case .clearText: send(.clearLayer(.slide))
         case .clearBackground: send(.clearLayer(.background))
         case .clearAudio: clearAudio()
-        case .undo, .redo: return false
+        case .undo: return undoPlan()
+        case .redo: return redoPlan()
+        case .delete: return deleteSelectedPlanItem()
         }
         return true
     }

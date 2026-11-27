@@ -18,8 +18,12 @@ struct LiveWorkspace: View {
                     ServicePlanPanel()
                         .frame(height: planHeight)
                     Hairline()
-                    CompactLibrary()
-                        .frame(maxHeight: .infinity)
+                    CompactLibrary { row in
+                        if let item = environment.planItem(for: row) {
+                            environment.appendToPlan(item)
+                        }
+                    }
+                    .frame(maxHeight: .infinity)
                 }
             }
             .frame(width: Metrics.railLeft)
@@ -38,18 +42,7 @@ struct LiveWorkspace: View {
         .background {
             LiveKeyMonitor { key in environment.perform(key) }
         }
-    }
-}
-
-/// Chương trình buổi nhóm (cột trái trên).
-struct ServicePlanPanel: View {
-    var body: some View {
-        EmptyStateView(
-            systemImage: "list.bullet.rectangle",
-            title: "No service plan yet",
-            message: "Service plans arrive in the next update. Pick songs from the library below for now."
-        )
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .onChange(of: environment.show?.state.live) { _, _ in environment.noteLiveChange() }
     }
 }
 
