@@ -28,6 +28,9 @@ struct ResolvedLayer {
 
 /// Bộ trộn lớp của một đầu ra: mỗi `LayerKind` một `LayerSlot`, vẽ dưới lên trên, hoà tan theo lớp.
 ///
+/// Theo đặc tả T1.6, một cảnh có tối đa một lớp cho mỗi `LayerKind` (chuyển cảnh theo từng loại lớp).
+/// Cảnh lỡ có hai lớp cùng loại thì lớp sau thay lớp trước và có cảnh báo trong nhật ký.
+///
 /// Chỉ dùng trên một luồng (luồng vẽ của đầu ra, hoặc luồng gọi `renderOffscreen`).
 final class LayerCompositor {
     private let gpu: GPUContext
@@ -60,7 +63,9 @@ final class LayerCompositor {
         let layout = CanvasLayout(canvasSize: scene.canvasSize.cgSize, targetSize: targetSize)
         var present: Set<LayerKind> = []
         for layer in scene.layers {
-            present.insert(layer.kind)
+            if !present.insert(layer.kind).inserted {
+                logger.warning("Cảnh có hai lớp \(layer.kind.rawValue, privacy: .public): chỉ vẽ lớp sau")
+            }
             let source = LayerTarget(layer: layer, scale: Double(layout.scale))
             slots[layer.kind, default: LayerSlot()].update(
                 source: source,
