@@ -21,7 +21,10 @@ struct ProbeOptions: Sendable {
     var video1: URL?
     var video2: URL?
     var pictureInPicture = true
-    var frameRate: Float = 60
+    /// `nil` = theo tần số tối đa của từng màn (`--fps native`).
+    var frameRate: Float? = 60
+    /// Đưa view đầu ra vào chế độ toàn màn hình của AppKit, để thử đường trình chiếu trực tiếp.
+    var fullScreenMode = false
     var frameLatency = 1
     var report: URL?
     var mediaDirectory: URL?
@@ -36,7 +39,8 @@ struct ProbeOptions: Sendable {
           --video1 <tệp>          video nền; mặc định tự tạo 1080p H.264
           --video2 <tệp>          video khung phụ; mặc định tự tạo 4K HEVC
           --no-pip                bỏ video khung phụ
-          --fps <số>              tần số khung mong muốn, mặc định 60
+          --fps <số|native>       tần số khung mong muốn, mặc định 60; native = theo từng màn
+          --fullscreen            dùng chế độ toàn màn hình của AppKit (thử trình chiếu trực tiếp)
           --frame-latency <1|2>   số khung trễ của display link, mặc định 1
           --report <tệp.md>       nơi ghi báo cáo, mặc định ./ket-qua-ban-thu-<thời điểm>.md
           --media-dir <thư mục>   nơi lưu video tự tạo, mặc định ~/Library/Caches/TrinhChieuProbe
@@ -73,11 +77,18 @@ struct ProbeOptions: Sendable {
                 default:
                     options.dissolve = number
                 }
+            case "--fullscreen":
+                options.fullScreenMode = true
             case "--fps":
-                guard let text = value(flag), let number = Float(text), number > 0 else {
-                    return .failure("Giá trị không hợp lệ cho --fps")
+                guard let text = value(flag) else { return .failure("Thiếu giá trị cho --fps") }
+                if text == "native" {
+                    options.frameRate = nil
+                } else {
+                    guard let number = Float(text), number > 0, number <= 240 else {
+                        return .failure("Giá trị không hợp lệ cho --fps")
+                    }
+                    options.frameRate = number
                 }
-                options.frameRate = number
             case "--frame-latency":
                 guard let text = value(flag), let number = Int(text), (1...3).contains(number) else {
                     return .failure("--frame-latency phải là 1, 2 hoặc 3")

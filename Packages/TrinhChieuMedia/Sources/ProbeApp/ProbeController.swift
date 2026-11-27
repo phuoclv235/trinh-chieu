@@ -68,8 +68,9 @@ final class ProbeController {
         var outputs: [Output] = []
         for screen in screens {
             let window = OutputWindow(screen: screen, device: gpu.device)
-            let refresh = max(1, min(Double(screen.maximumFramesPerSecond), Double(options.frameRate)))
-            let period = 1 / refresh
+            let screenRate = Float(max(1, screen.maximumFramesPerSecond))
+            let rate = min(screenRate, options.frameRate ?? screenRate)
+            let period = 1 / Double(rate)
             let index = NSScreen.screens.firstIndex { $0 === screen } ?? 0
             let renderer = ProbeRenderer(
                 compositor: compositor,
@@ -88,7 +89,7 @@ final class ProbeController {
                 gpu: gpu,
                 renderer: renderer,
                 stats: FrameStats(label: label, nominalPeriod: period),
-                preferredFrameRate: options.frameRate,
+                preferredFrameRate: rate,
                 frameLatency: options.frameLatency
             )
             let size = window.pixelSize
@@ -111,6 +112,9 @@ final class ProbeController {
         secondarySource?.play()
         for output in outputs {
             output.window.show()
+            if options.fullScreenMode {
+                output.window.enterFullScreenMode()
+            }
             output.loop.start()
         }
         outputs.first?.window.window.makeKey()

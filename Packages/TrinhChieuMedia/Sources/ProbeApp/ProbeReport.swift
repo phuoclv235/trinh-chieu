@@ -79,11 +79,13 @@ struct ProbeReport {
         let early = stoppedEarly ? " (dừng sớm bằng Esc)" : ""
         let interval = Self.format(options.sceneInterval, digits: 2)
         let dissolve = Self.format(options.dissolve, digits: 2)
-        let rate = Self.format(Double(options.frameRate), digits: 0)
+        let rate = options.frameRate.map { Self.format(Double($0), digits: 0) } ?? "theo từng màn"
         lines.append("| Thời gian đo | \(Self.format(measured, digits: 0)) giây\(early) |")
         lines.append("| Khởi động trước khi đo | \(Self.format(options.warmup, digits: 0)) giây |")
         lines.append("| Đổi chữ | mỗi \(interval) giây, hoà tan \(dissolve) giây |")
         lines.append("| Display link | \(rate) khung/giây, trễ \(options.frameLatency) khung |")
+        let windowMode = options.fullScreenMode ? "toàn màn hình AppKit" : "cửa sổ không viền mức screenSaver"
+        lines.append("| Chế độ cửa sổ | \(windowMode) |")
         for media in mediaDescriptions {
             lines.append("| Media | \(media) |")
         }
@@ -112,7 +114,8 @@ struct ProbeReport {
             let cells = [
                 "\(screen.index): \(screen.name)",
                 "\(screen.pixelWidth)x\(screen.pixelHeight)",
-                "\(screen.maximumFramesPerSecond) Hz (chu kỳ đo \(Self.ms(output.nominalPeriod)))",
+                "\(screen.maximumFramesPerSecond) Hz (chu kỳ đo \(Self.ms(output.nominalPeriod)), "
+                    + "khoảng cách trung vị \(Self.ms(Percentile.value(output.presentIntervals, 0.5))))",
                 "\(output.framesPresented)",
                 "\(output.droppedFrames) (không lên \(output.framesNotPresented), trễ \(output.lateFrames))",
                 Self.format(verdict.averageDropsPerMinute, digits: 2),

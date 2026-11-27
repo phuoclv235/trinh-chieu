@@ -63,7 +63,17 @@ public final class OutputWindow {
         window.orderFrontRegardless()
     }
 
+    /// Chuyển view sang chế độ toàn màn hình của AppKit trên đúng màn này
+    /// (cho phép hệ thống trình chiếu trực tiếp, bỏ qua bộ ghép hình khi đủ điều kiện).
+    public func enterFullScreenMode() {
+        guard !contentView.isInFullScreenMode else { return }
+        _ = contentView.enterFullScreenMode(screen, withOptions: [.fullScreenModeAllScreens: false])
+    }
+
     public func close() {
+        if contentView.isInFullScreenMode {
+            contentView.exitFullScreenMode(options: nil)
+        }
         contentView.releaseCursor()
         window.orderOut(nil)
         window.close()
