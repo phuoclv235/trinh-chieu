@@ -1,16 +1,1306 @@
 {
-  "sourceLanguage" : "vi",
-  "strings" : {
-    "System ready" : {
-      "localizations" : {
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hệ thống đã sẵn sàng"
+  "sourceLanguage": "vi",
+  "strings": {
+    "%@ (not connected)": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ (đang không cắm)"
+          }
+        }
+      }
+    },
+    "%@ · disconnected, reattaches when plugged in": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · đã bị rút, cắm lại thì tự gắn lại"
+          }
+        }
+      }
+    },
+    "%lld fps": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld khung/giây"
+          }
+        }
+      }
+    },
+    "%lld frames dropped in the last minute": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rớt %lld khung trong một phút qua"
+          }
+        }
+      }
+    },
+    "%lld more": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thêm %lld cảnh báo"
+          }
+        }
+      }
+    },
+    "Add": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thêm"
+          }
+        }
+      }
+    },
+    "Add a Bible translation": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thêm bản dịch Kinh Thánh"
+          }
+        }
+      }
+    },
+    "Add translation…": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thêm bản dịch…"
+          }
+        }
+      }
+    },
+    "Added translation \"%@\".": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã thêm bản dịch \"%@\"."
+          }
+        }
+      }
+    },
+    "Appearance": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giao diện"
+          }
+        }
+      }
+    },
+    "Assign the main output and the stage display.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gán màn cho đầu ra chính và màn hình nhắc."
+          }
+        }
+      }
+    },
+    "Audio": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Âm thanh"
+          }
+        }
+      }
+    },
+    "Cannot be assigned": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không gán được"
+          }
+        }
+      }
+    },
+    "Cannot open the library": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không mở được thư viện"
+          }
+        }
+      }
+    },
+    "Cannot show output on screen \"%@\".": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hệ thống chưa đưa được hình ra màn \"%@\"."
+          }
+        }
+      }
+    },
+    "Change folder…": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đổi thư mục…"
+          }
+        }
+      }
+    },
+    "Change library": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đổi thư viện"
+          }
+        }
+      }
+    },
+    "Choose a presentation in the library to edit its slides and lyrics.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn một bộ trình chiếu trong thư viện để soạn trang chiếu và lời bài hát."
+          }
+        }
+      }
+    },
+    "Choose an item in the service plan to see its slides here.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn một mục trong chương trình buổi nhóm để xem các trang chiếu ở đây."
+          }
+        }
+      }
+    },
+    "Choose folder again…": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn lại thư mục…"
+          }
+        }
+      }
+    },
+    "Choose lyrics files to import": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn tệp lời bài hát để nhập"
+          }
+        }
+      }
+    },
+    "Choose screens": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn màn hình"
+          }
+        }
+      }
+    },
+    "Choose screens again": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn lại màn hình"
+          }
+        }
+      }
+    },
+    "Choose the files of one Bible translation": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn các tệp của một bản dịch Kinh Thánh"
+          }
+        }
+      }
+    },
+    "Choose the library folder, or an empty folder for a new library": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn thư mục thư viện, hoặc một thư mục trống để tạo thư viện mới"
+          }
+        }
+      }
+    },
+    "Choose the projection screen": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn màn hình chiếu"
+          }
+        }
+      }
+    },
+    "Choosing \"Main output\" for another screen moves the screen that had it to \"Not used\".": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn \"Đầu ra chính\" cho màn khác thì màn đang giữ vai đó tự chuyển sang \"Không dùng\"."
+          }
+        }
+      }
+    },
+    "Clear all": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xoá tất cả"
+          }
+        }
+      }
+    },
+    "Clear background": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xoá nền"
+          }
+        }
+      }
+    },
+    "Clear text": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xoá chữ"
+          }
+        }
+      }
+    },
+    "Command palette arrives in a later update": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bảng lệnh có trong bản cập nhật kế tiếp"
+          }
+        }
+      }
+    },
+    "Connected screens": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Màn hình đang cắm"
+          }
+        }
+      }
+    },
+    "Create library": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tạo thư viện"
+          }
+        }
+      }
+    },
+    "Create new library…": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tạo thư viện mới…"
+          }
+        }
+      }
+    },
+    "Dark": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tối"
+          }
+        }
+      }
+    },
+    "Default Bible translation": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bản dịch Kinh Thánh mặc định"
+          }
+        }
+      }
+    },
+    "Defaults": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mặc định"
+          }
+        }
+      }
+    },
+    "Done": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã xong"
+          }
+        }
+      }
+    },
+    "Dropped in last minute": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rớt trong một phút qua"
+          }
+        }
+      }
+    },
+    "Each screen shows a large number for 3 seconds so you know which is which.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mỗi màn hiện số lớn trong 3 giây để bạn biết màn nào là màn nào."
+          }
+        }
+      }
+    },
+    "Editor": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Soạn thảo"
+          }
+        }
+      }
+    },
+    "Folder \"%@\" is missing. Plug the external drive back in.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thấy thư mục \"%@\". Nếu thư mục nằm trên ổ ngoài, bạn cắm lại ổ rồi bấm \"Thử lại\"."
+          }
+        }
+      }
+    },
+    "Follow system": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Theo hệ thống"
+          }
+        }
+      }
+    },
+    "Forget screen": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bỏ gán màn này"
+          }
+        }
+      }
+    },
+    "Frame rate": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khung hình"
+          }
+        }
+      }
+    },
+    "Frames are steady, none dropped": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khung hình đều, không rớt khung"
+          }
+        }
+      }
+    },
+    "Frames per output": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khung hình từng đầu ra"
+          }
+        }
+      }
+    },
+    "Frames per second": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khung mỗi giây"
+          }
+        }
+      }
+    },
+    "Freeze": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đóng băng"
+          }
+        }
+      }
+    },
+    "GPU time per frame": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thời gian GPU mỗi khung"
+          }
+        }
+      }
+    },
+    "Hide warning": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ẩn cảnh báo"
+          }
+        }
+      }
+    },
+    "Hold the picture currently shown": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giữ nguyên hình đang chiếu"
+          }
+        }
+      }
+    },
+    "Import": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhập"
+          }
+        }
+      }
+    },
+    "Import lyrics…": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhập lời bài hát…"
+          }
+        }
+      }
+    },
+    "Import songs or create your first one": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhập bài hát hoặc tạo bài đầu tiên"
+          }
+        }
+      }
+    },
+    "Keyboard shortcuts": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phím tắt"
+          }
+        }
+      }
+    },
+    "Library": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thư viện"
+          }
+        }
+      }
+    },
+    "Library folder": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thư mục thư viện"
+          }
+        }
+      }
+    },
+    "Library folder not found": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thấy thư mục thư viện"
+          }
+        }
+      }
+    },
+    "Light": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sáng"
+          }
+        }
+      }
+    },
+    "Live": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trực tiếp"
+          }
+        }
+      }
+    },
+    "Location": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vị trí"
+          }
+        }
+      }
+    },
+    "Main output": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đầu ra chính"
+          }
+        }
+      }
+    },
+    "Main window": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cửa sổ chính"
+          }
+        }
+      }
+    },
+    "Media audio": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Âm thanh media"
+          }
+        }
+      }
+    },
+    "Mode": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chế độ"
+          }
+        }
+      }
+    },
+    "Move to the next item after the last slide": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hết trang thì sang mục kế"
+          }
+        }
+      }
+    },
+    "Next slide": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trang kế"
+          }
+        }
+      }
+    },
+    "Next slide on the last slide goes to the next service plan item.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ở trang cuối, lệnh trang kế chuyển sang mục kế tiếp của chương trình buổi nhóm."
+          }
+        }
+      }
+    },
+    "No output": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa có đầu ra"
+          }
+        }
+      }
+    },
+    "No output is attached": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa gắn đầu ra nào"
+          }
+        }
+      }
+    },
+    "No screen assigned": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa gán màn"
+          }
+        }
+      }
+    },
+    "No service plan yet": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa có chương trình buổi nhóm"
+          }
+        }
+      }
+    },
+    "No translation yet": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa có bản dịch"
+          }
+        }
+      }
+    },
+    "Not done": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa xong"
+          }
+        }
+      }
+    },
+    "Not used": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không dùng"
+          }
+        }
+      }
+    },
+    "Nothing selected": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa chọn mục nào"
+          }
+        }
+      }
+    },
+    "Nothing to edit yet": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa có gì để soạn"
+          }
+        }
+      }
+    },
+    "OSIS, Zefania or USFM files.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tệp OSIS, Zefania hoặc USFM."
+          }
+        }
+      }
+    },
+    "Off": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tắt"
+          }
+        }
+      }
+    },
+    "On": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bật"
+          }
+        }
+      }
+    },
+    "Open command palette": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mở bảng lệnh"
+          }
+        }
+      }
+    },
+    "Open in Finder": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mở trong Finder"
+          }
+        }
+      }
+    },
+    "Open library": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mở thư viện"
+          }
+        }
+      }
+    },
+    "Output device": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thiết bị ra"
+          }
+        }
+      }
+    },
+    "Outputs": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đầu ra"
+          }
+        }
+      }
+    },
+    "Pipeline latency": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trễ đường ống"
+          }
+        }
+      }
+    },
+    "Plain text lyrics or OpenLyrics files.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lời bài hát dạng văn bản hoặc tệp OpenLyrics."
+          }
+        }
+      }
+    },
+    "Positions follow the macOS arrangement": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vị trí theo sắp xếp của macOS"
+          }
+        }
+      }
+    },
+    "Presenting": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trình chiếu"
+          }
+        }
+      }
+    },
+    "Previous slide": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trang trước"
+          }
+        }
+      }
+    },
+    "Quit": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thoát"
+          }
+        }
+      }
+    },
+    "Rebuild if search results look wrong.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dựng lại khi kết quả tìm kiếm có vẻ sai."
+          }
+        }
+      }
+    },
+    "Rebuild search index": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dựng lại chỉ mục tìm kiếm"
+          }
+        }
+      }
+    },
+    "Rebuilding… search keeps working meanwhile.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang dựng lại… trong lúc này tìm kiếm vẫn dùng được."
+          }
+        }
+      }
+    },
+    "Rehearsal": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tập dượt"
+          }
+        }
+      }
+    },
+    "Rehearsing": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang tập dượt"
+          }
+        }
+      }
+    },
+    "Run the show while the main output stays unchanged": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chạy thật nhưng đầu ra chính không đổi"
+          }
+        }
+      }
+    },
+    "Screen \"%@\" (%@) is disconnected.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Màn \"%@\" (%@) đã bị rút ra. Cắm lại thì Hệ thống tự gắn lại."
+          }
+        }
+      }
+    },
+    "Screen \"%@\" holds the main window; %@ waits for it to move.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Màn \"%@\" đang chứa cửa sổ chính nên %@ chưa hiện ở đó. Bạn kéo cửa sổ chính sang màn khác."
+          }
+        }
+      }
+    },
+    "Screen disconnected": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Màn đã bị rút ra"
+          }
+        }
+      }
+    },
+    "Search index": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chỉ mục tìm kiếm"
+          }
+        }
+      }
+    },
+    "Search songs, Bible verses, commands…": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tìm bài hát, câu Kinh Thánh, lệnh…"
+          }
+        }
+      }
+    },
+    "Service plans and the compact library will appear in this column.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chương trình buổi nhóm và thư viện thu gọn sẽ hiện ở cột này."
+          }
+        }
+      }
+    },
+    "Settings": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cài đặt"
+          }
+        }
+      }
+    },
+    "Show file in Finder": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mở tệp lỗi trong Finder"
+          }
+        }
+      }
+    },
+    "Show number on each screen": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hiện số trên từng màn"
+          }
+        }
+      }
+    },
+    "Show or hide right column": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ẩn hoặc hiện cột phải"
+          }
+        }
+      }
+    },
+    "Showing on screen. Quit the system?": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang chiếu. Thoát Hệ thống?"
+          }
+        }
+      }
+    },
+    "Showing on the main output. Change the library now?": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang chiếu trên đầu ra chính. Đổi thư viện ngay?"
+          }
+        }
+      }
+    },
+    "Skip": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bỏ qua"
+          }
+        }
+      }
+    },
+    "Sound of videos and audio files goes to this device.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tiếng của video và tệp âm thanh phát ra thiết bị này."
+          }
+        }
+      }
+    },
+    "Stage display": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Màn hình nhắc"
+          }
+        }
+      }
+    },
+    "Start": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bắt đầu"
+          }
+        }
+      }
+    },
+    "Stay": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ở lại"
+          }
+        }
+      }
+    },
+    "The main output goes dark when the system quits.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đầu ra chính sẽ tắt hình khi Hệ thống thoát."
+          }
+        }
+      }
+    },
+    "The main output keeps its last picture until you go live again.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đầu ra chính giữ hình cuối cho tới khi bạn lên màn lại."
+          }
+        }
+      }
+    },
+    "The system needs Metal to draw the outputs and will quit now.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hệ thống cần Metal để dựng hình cho các đầu ra, nên sẽ thoát ngay bây giờ."
+          }
+        }
+      }
+    },
+    "Theme": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mẫu trình bày"
+          }
+        }
+      }
+    },
+    "Theme for Bible passages": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mẫu cho Kinh Thánh"
+          }
+        }
+      }
+    },
+    "Theme for songs": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mẫu cho bài hát"
+          }
+        }
+      }
+    },
+    "This Mac does not support Metal": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Máy này không hỗ trợ Metal"
+          }
+        }
+      }
+    },
+    "This screen holds the main window. Move the main window to another screen first.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Màn này đang chứa cửa sổ chính. Bạn kéo cửa sổ chính sang màn khác trước."
+          }
+        }
+      }
+    },
+    "Three short steps and the system is ready for the next service.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ba bước ngắn là Hệ thống sẵn sàng cho buổi nhóm kế tiếp."
+          }
+        }
+      }
+    },
+    "Try again": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thử lại"
+          }
+        }
+      }
+    },
+    "Use this folder": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dùng thư mục này"
+          }
+        }
+      }
+    },
+    "Waiting for main window to move": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chờ cửa sổ chính rời màn này"
+          }
+        }
+      }
+    },
+    "Warnings": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cảnh báo"
+          }
+        }
+      }
+    },
+    "Welcome": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chào bạn"
+          }
+        }
+      }
+    },
+    "holds the system window": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "đang chứa cửa sổ Hệ thống"
           }
         }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

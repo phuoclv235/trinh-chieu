@@ -181,6 +181,17 @@ struct ShowControllerTests {
         #expect(controller.state.live?.source == library.planItem(202))
     }
 
+    @Test("updateSettings: tắt sang mục kế giữa chừng thì lệnh next sau đó dừng ở trang cuối, không gọi sink")
+    func updateSettingsAppliesToNextCommand() {
+        let harness = ControllerHarness()
+        harness.controller.send(.goLive(harness.library.planItem(202), slideIndex: 4))
+        let published = harness.sink.outputs.count
+        harness.controller.updateSettings(ShowSettings(advanceToNextItem: false))
+        #expect(harness.state.settings.advanceToNextItem == false)
+        #expect(harness.sink.outputs.count == published)
+        #expect(harness.controller.send(.next) == .ignored(.atEnd))
+    }
+
     @Test("next: chương trình không còn thì dừng ở trang cuối")
     func nextWhenPlanVanished() {
         let harness = ControllerHarness()
