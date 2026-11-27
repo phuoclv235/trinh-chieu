@@ -80,5 +80,5 @@ Quy tắc điều phối:
 | T0.1 | Xong, chờ Phuoc duyệt PR | #2 |
 | T0.3 | Xong (mẫu tự duyệt theo lời Phuoc 2026-11-27) | #3 |
 | T0.4 | Chưa bắt đầu | |
-| T0.5 | Chưa bắt đầu | |
+| T0.5 | Xong | #5 |
 | T1.1 đến T1.11 | Chưa bắt đầu | |

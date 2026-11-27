@@ -103,7 +103,8 @@ func fixedID(_ number: Int) -> UUID {
         let slideB1 = Slide(id: fixedID(3), elements: [.text(TextElement(slot: .body, text: "B1"))])
         let slideB2 = Slide(id: fixedID(4), enabled: false, elements: [.text(TextElement(slot: .body, text: "B2"))])
         let slideB3 = Slide(id: fixedID(5), background: .color(SampleLibrary.red))
-        let groupA = SlideGroup(id: fixedID(10), label: GroupLabel(kind: .verse, number: 1), slides: [slideA1, slideA2])
+        let verse = GroupLabel(kind: .verse, number: 1)
+        let groupA = SlideGroup(id: fixedID(10), label: verse, slides: [slideA1, slideA2])
         let groupB = SlideGroup(id: fixedID(11), label: GroupLabel(kind: .chorus), slides: [slideB1, slideB2, slideB3])
         let created = Date(timeIntervalSince1970: 1_700_000_000)
         song = Presentation(

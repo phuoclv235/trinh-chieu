@@ -67,10 +67,12 @@ struct FixtureRoundTripTests {
         #expect(result.value.items.map(\.plannedDuration) == [nil, 300, 120, nil, 30])
     }
 
-    @Test("Tệp mẫu đi qua migration không đổi", arguments: [
-        ("presentation-song.json", DocumentKind.presentation), ("presentation-generic.json", .presentation),
+    static let fixtureKinds: [(String, DocumentKind)] = [
+        ("presentation-song.json", .presentation), ("presentation-generic.json", .presentation),
         ("theme.json", .theme), ("plan.json", .plan),
-    ])
+    ]
+
+    @Test("Tệp mẫu đi qua migration không đổi", arguments: fixtureKinds)
     func fixturesPassMigrationUnchanged(name: String, kind: DocumentKind) throws {
         let data = try fixture(name)
         let (migrated, from) = try migrate(data, kind: kind)
@@ -146,14 +148,14 @@ struct DocumentCodingTests {
         let override = TextStyleOverride(
             fontFamily: "Inter", fontWeight: 700, fontSize: 48, color: .black, alignment: .left,
             verticalAlignment: .top, lineHeight: 1.5, letterSpacing: 2, transform: .uppercase,
-            stroke: TextStroke(color: .white, width: 2), shadow: .none, box: .none,
+            stroke: TextStroke(color: .white, width: 2), shadow: TextShadow.none, box: TextBox.none,
             autoFit: AutoFit(mode: .shrink, minScale: 0.5), maxLines: 2
         )
         let result = base.applying(override)
         let expected = TextStyle(
             fontFamily: "Inter", fontWeight: 700, fontSize: 48, color: .black, alignment: .left,
             verticalAlignment: .top, lineHeight: 1.5, letterSpacing: 2, transform: .uppercase,
-            stroke: TextStroke(color: .white, width: 2), shadow: .none, box: .none,
+            stroke: TextStroke(color: .white, width: 2), shadow: TextShadow.none, box: TextBox.none,
             autoFit: AutoFit(mode: .shrink, minScale: 0.5), maxLines: 2
         )
         #expect(result == expected)
@@ -297,9 +299,7 @@ struct MigrationTests {
         #expect(message.hasPrefix("Tệp được tạo bởi phiên bản Hệ thống mới hơn"))
     }
 
-    @Test("Dữ liệu không phải tài liệu hoặc phiên bản sai thì ném lỗi", arguments: [
-        #"[1, 2]"#, "không phải JSON",
-    ])
+    @Test("Dữ liệu không phải tài liệu thì ném lỗi", arguments: [#"[1, 2]"#, "không phải JSON"])
     func invalidDocumentThrows(text: String) {
         #expect(throws: DocumentError.notAnObject) {
             try migrate(Data(text.utf8), kind: .plan)
