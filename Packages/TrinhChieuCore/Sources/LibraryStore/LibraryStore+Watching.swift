@@ -1,6 +1,15 @@
 import CoreModel
 import Foundation
 
+/// Kết quả đọc một tệp khi có sự kiện thay đổi.
+enum FileRead: Sendable {
+    case data(Data)
+    /// Tệp không còn.
+    case missing
+    /// Tệp còn nhưng chưa đọc được.
+    case unreadable
+}
+
 /// Tệp trong thư viện mà việc theo dõi thay đổi quan tâm.
 enum WatchedFile: Hashable, Sendable {
     case document(DocumentKey)
@@ -91,9 +100,16 @@ extension LibraryStore {
     }
 
     /// Đọc tệp ngoài luồng chính; `nil` nếu tệp không còn.
-    private func readData(_ path: String) async -> Data? {
+    private func readData(_ path: String) async -> FileRead {
         let url = layout.url(path)
-        return await Task.detached { try? Data(contentsOf: url) }.value
+        return await Task.detached { () -> FileRead in
+            if let data = try? Data(contentsOf: url) {
+                return .data(data)
+            }
+            // Đọc lỗi mà tệp vẫn còn (đang đồng bộ, bị khoá tạm): không coi là đã xoá, chờ sự kiện sau.
+            return FileManager.default.fileExists(atPath: url.path) ? .unreadable : .missing
+        }
+        .value
     }
 
     /// Một tệp tài liệu đổi trên đĩa (quy tắc 4 của T1.3).
@@ -104,8 +120,14 @@ extension LibraryStore {
     ///   `<uuid>.conflict-<thời điểm>.json`, báo trong ``loadProblems``, rồi ghi lại bản trong bộ nhớ.
     func refreshDocument(_ key: DocumentKey) async {
         let path = key.relativePath
-        guard let data = await readData(path) else {
+        let data: Data
+        switch await readData(path) {
+        case .data(let read):
+            data = read
+        case .missing:
             documentRemovedExternally(key)
+            return
+        case .unreadable:
             return
         }
         let fingerprint = FileFingerprint(data)
@@ -211,7 +233,13 @@ extension LibraryStore {
 
     func refreshMediaInfo(_ id: MediaID) async {
         let path = LibraryLayout.mediaInfoPath(id)
-        guard let data = await readData(path) else {
+        let data: Data
+        switch await readData(path) {
+        case .data(let read):
+            data = read
+        case .unreadable:
+            return
+        case .missing:
             guard media[id] != nil else { return }
             media[id] = nil
             fingerprints[path] = nil
