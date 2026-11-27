@@ -44,6 +44,30 @@ struct ProbeOptions: Sendable {
     var report: URL?
     var mediaDirectory: URL?
 
+    // Cờ thử của T0.6 (đo dưới tải). Đặc tả: `plans/giai-doan-0-1/T0.6-ben-duoi-tai.md`.
+    /// B1: chỉ dựng và present khi có gì mới.
+    var onDemand = false
+    /// B1 biến thể: cảnh đứng yên thì bỏ nhịp nhưng display link vẫn chạy (không `isPaused`).
+    var onDemandSkip = false
+    /// B1 biến thể: cảnh đứng yên thì cứ n nhịp present lại một khung (0 là tắt).
+    var idleKeepAliveEvery = 0
+    /// B2: luồng vẽ thời gian thực và `beginActivity(.latencyCritical)`.
+    var realtime = false
+    /// B3: lặp video bằng `AVPlayerLooper`.
+    var looper = false
+    /// B4: giải mã video ở cỡ đầu ra thay vì cỡ gốc.
+    var decodeToOutputSize = false
+    /// B5: `maximumDrawableCount = 2` và tạo lại display link khi đường ống dài ra.
+    var recover = false
+    /// Dùng `FrameLoop` của RenderEngine thay vòng vẽ thử (để đối chiếu; không dùng được với B1, B2, B5).
+    var engineLoop = false
+    /// Mã lần chạy (ví dụ L0), ghi vào báo cáo và dòng tóm tắt.
+    var runLabel: String?
+    /// Mô tả tải nền lúc đo (ví dụ "Zoom họp, camera, chia sẻ màn; Chrome").
+    var loadDescription: String?
+    /// Tệp tóm tắt: mỗi lần chạy thêm một dòng bảng Markdown cho mỗi màn.
+    var summary: URL?
+
     static let usage = """
         Cách dùng: ProbeApp [tuỳ chọn]
           --duration <giây>       thời gian đo, mặc định 600 (10 phút)
@@ -66,6 +90,18 @@ struct ProbeOptions: Sendable {
           --keeper <native|số>    mở cửa sổ nhỏ có display link riêng trên các màn không đo
           --report <tệp.md>       nơi ghi báo cáo, mặc định ./ket-qua-ban-thu-<thời điểm>.md
           --media-dir <thư mục>   nơi lưu video tự tạo, mặc định ~/Library/Caches/TrinhChieuProbe
+        Cờ thử T0.6 (đo dưới tải):
+          --on-demand             B1: chỉ dựng khi cảnh đổi, đang hoà tan hoặc có khung video mới
+          --on-demand-skip        B1 biến thể: như --on-demand nhưng display link không nghỉ, chỉ bỏ nhịp
+          --idle-present-every <n>  B1 biến thể: cảnh đứng yên thì cứ n nhịp present lại một khung
+          --realtime              B2: luồng vẽ thời gian thực, tiến trình giữ latencyCritical
+          --looper                B3: lặp video bằng AVPlayerLooper
+          --decode-size <native|output>  B4: cỡ giải mã video, mặc định native
+          --recover               B5: 2 drawable, tạo lại display link khi đường ống dài ra
+          --engine-loop           dùng FrameLoop của RenderEngine (đối chiếu, không kèm B1, B2, B5)
+          --label <mã>            mã lần chạy, ví dụ L0
+          --load <mô tả>          tải nền lúc đo, ghi vào báo cáo
+          --summary <tệp.md>      thêm dòng tóm tắt của lần chạy vào tệp này
         Bấm Esc trên màn đầu ra để dừng sớm (vẫn ghi báo cáo).
         """
 
@@ -148,7 +184,39 @@ struct ProbeOptions: Sendable {
                     return .failure("--screens cần các chỉ số màn khác nhau, không âm, cách nhau bằng dấu phẩy")
                 }
                 options.screenIndices = indices
-            case "--video1", "--video2", "--report", "--media-dir":
+            case "--on-demand":
+                options.onDemand = true
+            case "--idle-present-every":
+                guard let text = value(flag), let number = Int(text), (1...600).contains(number) else {
+                    return .failure("--idle-present-every cần số nguyên từ 1 đến 600")
+                }
+                options.onDemand = true
+                options.onDemandSkip = true
+                options.idleKeepAliveEvery = number
+            case "--on-demand-skip":
+                options.onDemand = true
+                options.onDemandSkip = true
+            case "--realtime":
+                options.realtime = true
+            case "--looper":
+                options.looper = true
+            case "--recover":
+                options.recover = true
+            case "--engine-loop":
+                options.engineLoop = true
+            case "--decode-size":
+                guard let text = value(flag), text == "native" || text == "output" else {
+                    return .failure("--decode-size phải là native hoặc output")
+                }
+                options.decodeToOutputSize = text == "output"
+            case "--label", "--load":
+                guard let text = value(flag), !text.isEmpty else { return .failure("Thiếu giá trị cho \(flag)") }
+                if flag == "--label" {
+                    options.runLabel = text
+                } else {
+                    options.loadDescription = text
+                }
+            case "--video1", "--video2", "--report", "--media-dir", "--summary":
                 guard let text = value(flag) else { return .failure("Thiếu giá trị cho \(flag)") }
                 let url = URL(fileURLWithPath: (text as NSString).expandingTildeInPath)
                 switch flag {
@@ -158,6 +226,8 @@ struct ProbeOptions: Sendable {
                     options.video2 = url
                 case "--report":
                     options.report = url
+                case "--summary":
+                    options.summary = url
                 default:
                     options.mediaDirectory = url
                 }
@@ -166,9 +236,33 @@ struct ProbeOptions: Sendable {
             }
             index += 1
         }
+        if options.engineLoop && (options.onDemand || options.realtime || options.recover || options.viewDisplayLink) {
+            return .failure(
+                "--engine-loop không dùng chung với --on-demand, --realtime, --recover, --view-display-link"
+            )
+        }
+        if options.viewDisplayLink && (options.onDemand || options.realtime || options.recover) {
+            return .failure("--view-display-link không dùng chung với --on-demand, --realtime, --recover")
+        }
         if options.fullScreenMode && options.nativeFullScreen {
             return .failure("Chỉ chọn một trong --fullscreen và --native-fullscreen")
         }
         return .success(options)
+    }
+
+    /// Các biện pháp T0.6 đang bật, ví dụ "B1 B3", hoặc "không".
+    var measures: String {
+        let flags = [
+            ("B1", onDemand && !onDemandSkip),
+            ("B1 (không nghỉ link)", onDemandSkip && idleKeepAliveEvery == 0),
+            ("B1 (giữ ấm mỗi \(idleKeepAliveEvery) nhịp)", idleKeepAliveEvery > 0),
+            ("B2", realtime),
+            ("B3", looper),
+            ("B4 (cỡ đầu ra)", decodeToOutputSize),
+            ("B4 (bỏ khung phụ)", !pictureInPicture && !noVideo),
+            ("B5", recover),
+        ]
+        let list = flags.filter(\.1).map(\.0)
+        return list.isEmpty ? "không" : list.joined(separator: " ")
     }
 }

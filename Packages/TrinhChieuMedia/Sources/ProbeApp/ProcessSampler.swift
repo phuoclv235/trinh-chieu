@@ -9,6 +9,8 @@ final class ProcessSampler {
         var cpuPercent: Double
         /// Bộ nhớ thật tiến trình đang chiếm (phys_footprint, như Activity Monitor), MB.
         var footprintMB: Double
+        /// `ProcessInfo.thermalState` lúc lấy mẫu (0 bình thường, 1 hơi nóng, 2 nóng, 3 nguy cấp).
+        var thermalState = 0
     }
 
     private(set) var samples: [Sample] = []
@@ -38,7 +40,13 @@ final class ProcessSampler {
         let wall = ProcessInfo.processInfo.systemUptime
         let elapsed = wall - lastWall
         guard elapsed > 0 else { return }
-        samples.append(Sample(cpuPercent: (cpu - lastCPU) / elapsed * 100, footprintMB: Self.footprintMB()))
+        samples.append(
+            Sample(
+                cpuPercent: (cpu - lastCPU) / elapsed * 100,
+                footprintMB: Self.footprintMB(),
+                thermalState: ProcessInfo.processInfo.thermalState.rawValue
+            )
+        )
         lastCPU = cpu
         lastWall = wall
     }
@@ -60,6 +68,28 @@ final class ProcessSampler {
         }
         guard result == 0 else { return 0 }
         return Double(info.ri_phys_footprint) / (1024 * 1024)
+    }
+}
+
+/// Tên tiếng Việt của trạng thái nhiệt.
+enum ThermalName {
+    static func of(_ raw: Int) -> String {
+        switch raw {
+        case 0:
+            return "bình thường"
+        case 1:
+            return "hơi nóng"
+        case 2:
+            return "nóng"
+        case 3:
+            return "nguy cấp"
+        default:
+            return "không rõ (\(raw))"
+        }
+    }
+
+    static var current: String {
+        of(ProcessInfo.processInfo.thermalState.rawValue)
     }
 }
 
