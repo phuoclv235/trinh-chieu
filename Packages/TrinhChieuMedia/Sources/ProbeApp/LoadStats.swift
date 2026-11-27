@@ -209,6 +209,14 @@ final class LoadStats: Sendable {
             // Các nhịp rớt chưa có khung lên màn nào khép lại (cuối lần đo) vẫn được tính.
             let pending = state.pendingMissedTicks + state.notPresentedSinceLast
             var stalls = state.stalls
+            var perMinute = state.dropsPerMinute
+            if pending > 0 {
+                let minute = max(0, Int((end - state.startedAt) / 60))
+                while perMinute.count <= minute {
+                    perMinute.append(0)
+                }
+                perMinute[minute] += pending
+            }
             if pending >= 3 {
                 stalls.append(Stall(time: end - state.startedAt, frames: pending))
             }
@@ -220,7 +228,7 @@ final class LoadStats: Sendable {
                 nominalPeriod: period,
                 recordingDuration: state.startedAt > 0 ? max(0, end - state.startedAt) : 0,
                 droppedFrames: state.droppedFrames + pending,
-                dropsPerMinute: state.dropsPerMinute,
+                dropsPerMinute: perMinute,
                 missedTicks: state.missedTicks,
                 latePresents: state.latePresents,
                 notPresented: state.notPresented,

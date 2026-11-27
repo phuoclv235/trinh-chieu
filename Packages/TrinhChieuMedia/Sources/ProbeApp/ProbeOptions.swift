@@ -240,7 +240,8 @@ struct ProbeOptions: Sendable {
             ("B1", onDemand),
             ("B2", realtime),
             ("B3", looper),
-            ("B4", decodeToOutputSize || (!pictureInPicture && !noVideo)),
+            ("B4 (cỡ đầu ra)", decodeToOutputSize),
+            ("B4 (bỏ khung phụ)", !pictureInPicture && !noVideo),
             ("B5", recover),
         ]
         let list = flags.filter(\.1).map(\.0)
