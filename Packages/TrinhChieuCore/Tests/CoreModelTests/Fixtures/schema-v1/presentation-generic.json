@@ -1,0 +1,109 @@
+{
+  "arrangements" : [
+    {
+      "groupIDs" : [
+        "6A1E0000-0000-4000-8000-000000000032"
+      ],
+      "id" : "6A1E0000-0000-4000-8000-00000000003C",
+      "name" : "Mặc định"
+    }
+  ],
+  "createdAt" : "2026-11-26T10:00:00Z",
+  "groups" : [
+    {
+      "id" : "6A1E0000-0000-4000-8000-000000000032",
+      "label" : {
+        "custom" : "Trang",
+        "kind" : "custom"
+      },
+      "slides" : [
+        {
+          "background" : {
+            "kind" : "media",
+            "loop" : true,
+            "mediaID" : "a1b2c3d4e5f6",
+            "muted" : true
+          },
+          "elements" : [
+            {
+              "fit" : "fill",
+              "frame" : [
+                100,
+                100,
+                640,
+                360
+              ],
+              "id" : "6A1E0000-0000-4000-8000-000000000034",
+              "mediaID" : "0f1e2d3c4b5a",
+              "opacity" : 0.85,
+              "type" : "image"
+            },
+            {
+              "cornerRadius" : 12,
+              "fill" : "#00000080",
+              "frame" : [
+                0,
+                900,
+                1920,
+                180
+              ],
+              "id" : "6A1E0000-0000-4000-8000-000000000035",
+              "shape" : "rect",
+              "type" : "shape"
+            },
+            {
+              "frame" : [
+                120,
+                920,
+                1680,
+                140
+              ],
+              "id" : "6A1E0000-0000-4000-8000-000000000036",
+              "style" : {
+                "alignment" : "left",
+                "fontSize" : 48
+              },
+              "text" : "Tĩnh nguyện sáng thứ Bảy",
+              "type" : "text"
+            }
+          ],
+          "enabled" : true,
+          "id" : "6A1E0000-0000-4000-8000-000000000033",
+          "notes" : ""
+        },
+        {
+          "background" : {
+            "kind" : "none"
+          },
+          "elements" : [
+            {
+              "fit" : "fit",
+              "frame" : [
+                0,
+                0,
+                1920,
+                1080
+              ],
+              "id" : "6A1E0000-0000-4000-8000-000000000038",
+              "loop" : false,
+              "mediaID" : "99aa88bb77cc",
+              "muted" : false,
+              "type" : "video"
+            }
+          ],
+          "enabled" : true,
+          "id" : "6A1E0000-0000-4000-8000-000000000037",
+          "notes" : ""
+        }
+      ]
+    }
+  ],
+  "id" : "6A1E0000-0000-4000-8000-000000000002",
+  "kind" : "generic",
+  "modifiedAt" : "2026-11-26T10:05:00.250Z",
+  "schemaVersion" : 1,
+  "tags" : [
+    "thông báo"
+  ],
+  "title" : "Thông báo Hội Thánh"
+}
