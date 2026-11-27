@@ -15,9 +15,35 @@ public final class FrameStats: Sendable {
         public var presentIntervals: [Double]
         public var gpuTimes: [Double]
         public var sceneLatencies: [Double]
+        /// Từ lúc display link gọi vẽ tới `targetPresentationTimestamp` của khung đó.
+        public var callToTarget: [Double] = []
+        /// Từ `targetPresentationTimestamp` tới `presentedTime` thật (chỉ khung lên màn).
+        public var targetToPresented: [Double] = []
+        /// Trễ đường ống: từ lúc display link gọi vẽ tới `presentedTime` thật.
+        public var pipelineLatencies: [Double] = []
+        /// Nhật ký khung rớt theo thứ tự thời gian.
+        public var dropEvents: [DropEvent] = []
 
         /// Khung rớt = khung không lên màn + khung lên màn cách khung trước hơn 1.5 chu kỳ.
         public var droppedFrames: Int { framesNotPresented + lateFrames }
+    }
+
+    /// Một lần rớt khung trong nhật ký.
+    public struct DropEvent: Sendable, Equatable {
+        public enum Kind: Sendable, Equatable {
+            /// Khung không được hiển thị (`presentedTime == 0`).
+            case notPresented
+            /// Khoảng trống giữa hai khung lên màn dài hơn 1.5 chu kỳ.
+            case late
+        }
+
+        /// Giây kể từ lúc bắt đầu ghi.
+        public var time: Double
+        public var kind: Kind
+        /// Số nhịp làm tươi bị bỏ lỡ tính vào lần rớt này.
+        public var count: Int
+        /// Độ dài khoảng trống (chỉ có với `.late`).
+        public var gap: Double?
     }
 
     private struct State: Sendable {
@@ -34,6 +60,10 @@ public final class FrameStats: Sendable {
         var presentIntervals: [Double] = []
         var gpuTimes: [Double] = []
         var sceneLatencies: [Double] = []
+        var callToTarget: [Double] = []
+        var targetToPresented: [Double] = []
+        var pipelineLatencies: [Double] = []
+        var dropEvents: [DropEvent] = []
     }
 
     public let label: String
@@ -74,6 +104,9 @@ public final class FrameStats: Sendable {
                 state.framesNotPresented += 1
                 state.notPresentedSinceLast += 1
                 Self.addDrop(&state, at: now)
+                state.dropEvents.append(
+                    DropEvent(time: now - state.startedAt, kind: .notPresented, count: 1, gap: nil)
+                )
                 return
             }
             if state.lastPresented > 0 {
@@ -85,6 +118,10 @@ public final class FrameStats: Sendable {
                     let slots = max(1, Int((interval / period).rounded()) - 1)
                     let missed = max(0, slots - state.notPresentedSinceLast)
                     state.lateFrames += missed
+                    if missed > 0 {
+                        let time = state.lastPresented + period - state.startedAt
+                        state.dropEvents.append(DropEvent(time: time, kind: .late, count: missed, gap: interval))
+                    }
                     // Xếp mỗi nhịp bỏ lỡ vào đúng phút nó xảy ra (khoảng trống có thể vắt qua ranh giới phút).
                     for index in 0..<missed {
                         Self.addDrop(&state, at: state.lastPresented + period * Double(index + 1))
@@ -94,6 +131,18 @@ public final class FrameStats: Sendable {
             state.notPresentedSinceLast = 0
             state.lastPresented = presentedTime
             state.framesPresented += 1
+        }
+    }
+
+    /// Gọi từ `presentedHandler`: ba mốc thời gian của một khung (theo `CACurrentMediaTime`).
+    /// `presented == 0` (khung không lên màn) chỉ ghi phần "gọi tới đích".
+    public func recordFrameTiming(callback: Double, target: Double, presented: Double) {
+        state.withLock { state in
+            guard state.recording else { return }
+            state.callToTarget.append(target - callback)
+            guard presented > 0 else { return }
+            state.targetToPresented.append(presented - target)
+            state.pipelineLatencies.append(presented - callback)
         }
     }
 
@@ -129,7 +178,11 @@ public final class FrameStats: Sendable {
                 dropsPerMinute: state.dropsPerMinute,
                 presentIntervals: state.presentIntervals,
                 gpuTimes: state.gpuTimes,
-                sceneLatencies: state.sceneLatencies
+                sceneLatencies: state.sceneLatencies,
+                callToTarget: state.callToTarget,
+                targetToPresented: state.targetToPresented,
+                pipelineLatencies: state.pipelineLatencies,
+                dropEvents: state.dropEvents
             )
         }
     }

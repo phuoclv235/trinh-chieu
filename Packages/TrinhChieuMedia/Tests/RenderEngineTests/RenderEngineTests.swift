@@ -159,6 +159,26 @@ struct FrameStatsTests {
         #expect(snapshot.dropsPerMinute == [1, 3])
     }
 
+    @Test("Ghi ba mốc thời gian và nhật ký khung rớt")
+    func frameTimingAndDropLog() {
+        let period = 1.0 / 60
+        let stats = FrameStats(label: "thu", nominalPeriod: period)
+        stats.startRecording(at: 10)
+        stats.recordFrameTiming(callback: 10, target: 10.03, presented: 10.04)
+        stats.recordFrameTiming(callback: 10.1, target: 10.13, presented: 0)  // không lên màn
+        stats.recordPresented(10 + period, now: 10 + period)
+        stats.recordPresented(0, now: 10.5)
+        stats.recordPresented(10 + period * 5, now: 10 + period * 5)  // khoảng 4 chu kỳ, trừ 1 khung không lên
+        let snapshot = stats.snapshot(now: 11)
+        #expect(snapshot.callToTarget.count == 2)
+        #expect(snapshot.targetToPresented.count == 1)
+        #expect(abs(snapshot.pipelineLatencies[0] - 0.04) < 1e-9)
+        #expect(snapshot.dropEvents.count == 2)
+        #expect(snapshot.dropEvents[0].kind == .notPresented)
+        #expect(snapshot.dropEvents[1].kind == .late)
+        #expect(snapshot.dropEvents[1].count == 2)
+    }
+
     @Test("Phân vị theo hạng gần nhất")
     func percentile() {
         let values = (1...100).map(Double.init)
@@ -194,6 +214,39 @@ struct TextRasterizerTests {
         let markedHeight = markedRows.upperBound - markedRows.lowerBound
         #expect(markedHeight > plainHeight)
         #expect(markedRows.lowerBound > 0)
+    }
+
+    @Test("Viền nằm ngoài nét: phần tô trắng không bị viền ăn vào")
+    func strokeOutsideGlyph() {
+        let text = "Ẩn náu nơi Đấng Chí Cao, Người"
+        let plainStyle = TextStyle(fontSize: 72, strokeWidthPercent: 0)
+        let plain = TextRasterizer.rasterize(text, style: plainStyle, width: 1400, height: 200, scale: 1)
+        let stroked = TextRasterizer.rasterize(text, style: style, width: 1400, height: 200, scale: 1)
+        let plainFill = Self.opaqueWhitePixels(plain)
+        let strokedFill = Self.opaqueWhitePixels(stroked)
+        #expect(plainFill > 0)
+        // Phần tô gần như giữ nguyên (sai khác do khử răng cưa ở mép).
+        #expect(Double(strokedFill) >= Double(plainFill) * 0.9)
+        // Có viền đen bao ngoài.
+        #expect(Self.opaqueDarkPixels(stroked) > plainFill / 10)
+    }
+
+    private static func opaqueWhitePixels(_ bitmap: BGRABitmap) -> Int {
+        var count = 0
+        for index in stride(from: 0, to: bitmap.pixels.count, by: 4)
+        where bitmap.pixels[index + 3] == 255 && bitmap.pixels[index + 2] >= 250 {
+            count += 1
+        }
+        return count
+    }
+
+    private static func opaqueDarkPixels(_ bitmap: BGRABitmap) -> Int {
+        var count = 0
+        for index in stride(from: 0, to: bitmap.pixels.count, by: 4)
+        where bitmap.pixels[index + 3] == 255 && bitmap.pixels[index + 2] <= 5 {
+            count += 1
+        }
+        return count
     }
 
     @Test("Chuỗi tổ hợp (NFD) cho cùng ảnh với chuỗi dựng sẵn (NFC)")

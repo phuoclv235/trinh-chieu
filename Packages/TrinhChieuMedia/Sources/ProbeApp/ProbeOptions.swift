@@ -21,10 +21,12 @@ struct ProbeOptions: Sendable {
     var video1: URL?
     var video2: URL?
     var pictureInPicture = true
-    /// `nil` = theo tần số tối đa của từng màn (`--fps native`).
-    var frameRate: Float? = 60
+    /// `nil` = theo tần số tối đa của từng màn (mặc định, `--fps native`).
+    var frameRate: Float?
     /// Đưa view đầu ra vào chế độ toàn màn hình của AppKit, để thử đường trình chiếu trực tiếp.
     var fullScreenMode = false
+    /// Đưa cửa sổ vào toàn màn hình gốc của macOS (`toggleFullScreen`, có Space riêng).
+    var nativeFullScreen = false
     var frameLatency = 1
     var report: URL?
     var mediaDirectory: URL?
@@ -33,14 +35,15 @@ struct ProbeOptions: Sendable {
         Cách dùng: ProbeApp [tuỳ chọn]
           --duration <giây>       thời gian đo, mặc định 600 (10 phút)
           --warmup <giây>         khởi động trước khi đo, mặc định 5
-          --interval <giây>       đổi chữ mỗi khoảng, mặc định 2
+          --interval <giây>       đổi chữ mỗi khoảng, mặc định 2 (cộng ngẫu nhiên 0 đến 1 chu kỳ khung)
           --dissolve <giây>       thời lượng hoà tan, mặc định 0.35
           --screens <a,b>         chỉ số màn hình (xem danh sách in ra lúc chạy), mặc định 2 màn đầu
           --video1 <tệp>          video nền; mặc định tự tạo 1080p H.264
           --video2 <tệp>          video khung phụ; mặc định tự tạo 4K HEVC
           --no-pip                bỏ video khung phụ
-          --fps <số|native>       tần số khung mong muốn, mặc định 60; native = theo từng màn
-          --fullscreen            dùng chế độ toàn màn hình của AppKit (thử trình chiếu trực tiếp)
+          --fps <số|native>       tần số khung mong muốn, mặc định native = theo từng màn
+          --fullscreen            dùng enterFullScreenMode của AppKit (thử trình chiếu trực tiếp)
+          --native-fullscreen     dùng toàn màn hình gốc của macOS (toggleFullScreen)
           --frame-latency <1|2>   số khung trễ của display link, mặc định 1
           --report <tệp.md>       nơi ghi báo cáo, mặc định ./ket-qua-ban-thu-<thời điểm>.md
           --media-dir <thư mục>   nơi lưu video tự tạo, mặc định ~/Library/Caches/TrinhChieuProbe
@@ -79,6 +82,8 @@ struct ProbeOptions: Sendable {
                 }
             case "--fullscreen":
                 options.fullScreenMode = true
+            case "--native-fullscreen":
+                options.nativeFullScreen = true
             case "--fps":
                 guard let text = value(flag) else { return .failure("Thiếu giá trị cho --fps") }
                 if text == "native" {
@@ -120,6 +125,9 @@ struct ProbeOptions: Sendable {
                 return .failure("Không hiểu tuỳ chọn \(flag)")
             }
             index += 1
+        }
+        if options.fullScreenMode && options.nativeFullScreen {
+            return .failure("Chỉ chọn một trong --fullscreen và --native-fullscreen")
         }
         return .success(options)
     }

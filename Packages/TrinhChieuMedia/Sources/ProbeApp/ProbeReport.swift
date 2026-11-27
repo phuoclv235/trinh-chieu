@@ -28,18 +28,29 @@ struct ProbeReport {
         var latencyP95: Double
         var framesPassed: Bool
         var latencyPassed: Bool
+        /// Tiêu chí đề xuất 2a: trễ đường ống p99 ≤ 2 chu kỳ + 2 ms.
+        var pipelineP99: Double
+        var pipelinePassed: Bool
+        /// Tiêu chí đề xuất 2b: trễ đầu cuối p95 ≤ 3 chu kỳ + 1 ms và không mẫu nào > 4 chu kỳ.
+        var endToEndPassed: Bool
     }
 
     func evaluate(_ output: FrameStats.Snapshot) -> OutputVerdict {
         let minutes = max(output.recordingDuration / 60, 1.0 / 60)
         let average = Double(output.droppedFrames) / minutes
         let p95 = Percentile.value(output.sceneLatencies, 0.95)
+        let period = output.nominalPeriod
+        let pipelineP99 = Percentile.value(output.pipelineLatencies, 0.99)
+        let latencyMax = output.sceneLatencies.max() ?? 0
         return OutputVerdict(
             averageDropsPerMinute: average,
             worstMinute: output.dropsPerMinute.max() ?? 0,
             latencyP95: p95,
             framesPassed: average < 1,
-            latencyPassed: !output.sceneLatencies.isEmpty && p95 < output.nominalPeriod * 2
+            latencyPassed: !output.sceneLatencies.isEmpty && p95 < period * 2,
+            pipelineP99: pipelineP99,
+            pipelinePassed: !output.pipelineLatencies.isEmpty && pipelineP99 <= period * 2 + 0.002,
+            endToEndPassed: !output.sceneLatencies.isEmpty && p95 <= period * 3 + 0.001 && latencyMax <= period * 4
         )
     }
 
@@ -82,9 +93,12 @@ struct ProbeReport {
         let rate = options.frameRate.map { Self.format(Double($0), digits: 0) } ?? "theo từng màn"
         lines.append("| Thời gian đo | \(Self.format(measured, digits: 0)) giây\(early) |")
         lines.append("| Khởi động trước khi đo | \(Self.format(options.warmup, digits: 0)) giây |")
-        lines.append("| Đổi chữ | mỗi \(interval) giây, hoà tan \(dissolve) giây |")
+        lines.append("| Đổi chữ | mỗi \(interval) giây cộng ngẫu nhiên 0 đến 1 chu kỳ, hoà tan \(dissolve) giây |")
         lines.append("| Display link | \(rate) khung/giây, trễ \(options.frameLatency) khung |")
-        let windowMode = options.fullScreenMode ? "toàn màn hình AppKit" : "cửa sổ không viền mức screenSaver"
+        let windowMode =
+            options.fullScreenMode
+            ? "toàn màn hình AppKit (enterFullScreenMode)"
+            : options.nativeFullScreen ? "toàn màn hình gốc (toggleFullScreen)" : "cửa sổ không viền mức screenSaver"
         lines.append("| Chế độ cửa sổ | \(windowMode) |")
         for media in mediaDescriptions {
             lines.append("| Media | \(media) |")
@@ -114,7 +128,7 @@ struct ProbeReport {
             let cells = [
                 "\(screen.index): \(screen.name)",
                 "\(screen.pixelWidth)x\(screen.pixelHeight)",
-                "\(screen.maximumFramesPerSecond) Hz (chu kỳ đo \(Self.ms(output.nominalPeriod)), "
+                "\(screen.maximumFramesPerSecond) Hz (chu kỳ danh định \(Self.ms(output.nominalPeriod)), "
                     + "khoảng cách trung vị \(Self.ms(Percentile.value(output.presentIntervals, 0.5))))",
                 "\(output.framesPresented)",
                 "\(output.droppedFrames) (không lên \(output.framesNotPresented), trễ \(output.lateFrames))",
@@ -129,6 +143,9 @@ struct ProbeReport {
             lines.append("| " + cells.joined(separator: " | ") + " |")
         }
         lines.append("")
+
+        lines.append(contentsOf: pipelineSection())
+        lines.append(contentsOf: dropLogSection())
 
         let cpu = processSamples.map(\.cpuPercent)
         let memory = processSamples.map(\.footprintMB)
@@ -163,10 +180,91 @@ struct ProbeReport {
                     + "\(latencyResult) (\(Self.ms(verdict.latencyP95)) so với \(limit)) |"
             )
         }
+        for (screen, output) in zip(screens, outputs) {
+            let verdict = evaluate(output)
+            let period = output.nominalPeriod
+            let pipelineResult = verdict.pipelinePassed ? "ĐẠT" : "KHÔNG ĐẠT"
+            let endResult = verdict.endToEndPassed ? "ĐẠT" : "KHÔNG ĐẠT"
+            lines.append(
+                "| 2a (đề xuất). Trễ đường ống p99 ≤ 2 chu kỳ + 2 ms, màn \(screen.index) | "
+                    + "\(pipelineResult) (\(Self.ms(verdict.pipelineP99)) so với \(Self.ms(period * 2 + 0.002))) |"
+            )
+            lines.append(
+                "| 2b (đề xuất). Trễ đổi cảnh p95 ≤ 3 chu kỳ + 1 ms, lớn nhất ≤ 4 chu kỳ, màn \(screen.index) | "
+                    + "\(endResult) (p95 \(Self.ms(verdict.latencyP95)) so với \(Self.ms(period * 3 + 0.001)); "
+                    + "lớn nhất \(Self.ms(output.sceneLatencies.max() ?? 0)) so với \(Self.ms(period * 4))) |"
+            )
+        }
         lines.append("| 3. Dấu chồng không bị cắt | Kiểm bằng mắt trên màn và test `TextRasterizerTests` |")
         lines.append("| 4. Thread Sanitizer | Chạy riêng bản debug `--sanitize=thread` |")
         lines.append("")
         return lines.joined(separator: "\n")
+    }
+
+    /// Bảng ba mốc thời gian của từng khung và phân bố trễ đổi cảnh.
+    private func pipelineSection() -> [String] {
+        var lines = ["### Đường ống từng màn", ""]
+        lines.append(
+            "Ba mốc mỗi khung: lúc display link gọi vẽ, `targetPresentationTimestamp`, `presentedTime`. "
+                + "Chu kỳ đo là trung vị khoảng cách giữa hai `presentedTime` liên tiếp."
+        )
+        lines.append("")
+        lines.append("| Màn | Chu kỳ đo | Số đo | p50 | p95 | p99 | Nhỏ nhất | Lớn nhất |")
+        lines.append("| --- | --- | --- | --- | --- | --- | --- | --- |")
+        for (screen, output) in zip(screens, outputs) {
+            let measured = Self.format(Percentile.value(output.presentIntervals, 0.5) * 1000, digits: 4) + " ms"
+            let rows: [(String, [Double])] = [
+                ("Gọi tới đích", output.callToTarget),
+                ("Đích tới thật", output.targetToPresented),
+                ("Đường ống (gọi tới thật)", output.pipelineLatencies),
+                ("Trễ đổi cảnh (gửi tới thật)", output.sceneLatencies),
+            ]
+            for (index, row) in rows.enumerated() {
+                let values = row.1
+                let cells = [
+                    index == 0 ? "\(screen.index)" : "",
+                    index == 0 ? measured : "",
+                    "\(row.0), \(values.count) mẫu",
+                    Self.ms(Percentile.value(values, 0.5)),
+                    Self.ms(Percentile.value(values, 0.95)),
+                    Self.ms(Percentile.value(values, 0.99)),
+                    Self.ms(values.min() ?? 0),
+                    Self.ms(values.max() ?? 0),
+                ]
+                lines.append("| " + cells.joined(separator: " | ") + " |")
+            }
+        }
+        lines.append("")
+        return lines
+    }
+
+    /// Nhật ký khung rớt của từng màn (tối đa 200 dòng mỗi màn).
+    private func dropLogSection() -> [String] {
+        var lines = ["### Nhật ký khung rớt", ""]
+        let limit = 200
+        for (screen, output) in zip(screens, outputs) {
+            let events = output.dropEvents
+            lines.append("Màn \(screen.index): \(events.count) lần rớt.")
+            lines.append("")
+            guard !events.isEmpty else { continue }
+            lines.append("| Thời điểm (giây) | Loại | Số nhịp | Khoảng trống | Cách lần rớt trước |")
+            lines.append("| --- | --- | --- | --- | --- |")
+            var previous: Double?
+            for event in events.prefix(limit) {
+                let kind = event.kind == .late ? "trễ" : "không lên"
+                let gap = event.gap.map { Self.ms($0) } ?? ""
+                let since = previous.map { Self.format(event.time - $0, digits: 3) + " giây" } ?? ""
+                let cells = [Self.format(event.time, digits: 3), kind, "\(event.count)", gap, since]
+                lines.append("| " + cells.joined(separator: " | ") + " |")
+                previous = event.time
+            }
+            if events.count > limit {
+                lines.append("")
+                lines.append("(Bỏ bớt \(events.count - limit) dòng.)")
+            }
+            lines.append("")
+        }
+        return lines
     }
 
     static func ms(_ seconds: Double) -> String {

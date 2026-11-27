@@ -70,7 +70,19 @@ public final class OutputWindow {
         _ = contentView.enterFullScreenMode(screen, withOptions: [.fullScreenModeAllScreens: false])
     }
 
+    /// Chuyển cửa sổ sang toàn màn hình gốc của macOS (Space riêng, như bấm nút xanh),
+    /// khác `enterFullScreenMode` vốn chỉ phủ view lên màn.
+    public func enterNativeFullScreen() {
+        guard !window.styleMask.contains(.fullScreen) else { return }
+        window.level = .normal
+        window.collectionBehavior = [.fullScreenPrimary]
+        window.toggleFullScreen(nil)
+    }
+
     public func close() {
+        if window.styleMask.contains(.fullScreen) {
+            window.toggleFullScreen(nil)
+        }
         if contentView.isInFullScreenMode {
             contentView.exitFullScreenMode(options: nil)
         }

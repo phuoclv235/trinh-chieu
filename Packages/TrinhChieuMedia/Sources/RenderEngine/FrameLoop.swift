@@ -128,6 +128,8 @@ public final class FrameLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked S
     }
 
     public func metalDisplayLink(_ link: CAMetalDisplayLink, needsUpdate update: CAMetalDisplayLink.Update) {
+        let callbackTime = CACurrentMediaTime()
+        let targetTime = update.targetPresentationTimestamp
         let drawable = update.drawable
         let texture = drawable.texture
         guard let commandBuffer = gpu.commandQueue.makeCommandBuffer() else { return }
@@ -144,7 +146,7 @@ public final class FrameLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked S
             FrameContext(
                 encoder: encoder,
                 targetSize: CGSize(width: texture.width, height: texture.height),
-                targetPresentationTime: update.targetPresentationTimestamp
+                targetPresentationTime: targetTime
             )
         )
         encoder.endEncoding()
@@ -154,6 +156,7 @@ public final class FrameLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked S
         drawable.addPresentedHandler { presented in
             let presentedTime = presented.presentedTime
             stats.recordPresented(presentedTime, now: CACurrentMediaTime())
+            stats.recordFrameTiming(callback: callbackTime, target: targetTime, presented: presentedTime)
             if let postedAt, presentedTime > 0 {
                 stats.recordSceneLatency(presentedTime - postedAt)
             }

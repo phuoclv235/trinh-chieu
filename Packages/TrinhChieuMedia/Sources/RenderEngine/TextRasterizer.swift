@@ -151,22 +151,19 @@ public enum TextRasterizer {
 
         let fill = cgColor(style.fillColor, colorSpace: colorSpace)
         let stroke = cgColor(style.strokeColor, colorSpace: colorSpace)
-        var attributes: [CFString: Any] = [
+        let attributes: [CFString: Any] = [
             kCTFontAttributeName: font,
             kCTForegroundColorAttributeName: fill,
             kCTParagraphStyleAttributeName: paragraph,
         ]
-        if style.strokeWidthPercent > 0 {
-            // Số âm: vừa tô vừa viền.
-            attributes[kCTStrokeWidthAttributeName] = -style.strokeWidthPercent
-            attributes[kCTStrokeColorAttributeName] = stroke
-        }
         let normalized = text.precomposedStringWithCanonicalMapping
         let attributed = CFAttributedStringCreate(nil, normalized as CFString, attributes as CFDictionary)
         guard let attributed else { return }
         let framesetter = CTFramesetterCreateWithAttributedString(attributed)
 
-        let padding = (fontSize * paddingRatio).rounded(.up)
+        // Chừa thêm độ dày viền (nằm ngoài nét chữ).
+        let strokeOutset = fontSize * style.strokeWidthPercent / 100
+        let padding = (fontSize * paddingRatio + strokeOutset).rounded(.up)
         let available = CGSize(
             width: max(1, CGFloat(width) - padding * 2),
             height: max(1, CGFloat(height) - padding * 2)
@@ -184,6 +181,29 @@ public enum TextRasterizer {
         let frameRect = CGRect(x: padding, y: originY, width: available.width, height: textHeight)
         let path = CGPath(rect: frameRect, transform: nil)
         let frame = CTFramesetterCreateFrame(framesetter, CFRange(location: 0, length: 0), path, nil)
+
+        if style.strokeWidthPercent > 0 {
+            // Viền chỉ nằm ngoài nét chữ: vẽ viền trước với độ dày gấp đôi (nét viền nằm giữa đường bao,
+            // nửa trong sẽ bị lớp tô phủ lên), rồi tô chữ đè lên. Viền kiểu Core Text (số âm) nằm giữa
+            // đường bao nên ăn vào trong nét, làm chữ mảnh bị "cắt nét".
+            var strokeAttributes = attributes
+            strokeAttributes[kCTStrokeWidthAttributeName] = style.strokeWidthPercent * 2
+            strokeAttributes[kCTStrokeColorAttributeName] = stroke
+            let strokeString = CFAttributedStringCreate(
+                nil,
+                normalized as CFString,
+                strokeAttributes as CFDictionary
+            )
+            if let strokeString {
+                let strokeSetter = CTFramesetterCreateWithAttributedString(strokeString)
+                let strokeFrame = CTFramesetterCreateFrame(strokeSetter, CFRange(location: 0, length: 0), path, nil)
+                context.saveGState()
+                context.setLineJoin(.round)
+                context.setLineCap(.round)
+                CTFrameDraw(strokeFrame, context)
+                context.restoreGState()
+            }
+        }
         CTFrameDraw(frame, context)
     }
 

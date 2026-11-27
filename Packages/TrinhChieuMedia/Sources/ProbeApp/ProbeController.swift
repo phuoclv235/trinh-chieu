@@ -114,6 +114,8 @@ final class ProbeController {
             output.window.show()
             if options.fullScreenMode {
                 output.window.enterFullScreenMode()
+            } else if options.nativeFullScreen {
+                output.window.enterNativeFullScreen()
             }
             output.loop.start()
         }
@@ -133,7 +135,13 @@ final class ProbeController {
         }
         sampler.start()
 
-        var nextChange = measureStart + options.sceneInterval
+        // Cộng ngẫu nhiên 0 đến 1 chu kỳ khung vào mỗi khoảng đổi chữ, để pha giữa lúc gửi cảnh và nhịp
+        // display link trải đều (2 giây tròn là đúng 120 khung, pha gần như cố định).
+        let jitterPeriod = outputs.map(\.loop.stats.nominalPeriod).max() ?? (1.0 / 60)
+        func nextInterval() -> Double {
+            options.sceneInterval + Double.random(in: 0..<jitterPeriod)
+        }
+        var nextChange = measureStart + nextInterval()
         var lastProgress = measureStart
         while !stopRequested, CACurrentMediaTime() - measureStart < options.duration {
             let wait = max(0.001, nextChange - CACurrentMediaTime())
@@ -142,7 +150,7 @@ final class ProbeController {
             if now >= nextChange {
                 phraseIndex = (phraseIndex + 1) % ProbeLayout.phrases.count
                 mailbox.post(ProbeScene(text: ProbeLayout.phrases[phraseIndex]), at: now)
-                nextChange += options.sceneInterval
+                nextChange += nextInterval()
             }
             if now - lastProgress >= 60 {
                 lastProgress = now

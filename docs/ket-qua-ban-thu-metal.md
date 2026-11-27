@@ -22,7 +22,8 @@ swift run -c debug --sanitize=thread --package-path Packages/TrinhChieuMedia Pro
 - Có 5 giây khởi động trước khi đo (bỏ các khung giật lúc mở cửa sổ và nạp video). Bấm Esc trên màn đầu ra để dừng sớm; báo cáo vẫn được ghi.
 - Mã thoát: 0 khi cả hai tiêu chí số đo đạt, 1 khi có tiêu chí không đạt, 2 khi lỗi hoặc lần chạy không hợp lệ (có màn không nhận khung nào, thường do màn hình đang khoá).
 - Mac phải mở khoá và không tự khoá trong lúc đo: khi màn hình khoá, macOS không trình chiếu drawable nào.
-- Màn 120 Hz (ProMotion) vẫn đo theo chu kỳ 16.67 ms vì display link đặt 60 khung/giây.
+- Từ lần chạy 4: display link mặc định chạy theo tần số gốc của từng màn (`--fps 60` để ép 60). Khoảng đổi chữ cộng thêm ngẫu nhiên 0 đến 1 chu kỳ khung để pha giữa lúc gửi cảnh và nhịp vẽ trải đều. Báo cáo có thêm bảng "Đường ống từng màn" (ba mốc mỗi khung: lúc gọi vẽ, `targetPresentationTimestamp`, `presentedTime`) và "Nhật ký khung rớt".
+- `--native-fullscreen` đưa cửa sổ vào toàn màn hình gốc của macOS (`toggleFullScreen`), khác `--fullscreen` (`enterFullScreenMode` của view).
 
 ## Cách đo
 
@@ -34,6 +35,8 @@ swift run -c debug --sanitize=thread --package-path Packages/TrinhChieuMedia Pro
 | CPU, RAM | Lấy mẫu mỗi giây: CPU từ `getrusage` (phần trăm một nhân), RAM là `phys_footprint` |
 
 Chữ của cả 4 lời được dựng trước khi đo, nên độ trễ đo được là của vòng vẽ chứ không gồm thời gian Core Text dựng chữ. Display link đặt `preferredFrameLatency = 1` (đổi bằng `--frame-latency 2` để so sánh).
+
+Từ lần chạy 4 có thêm: "gọi tới đích" (`targetPresentationTimestamp` trừ lúc display link gọi vẽ), "đích tới thật" (`presentedTime` trừ `targetPresentationTimestamp`), "đường ống" (`presentedTime` trừ lúc gọi vẽ), mỗi loại báo p50, p95, p99. Chu kỳ đo là trung vị khoảng cách giữa hai `presentedTime`.
 
 ## Tiêu chí (cổng giai đoạn 0)
 
@@ -113,3 +116,7 @@ Kết luận chẩn đoán:
 - **`--frame-latency 2` (C):** không cải thiện.
 - **Trễ đổi cảnh:** p95 ở mọi cấu hình đều 43 đến 48 ms (khoảng 2.6 đến 2.9 khung), kể cả khi gần như không rớt khung. Phân rã ước lượng: chờ tới lần gọi display link kế tiếp (0 đến 1 khung, trung bình nửa khung) cộng khoảng cách từ lúc gọi tới `targetPresentationTimestamp` (khoảng 2 khung: một khung dựng, một khung bộ ghép hình của hệ thống). Như vậy trễ nằm ở cấu trúc đường trình chiếu qua bộ ghép hình, không phải ở tải vẽ. Với đường hiện tại, tiêu chí 2 (dưới 2 khung, 33 ms) gần như không thể đạt.
 - Theo tiêu chí 5 và quyết định của coordinator: không đổi kiến trúc, không merge; chuyển tổng hợp để rà soát kiến trúc.
+
+### Kiểm bằng mắt tiêu chí 3 (Phuoc, 2026-11-27)
+
+Dấu tiếng Việt hiển thị đúng, không bị cắt. Nhưng viền "cắt nét" chữ: viền kiểu Core Text (`kCTStrokeWidthAttributeName` âm) nằm giữa đường bao nên ăn vào trong nét, làm nét chữ mảnh đi. Đã sửa trong bản thử: vẽ viền trước với độ dày gấp đôi rồi tô chữ đè lên, nên viền chỉ nằm ngoài nét; chừa thêm lề bằng độ dày viền. Có test `strokeOutsideGlyph`. Cần Phuoc kiểm lại bằng mắt ở lần chạy 4.
