@@ -186,7 +186,7 @@ final class SlideCardItem: NSCollectionViewItem {
 
     override func prepareForReuse() {
         super.prepareForReuse()
-        cardView.prepareForReuse()
+        cardView.resetForReuse()
     }
 }
 
@@ -452,7 +452,7 @@ final class SlideCardView: NSView {
     }
 
     /// Thẻ cũ được dùng lại cho trang khác.
-    func prepareForReuse() {
+    func resetForReuse() {
         isHovered = false
         setImage(nil)
     }
