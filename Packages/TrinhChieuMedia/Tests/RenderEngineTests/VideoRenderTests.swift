@@ -138,23 +138,23 @@ struct VideoRenderTests {
     @Test("Video ở 0.5 giây: khung đỏ của giây đầu, chữ vẫn vẽ trên nền video")
     func firstSecond() async throws {
         let image = try await render(TestVideo.scene(), at: 0.5)
-        #expect(image.color(20, 20).isClose(to: SceneKit.red, tolerance: 24))
-        #expect(image.color(940, 520).isClose(to: SceneKit.red, tolerance: 24))
+        #expect(image.color(20, 20).isVideoRed)
+        #expect(image.color(940, 520).isVideoRed)
         #expect(image.inkBounds(background: image.color(20, 20)) != nil)
     }
 
     @Test("Video ở 1.0 giây: khung xanh của giây sau")
     func atOneSecond() async throws {
         let image = try await render(TestVideo.scene(), at: 1.0)
-        #expect(image.color(20, 20).isClose(to: SceneKit.blue, tolerance: 24))
+        #expect(image.color(20, 20).isVideoBlue)
     }
 
     @Test("Video lặp ở 2.5 giây quay lại khung đỏ; không lặp thì giữ khung cuối")
     func loopAndHold() async throws {
         let looped = try await render(TestVideo.scene(loop: true), at: 2.5)
-        #expect(looped.color(20, 20).isClose(to: SceneKit.red, tolerance: 24))
+        #expect(looped.color(20, 20).isVideoRed)
         let held = try await render(TestVideo.scene(loop: false), at: 2.5)
-        #expect(held.color(20, 20).isClose(to: SceneKit.blue, tolerance: 24))
+        #expect(held.color(20, 20).isVideoBlue)
     }
 
     @Test("Tệp video không có: không crash, không vẽ gì thay thế, các lớp khác vẫn hiện")
@@ -183,4 +183,11 @@ struct SourceHealthTests {
         #expect(first.first?.issue == .videoFailed(TestVideo.missingID))
         #expect(health.drain().isEmpty)
     }
+}
+
+extension RGBA {
+    /// Màu đỏ sau khi qua mã hoá H.264 (YUV làm lệch vài chục mức trên mỗi kênh): kênh đỏ trội hẳn.
+    var isVideoRed: Bool { red > 200 && green < 70 && blue < 70 }
+    /// Màu xanh dương sau khi qua mã hoá H.264.
+    var isVideoBlue: Bool { blue > 200 && red < 70 && green < 70 }
 }
