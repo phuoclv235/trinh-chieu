@@ -195,3 +195,29 @@ struct VietTextFuzzTests {
         }
     }
 }
+
+@Suite("VietText.decodeWindows1258")
+struct Windows1258Tests {
+    @Test("Nguyên âm dựng sẵn và dấu thanh kết hợp được ghép thành NFC")
+    func decodesVietnamese() {
+        // "Việt Nam" và "Đức" như Windows-1258 ghi: ê (0xEA) + dấu nặng kết hợp (0xF2); Đ (0xD0) ư (0xFD) + sắc (0xEC).
+        let bytes: [UInt8] = [0x56, 0x69, 0xEA, 0xF2, 0x74, 0x20, 0x4E, 0x61, 0x6D, 0x20, 0xD0, 0xFD, 0xEC, 0x63]
+        let text = VietText.decodeWindows1258(Data(bytes))
+        #expect(text == "Việt Nam Đức")
+        let expected = "Việt Nam Đức".precomposedStringWithCanonicalMapping
+        #expect(Array(text.unicodeScalars) == Array(expected.unicodeScalars))
+    }
+
+    @Test("Đủ 5 dấu thanh kết hợp, chữ ă, ơ, ₫; byte không định nghĩa thành U+FFFD")
+    func decodesTonesAndSymbols() {
+        // a + huyền, hỏi, ngã, sắc, nặng; ă; ơ; ₫; 0x81 không định nghĩa.
+        let bytes: [UInt8] = [0x61, 0xCC, 0x61, 0xD2, 0x61, 0xDE, 0x61, 0xEC, 0x61, 0xF2, 0xE3, 0xF5, 0xFE, 0x81]
+        #expect(VietText.decodeWindows1258(Data(bytes)) == "àảãáạăơ₫\u{FFFD}")
+    }
+
+    @Test("Chữ ASCII giữ nguyên, CRLF thành LF")
+    func asciiIsUnchanged() {
+        #expect(VietText.decodeWindows1258(Data("Amazing Grace\r\n123".utf8)) == "Amazing Grace\n123")
+        #expect(VietText.windows1258High.count == 128)
+    }
+}

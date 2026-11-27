@@ -89,6 +89,41 @@ struct MediaTests {
         await reopened.close()
     }
 
+    @Test("Cập nhật thông tin media: ghi kích thước, thời lượng; giữ mã, loại, nguồn; media lạ thì báo lỗi")
+    func updatesMediaInfo() async throws {
+        let dir = try TemporaryDirectory()
+        let library = try dir.child("thu-vien")
+        let store = try await LibraryStore.open(
+            at: library, fileWatcher: NoFileWatching(), configuration: testConfiguration(clock: FakeClock()))
+        let source = dir.url.appendingPathComponent("nen.mp4")
+        try Data((0..<2_000).map { UInt8($0 % 199) }).write(to: source)
+        let info = try await store.importMedia(from: source)
+
+        var probed = info
+        probed.pixelSize = PixelSize(width: 1920, height: 1080)
+        probed.duration = 12.5
+        probed.kind = .image
+        probed.tags = ["nền"]
+        try await store.updateMediaInfo(probed)
+        let updated = try #require(store.media[info.id])
+        #expect(updated.pixelSize == PixelSize(width: 1920, height: 1080))
+        #expect(updated.duration == 12.5)
+        #expect(updated.tags == ["nền"])
+        #expect(updated.kind == .video)
+        #expect(updated.origin == info.origin)
+        await store.close()
+
+        let reopened = try await LibraryStore.open(
+            at: library, fileWatcher: NoFileWatching(), configuration: testConfiguration(clock: FakeClock()))
+        #expect(reopened.media[info.id] == updated)
+        var stranger = info
+        stranger.id = MediaID("000000000000")
+        await #expect(throws: LibraryStoreError.mediaNotFound(MediaID("000000000000"))) {
+            try await reopened.updateMediaInfo(stranger)
+        }
+        await reopened.close()
+    }
+
     @Test("Loại tệp không nhận làm media thì báo lỗi, không chép gì")
     func rejectsUnsupportedType() async throws {
         let dir = try TemporaryDirectory()

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<song xmlns="http://openlyrics.info/namespace/2009/song" version="0.9">
+  <properties>
+    <titles><title>Bài Có Hợp Âm</title></titles>
+  </properties>
+  <lyrics>
+    <verse name="v1">
+      <lines><chord name="G"/>Ngợi khen <chord name="C"/>Chúa<br/><chord name="D">Hát</chord> lên mãi</lines>
+    </verse>
+    <verse name="c1">
+      <lines><chord name="Em"/>Ha-lê-lu-gia</lines>
+    </verse>
+  </lyrics>
+</song>

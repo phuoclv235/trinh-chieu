@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XMLBIBLE xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" biblename="Tên ở thuộc tính">
+  <INFORMATION>
+    <title>Bản thử Zefania</title>
+    <language>VIE</language>
+  </INFORMATION>
+  <BIBLEBOOK bnumber="1" bname="Sáng Thế Ký">
+    <CHAPTER cnumber="1">
+      <CAPTION>Tiêu đề đoạn phải bị bỏ</CAPTION>
+      <VERS vnumber="1"><gr str="7225">Ban đầu</gr> là câu thử một.<NOTE>Chú thích phải bị bỏ.</NOTE></VERS>
+      <VERS vnumber="2">Câu thử hai<BR/>có <STYLE css="font-style:italic">chữ nghiêng</STYLE>.</VERS>
+    </CHAPTER>
+  </BIBLEBOOK>
+  <BIBLEBOOK bnumber="43" bname="Giăng">
+    <CHAPTER cnumber="3">
+      <VERS vnumber="16">Câu thử Giăng ba mười sáu.</VERS>
+      <VERS vnumber="17-18">Câu gộp mười bảy và mười tám.</VERS>
+    </CHAPTER>
+  </BIBLEBOOK>
+  <BIBLEBOOK bnumber="67" bname="Sách lạ">
+    <CHAPTER cnumber="1"><VERS vnumber="1">Không nhập.</VERS></CHAPTER>
+  </BIBLEBOOK>
+</XMLBIBLE>

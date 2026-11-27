@@ -180,6 +180,7 @@ public enum LibraryStoreError: Error, Sendable, Equatable, CustomStringConvertib
     case documentNotFound(UUID)
     case unsupportedMediaType(String)
     case mediaFileMissing(MediaID)
+    case mediaNotFound(MediaID)
     case restoreConflict(UUID)
     case trashItemMissing(UUID)
     case invalidBundle(String)
@@ -196,6 +197,8 @@ public enum LibraryStoreError: Error, Sendable, Equatable, CustomStringConvertib
             return "Hệ thống chưa nhận loại tệp \".\(fileExtension)\" làm media."
         case .mediaFileMissing(let id):
             return "Tệp media \(id.rawValue) không còn trên đĩa."
+        case .mediaNotFound(let id):
+            return "Không tìm thấy media \(id.rawValue) trong thư viện."
         case .restoreConflict(let id):
             return "Không khôi phục được: thư viện đã có tài liệu cùng mã \(id.uuidString)."
         case .trashItemMissing(let id):
