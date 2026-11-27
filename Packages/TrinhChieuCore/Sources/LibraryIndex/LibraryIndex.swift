@@ -189,9 +189,7 @@ public actor LibraryIndex {
         configuration.prepareDatabase { db in
             db.add(
                 collation: DatabaseCollation(foldedCollationName) { lhs, rhs in
-                    let left = VietText.fold(lhs)
-                    let right = VietText.fold(rhs)
-                    return left == right ? .orderedSame : (left < right ? .orderedAscending : .orderedDescending)
+                    VietText.foldedCompare(lhs, rhs)
                 })
         }
         let queue = try DatabaseQueue(path: url.path, configuration: configuration)
@@ -309,7 +307,8 @@ public actor LibraryIndex {
         // Trọng số bm25 tính cả hai cột UNINDEXED đứng đầu (id, kind), nên đặt 0 cho chúng.
         // Hoà điểm thì xếp theo tên đã gộp dấu bằng collation `vietfold` trên `items.title`, không đọc
         // `items_fts.title_f`: đọc cột đó buộc FTS5 nạp cả dòng nội dung (gồm lời bài hát) cho mọi mục khớp, chậm
-        // gần gấp đôi khi truy vấn khớp hàng nghìn mục. Collation chỉ chạy khi hai mục cùng điểm.
+        // gần gấp đôi khi truy vấn khớp hàng nghìn mục. Collation chỉ chạy khi hai mục cùng điểm (câu Kinh Thánh cùng
+        // độ dài hay cùng điểm), và `VietText.foldedCompare` không cấp phát chuỗi nên rẻ.
         let sql = """
             SELECT i.id, i.kind, i.title, i.subtitle, bm25(items_fts, 0.0, 0.0, 10.0, 5.0, 1.0) AS rank
             FROM items_fts JOIN items i ON i.rowid = items_fts.rowid

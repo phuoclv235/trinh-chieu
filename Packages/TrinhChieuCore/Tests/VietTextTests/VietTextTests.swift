@@ -73,6 +73,16 @@ struct VietTextOtherTests {
         #expect(VietText.normalize("") == "")
     }
 
+    @Test("foldedCompare: thứ tự chữ cái tiếng Việt")
+    func foldedCompareOrdersVietnamese() {
+        #expect(VietText.foldedCompare("Ân Chúa", "Ca Chúa") == .orderedAscending)
+        #expect(VietText.foldedCompare("Đấng Chúa", "Ca Chúa") == .orderedDescending)
+        #expect(VietText.foldedCompare("  Chúa  Là ", "chua la") == .orderedSame)
+        #expect(VietText.foldedCompare("Chúa", "Chúa Là") == .orderedAscending)
+        #expect(VietText.foldedCompare("", "") == .orderedSame)
+        #expect(VietText.foldedCompare("a\u{00A0}b", "a b") == .orderedSame)
+    }
+
     @Test("queryTerms: chia từ đã gộp, bỏ từ rỗng")
     func queryTermsSplitFoldedWords() {
         #expect(VietText.queryTerms("  Chúa   LÀ đá ") == ["chua", "la", "da"])
@@ -133,6 +143,30 @@ struct VietTextFuzzTests {
             #expect(!folded.hasPrefix(" ") && !folded.hasSuffix(" ") && !folded.contains("  "))
             #expect(VietText.fold(folded) == folded)
             #expect(VietText.queryTerms(text).allSatisfy { !$0.isEmpty && !$0.contains(" ") })
+        }
+    }
+
+    @Test("foldedCompare cho cùng kết quả như so hai chuỗi đã fold, cả khi có ký tự ngoài bảng tra nhanh")
+    func foldedCompareMatchesFold() {
+        var rng = SplitMix64(state: 2010)
+        let extras: [Character] = ["\u{00A0}", "ß", "Ω", "中", "\u{0483}", " ", "\u{1E9E}"]
+        let alphabet = Self.vietnameseLetters + Self.asciiPrintable + extras
+        for round in 0..<5_000 {
+            let usesExtras = round % 5 == 0
+            func randomText(_ rng: inout SplitMix64) -> String {
+                let pool = usesExtras ? alphabet : Self.vietnameseLetters + Self.asciiPrintable
+                let length = Int.random(in: 0...8, using: &rng)
+                let text = String((0..<length).map { _ in pool.randomElement(using: &rng)! })
+                return Bool.random(using: &rng) ? text.decomposedStringWithCanonicalMapping : text
+            }
+            let a = randomText(&rng)
+            // Một nửa số lần so với chuỗi gần giống để có nhiều cặp bằng nhau sau khi gộp.
+            let b = Bool.random(using: &rng) ? a.uppercased() : randomText(&rng)
+            let foldedA = VietText.fold(a)
+            let foldedB = VietText.fold(b)
+            let expected: ComparisonResult =
+                foldedA == foldedB ? .orderedSame : (foldedA < foldedB ? .orderedAscending : .orderedDescending)
+            #expect(VietText.foldedCompare(a, b) == expected, "\(a.debugDescription) và \(b.debugDescription)")
         }
     }
 
