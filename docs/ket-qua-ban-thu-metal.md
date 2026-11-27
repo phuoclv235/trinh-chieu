@@ -216,3 +216,64 @@ Nhận xét:
 - **Cửa sổ giữ nhịp giúp rõ khi chỉ chạy màn ngoài:** G5 và G6 rớt 1.4 đến 6.2 khung/phút, so với 7 đến 45 khung/phút ở E0 đến E4. Cửa sổ chỉ cập nhật 15 khung/giây (G6, giống PreviewPublisher của T1.6) cho kết quả tốt nhất, nhưng vẫn chưa dưới 1 khung/phút. Phủ đen tĩnh (G2) không giúp.
 - Trễ đổi cảnh p95 vẫn khoảng 46 đến 48 ms ở mọi lần. Đường ống p99 khoảng 33 ms, trừ G1a màn 0 lên 3 chu kỳ.
 - **Kết luận cho rà soát:** số đo rớt khung trên chiếc Mac dùng hằng ngày này dao động từ 0.2 lên tới 111 khung/phút giữa các lần chạy cùng cấu hình, tuỳ các ứng dụng đang chạy nền. Muốn chấm cổng đáng tin cần một môi trường đo cố định: thoát các ứng dụng nền (Zalo, trình duyệt, WARP), hoặc dùng một tài khoản người dùng sạch, hoặc đo trên máy dùng cho buổi nhóm thật.
+
+### Lần chạy 7 (2026-11-27, commit 0980b31 và c02f767): T0.6 đo dưới tải thật
+
+Đặc tả: `plans/giai-doan-0-1/T0.6-ben-duoi-tai.md`. Kịch bản: `scripts/t06-do-duoi-tai.sh`. Chạy từ 19:18 đến 20:19 giờ Việt Nam trên MacBook Pro M1 Pro 32 GB, macOS 27.0.1.
+
+**Lệch so với đặc tả (Phuoc chọn ngày 2026-11-27):** bản gọn, mỗi cấu hình một lần 3 phút (đặc tả: hai vòng xen kẽ 5 phút); L6 một lần 10 phút (đặc tả: hai lần); L7 5 phút; **chỉ màn MacBook** (không cắm màn ngoài), nên bỏ L8. Ép 60 khung/giây (`--fps 60`) như đầu ra HDMI tới LED; màn MacBook là màn 120 Hz. Một vòng đầu ở tần số gốc 120 Hz (commit 18b6bb1) bị bỏ vì chu kỳ 8.33 ms không so được với đầu ra thật và vì lỗi đếm của B1 (đã sửa ở 0980b31).
+
+Tải chuẩn: Zoom đang họp, bật camera, chia sẻ màn hình; ứng dụng web trong Chrome. Không thoát ứng dụng nào khác (Outlook, Activity Monitor, Claude vẫn chạy). Máy lặng (L7): Phuoc rời cuộc họp và đóng cửa sổ Chrome; tiến trình zoom.us và Chrome vẫn còn nhưng gần như không dùng CPU. Nhiệt "bình thường" ở mọi lần. WindowServer 47 đến 52% CPU khi có tải (122% một lần ở L4k).
+
+| Lần | Biện pháp | Rớt/phút | Khựng ≥3 | Đường ống p50 / p99 | Đổi cảnh p95 / lớn nhất | CPU TB | GPU TB | RAM lớn nhất |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| L0 | không | 1.00 | 0 | 33.17 / 33.28 ms | 49.23 / 49.56 ms | 14.6% | 1.13 ms | 266 MB |
+| L1 | B2 | 0.33 | 0 | 33.18 / 41.56 ms | 49.66 / 56.77 ms | 13.9% | 1.18 ms | 266 MB |
+| L2 | B3 | 2.66 | 0 | 33.14 / 37.24 ms | 49.17 / 57.22 ms | 14.6% | 1.26 ms | 269 MB |
+| L3 | B3 + B4 | 0.00 | 0 | 33.14 / 33.27 ms | 49.32 / 49.65 ms | 14.5% | 1.31 ms | 268 MB |
+| L4m | cảnh tĩnh, vẽ liên tục (mốc của L4) | 3.67 | 0 | 33.16 / 41.57 ms | 57.52 / 57.88 ms | 8.9% | 0.91 ms | 261 MB |
+| L4 | B1, display link nghỉ | 0.00 | 0 | 41.48 / 41.59 ms | 107.89 / 8977 ms (*) | 2.5% | 1.10 ms | 260 MB |
+| L4s | B1, link không nghỉ, chỉ bỏ nhịp | 89.21 (**) | 89 | 41.47 / 41.59 ms | 108.02 / 9001 ms (*) | 4.7% | 1.11 ms | 260 MB |
+| L4k | B1 giữ ấm: cảnh đứng yên thì present lại mỗi 4 nhịp | 0.67 | 0 | 41.50 / 41.59 ms | 58.09 / 58.16 ms | 5.6% | 0.94 ms | 261 MB |
+| L5 | B5 | 1.66 | 0 | 33.14 / 33.28 ms | 49.25 / 49.60 ms | 14.9% | 1.29 ms | 266 MB |
+| L0b | không (lặp mốc cuối vòng) | 0.00 | 0 | 33.15 / 33.27 ms | 49.10 / 49.68 ms | 14.5% | 1.26 ms | 266 MB |
+| **L6** | B3 + B4, 10 phút | **0.00** | **0** | 41.47 / 41.60 ms | 57.65 / 58.08 ms | **16.3%** | **1.26 ms** | **271 MB** |
+| **L7** | B3 + B4, máy lặng, 5 phút | **0.00** | **0** | 32.52 / 32.81 ms | 47.29 / 48.08 ms | 14.7% | 1.34 ms | 269 MB |
+| L7k | B1 giữ ấm, máy lặng | 0.67 | 0 | 33.18 / 33.38 ms | 49.81 / 66.53 ms | 4.3% | 1.05 ms | 260 MB |
+
+(*) Lần lớn nhất khoảng 9 giây là lỗi đo đã sửa ở c02f767 (cảnh khởi động chưa từng lên màn bị gán cho khung lên màn sau đó); p95 không bị ảnh hưởng.
+(**) Ở L4 và L4s, mỗi lần đổi cảnh sau lúc đứng yên có khoảng 3 khung không lên màn (266 và 267 khung trên 89 lần đổi). L4 đếm chúng là "không lên ngay sau nghỉ", L4s đếm là khựng. Hệ quả chung: chữ mới hiện trễ khoảng 100 ms thay vì 49 ms.
+
+Nhận xét:
+
+- **Ở 60 khung/giây, chỉ màn MacBook, đường mặc định đã đạt mức dưới tải.** Mọi lần vẽ liên tục rớt 0 đến 3.7 khung/phút, không lần khựng nào. L0 đầu vòng và L0b cuối vòng (1.00 và 0.00) cho thấy máy ổn định suốt vòng. Chênh lệch giữa các biện pháp nhỏ hơn độ nhiễu của một lần 3 phút.
+- **Đường ống có hai mức ổn định: 2 chu kỳ (33 ms) hoặc 2.5 chu kỳ (41.5 ms).** "Đích tới thật" nhảy giữa 8.34 ms và 16.67 ms theo từng lần chạy, kể cả cùng cấu hình (L3 33 ms, L6 41.5 ms). Màn 120 Hz chạy nội dung 60 khung/giây có hai pha nửa chu kỳ, nên nhiều khả năng đây là đặc tính của màn MacBook, không phải của bản thử. Ở máy lặng (L7), "đích tới thật" gần 0 ms và đường ống đúng 2 chu kỳ. Tiêu chí 2a, 2b phải chấm lại trên đầu ra 60 Hz thật (Mac mini, T1.11).
+- **B1 dạng nghỉ link hoặc bỏ nhịp không dùng được:** sau mỗi khoảng đứng yên, khoảng 3 khung đầu không lên màn, nên chữ mới hiện trễ khoảng 100 ms. Đây là hành vi của đường trình chiếu macOS khi lớp không nhận present một lúc, không phụ thuộc display link có nghỉ hay không.
+- **B1 dạng giữ ấm (present lại mỗi 4 nhịp, tức 15 khung/giây, khi cảnh đứng yên) hết lỗi trên:** 0 khung "không lên", trễ đổi cảnh như vẽ liên tục, CPU giảm từ 8.9% (L4m) xuống 5.6% dưới tải và 4.3% ở máy lặng. Chưa đạt ngân sách 3% của cảnh tĩnh.
+- B2 không giảm rớt rõ rệt và làm đuôi đường ống p99 xấu đi (41.56 ms so với 33.28 ms). B5 không lần nào kích hoạt ở 60 khung/giây (ở vòng 120 Hz nó kích hoạt nhầm mỗi lần đổi cảnh vì ngưỡng tính theo chu kỳ 8.33 ms).
+
+#### Đối chiếu tiêu chí T0.6
+
+| Tiêu chí | Kết quả |
+| --- | --- |
+| 1. L6 dưới tải: không khựng ≥3, dưới 6 khung/phút | **ĐẠT** (0 khựng, 0.00/phút trong 10 phút; một lần thay vì hai, một màn) |
+| 2. L7 máy lặng: dưới 1 khung/phút | **ĐẠT** (0.00/phút) |
+| 3. 2a, 2b ở L6 và L7 | L7 **ĐẠT** (p99 32.81 ms ≤ 35.33; p95 47.29 ms ≤ 51.00, lớn nhất 48.08 ≤ 66.67). L6 **KHÔNG ĐẠT** (p99 41.60 ms; p95 57.65 ms) vì đường ống ở mức 2.5 chu kỳ, xem nhận xét về màn 120 Hz. B1 giữ ấm: không có lần nghỉ link nên tiêu chí khung đầu sau nghỉ không áp dụng; trễ đổi cảnh lớn nhất 58.16 ms dưới tải, 66.53 ms ở máy lặng (≤ 4 chu kỳ) |
+| 4. Ngân sách ở L6: CPU < 25%, GPU < 3 ms, RAM < 500 MB | **ĐẠT** (16.3%, 1.26 ms, 271 MB) |
+| 4. Cảnh tĩnh (L4): CPU < 3% | **KHÔNG ĐẠT** với dạng giữ được chất lượng (L4k 5.6%). Dạng nghỉ link đạt 2.5% nhưng làm chữ hiện trễ 100 ms |
+| 5. Bảng kết luận | Bên dưới |
+| 6. Dừng nếu tiêu chí 1 không đạt | Không cần: tiêu chí 1 đạt |
+
+#### Kết luận: biện pháp nào vào `RenderEngine` ở T1.6 PR 2
+
+| Biện pháp | Quyết định | Số đo trước → sau | Lý do |
+| --- | --- | --- | --- |
+| B1 vẽ theo nhu cầu, dạng giữ ấm | **Giữ** | CPU cảnh tĩnh 8.9% → 5.6% (máy lặng 4.3%); trễ đổi cảnh p95 57.5 → 58.1 ms; rớt 3.67 → 0.67/phút | Nhẹ máy hơn mà không mất chất lượng. Bắt buộc: khung cuối của mỗi lần chuyển cảnh phải được xác nhận đã lên màn (`presentedTime > 0`), nếu không thì dựng lại, để màn không dừng ở khung giữa hoà tan |
+| B1 dạng nghỉ link hoặc bỏ nhịp | **Bỏ** | Trễ đổi cảnh p95 57.5 → 108 ms | Mất khoảng 3 khung đầu sau mỗi lần đứng yên |
+| B2 luồng vẽ thời gian thực | **Bỏ** | Rớt 1.00 → 0.33/phút (trong độ nhiễu); đường ống p99 33.28 → 41.56 ms | Không cải thiện đo được, đuôi trễ xấu hơn, thêm rủi ro bị hệ thống hạ ưu tiên khi vượt ngân sách tính toán |
+| B3 lặp video bằng `AVPlayerLooper` | **Giữ** | Rớt 1.00 → 2.66/phút một mình (trong độ nhiễu); cùng B4 → 0.00 | Không còn `seek` trên luồng chính ở điểm lặp, không tốn thêm CPU |
+| B4 giải mã video ở cỡ đầu ra | **Giữ** | Cùng B3: rớt 0.00/phút ở L3, L6, L7; CPU 14.5 đến 16.3% (không đổi) | Bộ nhớ khung nhỏ hơn khi đầu ra nhỏ hơn video; T1.6 cần tính lại cỡ khi đầu ra đổi độ phân giải |
+| B5 hồi phục sau khựng | **Bỏ** (giữ ý tưởng cho chẩn đoán) | 0 lần kích hoạt ở 60 khung/giây | Đường ống không dài ra lần nào; ngưỡng tính theo chu kỳ dễ kích hoạt nhầm trên màn 120 Hz |
+| Đầu ra 60 khung/giây | **Giữ làm mặc định** | Vòng 120 Hz: đường ống 4 đến 5 chu kỳ, rớt 0.3 đến 145/phút | Khớp HDMI tới LED và máy chiếu, nửa tải GPU và CPU |
+
+**Còn treo cho lần chấm trên Mac mini (T1.11):** rớt khung khi đầu ra ở màn ngoài (lỗi của lần chạy 5, 6), hai đầu ra cùng lúc (LED và màn nhắc), tiêu chí 2a, 2b trên đầu ra 60 Hz thật, và ngân sách CPU 3% cho cảnh tĩnh.
