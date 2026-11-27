@@ -1,0 +1,19 @@
+﻿Tiêu đề:   Bài CRLF   
+
+
+[Câu 1]
+   Lời câu một dòng một   
+Lời câu một dòng hai
+
+
+
+[ĐK]
+Điệp khúc dòng một
+Điệp khúc dòng hai
+
+[Câu 2]
+Lời câu hai
+
+[ĐK]
+Điệp khúc dòng một
+Điệp khúc dòng hai

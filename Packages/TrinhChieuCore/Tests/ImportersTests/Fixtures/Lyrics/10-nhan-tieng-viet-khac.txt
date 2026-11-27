@@ -1,0 +1,18 @@
+Tiêu đề: Bài Đủ Loại Nhãn
+[Dạo]
+La la la
+
+[Câu 1]
+Lời câu một
+
+[Tiền điệp khúc]
+Lời tiền điệp khúc
+
+[Điệp khúc]
+Lời điệp khúc
+
+[Cầu nối]
+Lời cầu nối
+
+[Kết]
+A-men

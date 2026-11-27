@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<song xmlns="http://openlyrics.info/namespace/2009/song" version="0.9">
+  <properties>
+    <titles><title>Bài Hai Ngôn Ngữ</title></titles>
+  </properties>
+  <lyrics>
+    <verse name="v1" lang="vi">
+      <lines>Lời <tag name="it">tiếng Việt</tag><comment>ghi chú cho ban nhạc</comment><br/>dòng hai</lines>
+    </verse>
+    <verse name="v1" lang="en">
+      <lines>English words<br/>line two</lines>
+    </verse>
+    <verse name="o-Lời_dẫn"><lines>Hãy cùng đứng lên</lines></verse>
+  </lyrics>
+</song>
