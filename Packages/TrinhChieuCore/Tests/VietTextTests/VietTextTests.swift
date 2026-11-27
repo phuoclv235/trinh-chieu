@@ -128,8 +128,8 @@ struct VietTextFuzzTests {
             if Bool.random(using: &rng) { text = text.decomposedStringWithCanonicalMapping }
             let folded = VietText.fold(text)
             let loose = VietText.foldLoose(text)
-            #expect(folded.unicodeScalars.allSatisfy(\.isASCII), "fold(\(text.debugDescription))")
-            #expect(loose.unicodeScalars.allSatisfy(\.isASCII), "foldLoose(\(text.debugDescription))")
+            #expect(folded.unicodeScalars.allSatisfy { $0.isASCII }, "fold(\(text.debugDescription))")
+            #expect(loose.unicodeScalars.allSatisfy { $0.isASCII }, "foldLoose(\(text.debugDescription))")
             #expect(!folded.hasPrefix(" ") && !folded.hasSuffix(" ") && !folded.contains("  "))
             #expect(VietText.fold(folded) == folded)
             #expect(VietText.queryTerms(text).allSatisfy { !$0.isEmpty && !$0.contains(" ") })
