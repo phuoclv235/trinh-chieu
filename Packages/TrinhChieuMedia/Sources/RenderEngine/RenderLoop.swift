@@ -29,6 +29,7 @@ final class RenderLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked Sendabl
 
     /// - Parameters:
     ///   - frameRate: tần số display link (tần số gốc của màn cho đầu ra; 15 cho bản xem trước).
+    ///   - audible: đầu ra thật thì `true`; bản xem trước thì `false` để không làm video phát tiếng.
     init(
         label: String,
         role: OutputRole,
@@ -38,7 +39,8 @@ final class RenderLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked Sendabl
         cache: TextureCache,
         video: any VideoFrameProvider,
         mailbox: SceneMailbox<RenderScene>,
-        frameRate: Float
+        frameRate: Float,
+        audible: Bool
     ) throws {
         guard let queue = gpu.device.makeCommandQueue() else {
             throw RenderEngineError.commandQueueUnavailable
@@ -54,7 +56,7 @@ final class RenderLoop: NSObject, CAMetalDisplayLinkDelegate, @unchecked Sendabl
             cache: cache,
             blocking: false,
             video: video,
-            consumer: VideoConsumer(role: role)
+            consumer: VideoConsumer(role: role, audible: audible)
         )
         self.mailbox = mailbox
         self.frameRate = max(1, frameRate)

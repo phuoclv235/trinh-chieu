@@ -182,6 +182,20 @@ struct VideoMutingTests {
         video.muted = true
         #expect(VideoPlayerPool.shouldMute(video, programLastUse: 10, now: 10))
     }
+
+    @Test("Bản xem trước vai chính không ghi lần dùng của vai chính, nên không làm video phát tiếng")
+    func previewNeverUnmutes() {
+        var video = TestVideo.ref()
+        video.muted = false
+        var lastUse: [OutputRole: CFTimeInterval] = [:]
+        let preview = VideoConsumer(role: .program, audible: false)
+        #expect(!VideoPlayerPool.noteUse(&lastUse, by: preview, now: 10))
+        #expect(VideoPlayerPool.shouldMute(video, programLastUse: lastUse[.program], now: 10))
+        let output = VideoConsumer(role: .program)
+        #expect(VideoPlayerPool.noteUse(&lastUse, by: output, now: 10))
+        #expect(!VideoPlayerPool.noteUse(&lastUse, by: output, now: 10.1))
+        #expect(!VideoPlayerPool.shouldMute(video, programLastUse: lastUse[.program], now: 10.2))
+    }
 }
 
 @Suite("SourceHealth")

@@ -27,6 +27,18 @@ final class VideoPlayerPool: VideoFrameProvider, @unchecked Sendable {
         return now - programLastUse > programGrace
     }
 
+    /// Ghi lần lấy khung của một bên dùng vào `roleLastUse` (chỉ bên phát tiếng được, bản xem trước thì bỏ qua).
+    /// Trả `true` khi vai này lần đầu xuất hiện, để đặt lại tiếng.
+    @discardableResult
+    static func noteUse(
+        _ roleLastUse: inout [OutputRole: CFTimeInterval],
+        by consumer: VideoConsumer,
+        now: CFTimeInterval
+    ) -> Bool {
+        guard consumer.audible else { return false }
+        return roleLastUse.updateValue(now, forKey: consumer.role) == nil
+    }
+
     private final class Entry: @unchecked Sendable {
         let video: VideoRef
         var player: AVQueuePlayer?
@@ -75,7 +87,7 @@ final class VideoPlayerPool: VideoFrameProvider, @unchecked Sendable {
         let (result, action): (VideoAvailability, Action) = entries.withLockUnchecked { entries in
             guard let entry = entries[video.playbackID] else {
                 let entry = Entry(video: video, now: now)
-                entry.roleLastUse[consumer.role] = now
+                Self.noteUse(&entry.roleLastUse, by: consumer, now: now)
                 entry.taps[consumer] = PoolTap(textureCache: gpu.textureCache)
                 entries[video.playbackID] = entry
                 return (.pending, .createPlayer)
@@ -83,7 +95,7 @@ final class VideoPlayerPool: VideoFrameProvider, @unchecked Sendable {
             entry.lastUse = now
             if entry.failed { return (.failed, .none) }
             var action = Action.none
-            if entry.roleLastUse.updateValue(now, forKey: consumer.role) == nil { action = .refresh }
+            if Self.noteUse(&entry.roleLastUse, by: consumer, now: now) { action = .refresh }
             guard let tap = entry.taps[consumer] else {
                 entry.taps[consumer] = PoolTap(textureCache: gpu.textureCache)
                 return (.pending, .refresh)
@@ -120,7 +132,7 @@ final class VideoPlayerPool: VideoFrameProvider, @unchecked Sendable {
         let tap: PoolTap? = entries.withLockUnchecked { entries in
             guard let entry = entries[video.playbackID] else { return nil }
             entry.lastUse = now
-            entry.roleLastUse[consumer.role] = now
+            Self.noteUse(&entry.roleLastUse, by: consumer, now: now)
             return entry.taps[consumer]
         }
         return tap?.frame(forHostTime: time)

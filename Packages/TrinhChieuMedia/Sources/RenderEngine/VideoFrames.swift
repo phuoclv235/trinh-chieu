@@ -25,10 +25,13 @@ enum VideoAvailability: Equatable {
 struct VideoConsumer: Hashable, Sendable {
     let id: UUID
     let role: OutputRole
+    /// Đầu ra thật thì `true`; bản xem trước thì `false`: xem trước không bao giờ làm video phát tiếng.
+    let audible: Bool
 
-    init(role: OutputRole, id: UUID = UUID()) {
+    init(role: OutputRole, audible: Bool = true, id: UUID = UUID()) {
         self.id = id
         self.role = role
+        self.audible = audible
     }
 }
 

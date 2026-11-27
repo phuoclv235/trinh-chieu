@@ -89,7 +89,8 @@ public final class RenderEngine {
             cache: cache,
             video: videoPool,
             mailbox: mailbox,
-            frameRate: Float(max(1, screen.maximumFramesPerSecond))
+            frameRate: Float(max(1, screen.maximumFramesPerSecond)),
+            audible: true
         )
         displays[id] = DisplayOutput(window: window, loop: loop, screenNumber: Self.screenNumber(screen))
         window.show()
@@ -133,7 +134,8 @@ public final class RenderEngine {
                 cache: cache,
                 video: videoPool,
                 mailbox: mailbox,
-                frameRate: Self.previewFrameRate
+                frameRate: Self.previewFrameRate,
+                audible: false
             )
         {
             previews[role] = (layer, loop)
