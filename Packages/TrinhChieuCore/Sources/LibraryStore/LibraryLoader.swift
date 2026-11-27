@@ -225,9 +225,8 @@ enum LibraryLoader {
 
     /// Xoá tệp `.tmp` còn sót do lần ghi bị ngắt; tệp gốc chưa bị đụng tới nên vẫn nguyên vẹn.
     private static func removeTemporaryFiles(_ layout: LibraryLayout) {
-        let directories = [""] + LibraryDocumentKind.allCases.map(\.directoryName) + [
-            LibraryLayout.mediaDirectory, LibraryLayout.logsDirectory, LibraryLayout.trashDirectory,
-        ]
+        let others = [LibraryLayout.mediaDirectory, LibraryLayout.logsDirectory, LibraryLayout.trashDirectory]
+        let directories = [""] + LibraryDocumentKind.allCases.map(\.directoryName) + others
         for directory in directories {
             let url = directory.isEmpty ? layout.root : layout.url(directory)
             for name in fileNames(in: url) where name.hasSuffix(".tmp") {

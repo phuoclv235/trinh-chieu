@@ -78,7 +78,9 @@ struct BundleTests {
         #expect(paths.contains("plans/\(source.plan.id.uuidString).json"))
         #expect(!paths.contains("presentations/\(source.unrelated.id.uuidString).json"))
         #expect(paths.contains("media/\(source.background.id.rawValue).jpg"))
-        #expect(paths.count == 1 + 1 + 2 + 1 + 3 * 2)
+        // manifest, chương trình, 2 bài, 1 mẫu, 3 media (mỗi media một tệp nội dung và một tệp thông tin).
+        let expectedCount = 11
+        #expect(paths.count == expectedCount)
 
         let target = try await LibraryStore.open(
             at: try dir.child("dich"), fileWatcher: NoFileWatching(), configuration: testConfiguration(clock: clock))

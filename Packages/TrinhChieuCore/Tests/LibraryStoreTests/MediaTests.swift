@@ -100,8 +100,8 @@ struct MediaTests {
         await #expect(throws: LibraryStoreError.unsupportedMediaType("docx")) {
             try await store.importMedia(from: source)
         }
-        #expect(try FileManager.default.contentsOfDirectory(atPath: library.appendingPathComponent("media").path)
-            .isEmpty)
+        let mediaPath = library.appendingPathComponent("media").path
+        #expect(try FileManager.default.contentsOfDirectory(atPath: mediaPath).isEmpty)
         await store.close()
     }
 

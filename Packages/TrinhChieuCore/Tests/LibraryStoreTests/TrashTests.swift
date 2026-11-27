@@ -42,8 +42,8 @@ struct TrashTests {
         try store.restore(ticket)
         #expect(store.presentations[remove.id] == saved)
         #expect(try Data(contentsOf: path) == original)
-        #expect(try FileManager.default.contentsOfDirectory(atPath: dir.url.appendingPathComponent(".trash").path)
-            .isEmpty)
+        let trashPath = dir.url.appendingPathComponent(".trash").path
+        #expect(try FileManager.default.contentsOfDirectory(atPath: trashPath).isEmpty)
         await store.waitForIndexing()
         #expect(await store.search("on phuoc", kinds: [.presentation]).map(\.title) == ["Ơn phước tuôn tràn"])
 
