@@ -23,7 +23,6 @@ struct CommandPalette: View {
     @State private var isSearching = false
     /// `Enter` bấm khi đang tìm: `true` là `⌘Enter`.
     @State private var pendingSubmit: Bool?
-    @FocusState private var fieldFocused: Bool
 
     private static let ranker = PaletteRanker()
     @MainActor private static let commands = AppEnvironment.paletteCommands()
@@ -73,27 +72,14 @@ struct CommandPalette: View {
                 .font(.system(size: 15, weight: .medium))
                 .foregroundStyle(Palette.text3)
                 .accessibilityHidden(true)
-            TextField(
+            PaletteTextField(
                 text: $query,
-                prompt: Text("Search songs, Bible verses, commands…").foregroundStyle(Palette.text3)
-            ) {
-                Text("Type to search or run a command")
-            }
-            .textFieldStyle(.plain)
-            .font(.system(size: 15))
-            .foregroundStyle(Palette.text)
-            .focused($fieldFocused)
-            .onKeyPress(.upArrow) { move(-1) }
-            .onKeyPress(.downArrow) { move(1) }
-            .onKeyPress(.escape) {
-                close()
-                return .handled
-            }
-            .onKeyPress(.return, phases: .down) { press in
-                submit(secondary: press.modifiers.contains(.command))
-                return .handled
-            }
-            .onExitCommand { close() }
+                placeholder: String(localized: "Search songs, Bible verses, commands…"),
+                onMove: { move($0) },
+                onSubmit: { submit(secondary: $0) },
+                onCancel: { close() }
+            )
+            .frame(maxWidth: .infinity)
             .onChange(of: query) { _, _ in refresh() }
             KeyCap(keys: "Esc")
         }
@@ -196,7 +182,6 @@ struct CommandPalette: View {
     private func appeared() {
         planItems = environment.palettePlanItems()
         refresh()
-        fieldFocused = true
         guard let requested = environment.commandPaletteRequestedAt else { return }
         environment.commandPaletteRequestedAt = nil
         // Đo tới vòng chạy kế tiếp: lúc đó khung đầu tiên của Bảng lệnh đã được vẽ.
@@ -209,6 +194,8 @@ struct CommandPalette: View {
     /// Xếp hạng lại theo chữ đang gõ. Phân tích địa chỉ và lệnh chạy ngay; tìm thư viện chạy nền.
     private func refresh() {
         searchTask?.cancel()
+        // Chữ đã đổi sau khi bấm Enter: bỏ lần Enter chờ, không chạy dòng của truy vấn cũ.
+        pendingSubmit = nil
         let text = query
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty, let library = environment.library else {
@@ -247,10 +234,9 @@ struct CommandPalette: View {
 
     // MARK: - Phím
 
-    private func move(_ delta: Int) -> KeyPress.Result {
-        guard !rows.isEmpty else { return .handled }
+    private func move(_ delta: Int) {
+        guard !rows.isEmpty else { return }
         selection = min(rows.count - 1, max(0, selection + delta))
-        return .handled
     }
 
     private func submit(secondary: Bool) {
