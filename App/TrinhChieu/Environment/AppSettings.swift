@@ -1,4 +1,5 @@
 import Foundation
+import LibraryStore
 import Observation
 import RenderEngine
 
@@ -26,10 +27,15 @@ struct AppSettings: Codable, Equatable, Sendable {
     var advanceToNextItem: Bool
     /// Bạn đã đóng màn chào.
     var welcomeDismissed: Bool
+    /// Mục mở từ Bảng lệnh gần đây, mới nhất trước (tối đa 5).
+    var paletteRecents: [PaletteItem]
+    /// Số lần chạy mỗi lệnh từ Bảng lệnh, theo `PaletteCommandID.rawValue`.
+    var paletteCommandUsage: [String: Int]
 
     init(
         libraryPath: String? = nil, outputAssignments: [OutputAssignment] = [], audioOutputDeviceID: String? = nil,
-        defaultTranslation: String? = nil, advanceToNextItem: Bool = true, welcomeDismissed: Bool = false
+        defaultTranslation: String? = nil, advanceToNextItem: Bool = true, welcomeDismissed: Bool = false,
+        paletteRecents: [PaletteItem] = [], paletteCommandUsage: [String: Int] = [:]
     ) {
         self.libraryPath = libraryPath
         self.outputAssignments = outputAssignments
@@ -37,6 +43,8 @@ struct AppSettings: Codable, Equatable, Sendable {
         self.defaultTranslation = defaultTranslation
         self.advanceToNextItem = advanceToNextItem
         self.welcomeDismissed = welcomeDismissed
+        self.paletteRecents = paletteRecents
+        self.paletteCommandUsage = paletteCommandUsage
     }
 
     /// Mỗi trường đọc riêng: một trường hỏng hoặc sai kiểu chỉ trường đó về mặc định, các trường khác giữ nguyên.
@@ -52,6 +60,8 @@ struct AppSettings: Codable, Equatable, Sendable {
         defaultTranslation = field(.defaultTranslation, defaults.defaultTranslation)
         advanceToNextItem = field(.advanceToNextItem, defaults.advanceToNextItem)
         welcomeDismissed = field(.welcomeDismissed, defaults.welcomeDismissed)
+        paletteRecents = field(.paletteRecents, defaults.paletteRecents)
+        paletteCommandUsage = field(.paletteCommandUsage, defaults.paletteCommandUsage)
     }
 
     /// Thư mục thư viện mặc định.

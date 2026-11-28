@@ -97,28 +97,39 @@ struct ModeSwitcher: View {
     }
 }
 
-/// Ô tìm trên thanh công cụ: mở Bảng lệnh (`⌘K`). Bảng lệnh làm ở T1.10; tới lúc đó ô chỉ hiển thị.
+/// Ô tìm trên thanh công cụ: bấm để mở Bảng lệnh (cũng mở bằng `⌘K`).
 struct PaletteLauncher: View {
+    @Environment(AppEnvironment.self) private var environment
+    @State private var isHovered = false
+
     var body: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "magnifyingglass")
-                .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(Palette.text3)
-                .accessibilityHidden(true)
-            Text("Search songs, Bible verses, commands…")
-                .font(Typography.body)
-                .foregroundStyle(Palette.text3)
-                .lineLimit(1)
-            Spacer(minLength: 4)
-            KeyCap(keys: "⌘K")
+        Button {
+            environment.openCommandPalette()
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(Palette.text3)
+                    .accessibilityHidden(true)
+                Text("Search songs, Bible verses, commands…")
+                    .font(Typography.body)
+                    .foregroundStyle(Palette.text3)
+                    .lineLimit(1)
+                Spacer(minLength: 4)
+                KeyCap(keys: "⌘K")
+            }
+            .padding(.horizontal, 10)
+            .frame(height: Metrics.controlHeight)
+            .background(RoundedRectangle(cornerRadius: Metrics.radius).fill(Palette.bgRaised))
+            .overlay(
+                RoundedRectangle(cornerRadius: Metrics.radius)
+                    .strokeBorder(isHovered ? Palette.text3 : Palette.lineStrong, lineWidth: 1)
+            )
+            .contentShape(Rectangle())
         }
-        .padding(.horizontal, 10)
-        .frame(height: Metrics.controlHeight)
-        .background(RoundedRectangle(cornerRadius: Metrics.radius).fill(Palette.bgRaised))
-        .overlay(RoundedRectangle(cornerRadius: Metrics.radius).strokeBorder(Palette.lineStrong, lineWidth: 1))
-        .opacity(0.75)
-        .help(Text("Command palette arrives in a later update"))
-        .accessibilityElement(children: .ignore)
+        .buttonStyle(.plain)
+        .onHover { isHovered = $0 }
+        .help(Text("Open command palette") + Text(verbatim: " (⌘K)"))
         .accessibilityLabel(Text("Open command palette"))
     }
 }

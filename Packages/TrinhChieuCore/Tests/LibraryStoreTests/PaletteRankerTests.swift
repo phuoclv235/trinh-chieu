@@ -252,7 +252,7 @@ struct PaletteCommandTests {
         ]
         let group = try #require(section(.planItems, in: rank("bai giang", planItems: items)))
         #expect(group.rows.map(\.target) == [.planItem(id: sermon), .planItem(id: welcome)])
-        #expect(group.rows.allSatisfy(\.target.hasSecondaryAction))
+        #expect(group.rows.allSatisfy { $0.target.hasSecondaryAction })
     }
 
     @Test("Lệnh không có hành động phụ và không ghi vào gần đây")

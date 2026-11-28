@@ -54,6 +54,10 @@ enum WorkspaceMode: String, CaseIterable, Sendable {
     let planEditing = PlanEditing()
     /// Bộ trình chiếu đang mở ở chế độ Soạn thảo (T1.9).
     let presentationEditing = PresentationEditing()
+    /// Bảng lệnh (`⌘K`) đang mở.
+    var isCommandPalettePresented = false
+    /// Lúc bấm `⌘K` (hoặc bấm ô tìm), để đo thời gian mở Bảng lệnh (tiêu chí 4 của T1.10).
+    @ObservationIgnored var commandPaletteRequestedAt: ContinuousClock.Instant?
 
     @ObservationIgnored private let mediaLocator: LibraryMediaLocator
     @ObservationIgnored private var sink: AppSceneSink?
