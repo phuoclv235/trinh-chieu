@@ -57,7 +57,7 @@ private struct TextFields: View {
             }
             HStack(alignment: .top, spacing: 8) {
                 InspectorField("Horizontal alignment", reset: reset(\.alignment)) {
-                    IconChoice<TextAlignment>(
+                    IconChoice<CoreModel.TextAlignment>(
                         options: [
                             .init(value: .left, systemImage: "text.alignleft", label: "Align left"),
                             .init(value: .center, systemImage: "text.aligncenter", label: "Align center"),
