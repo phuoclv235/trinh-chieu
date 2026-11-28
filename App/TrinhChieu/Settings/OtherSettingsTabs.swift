@@ -195,24 +195,14 @@ struct LiveSettingsTab: View {
             SettingsGroup {
                 SettingsRow(
                     title: "Move to the next item after the last slide",
-                    detail: String(localized: "Next slide on the last slide goes to the next service plan item.")
+                    detail: String(localized: "Next slide on the last slide goes to the next service plan item."),
+                    showsDivider: false
                 ) {
                     Toggle(isOn: advance) {
                         Text("Move to the next item after the last slide")
                     }
                     .labelsHidden()
                     .toggleStyle(.switch)
-                }
-                SettingsRow(title: "Appearance", showsDivider: false) {
-                    SegmentedChoice(
-                        options: [
-                            .init(value: AppearancePreference.dark, title: String(localized: "Dark")),
-                            .init(value: .light, title: String(localized: "Light")),
-                            .init(value: .system, title: String(localized: "Follow system")),
-                        ],
-                        selection: appearance,
-                        accessibilityTitle: Text("Appearance")
-                    )
                 }
             }
             SectionHeader(title: "Keyboard shortcuts")
@@ -239,13 +229,6 @@ struct LiveSettingsTab: View {
         Binding(
             get: { environment.settings.value.advanceToNextItem },
             set: { environment.setAdvanceToNextItem($0) }
-        )
-    }
-
-    private var appearance: Binding<AppearancePreference> {
-        Binding(
-            get: { environment.settings.value.appearance },
-            set: { environment.setAppearance($0) }
         )
     }
 

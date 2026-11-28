@@ -89,8 +89,8 @@ enum Metrics {
     static let radiusLarge: CGFloat = 8
     /// Bo góc hộp thoại, bảng lệnh.
     static let radiusPop: CGFloat = 10
-    /// Chừa chỗ cho ba nút đỏ vàng xanh của cửa sổ.
-    static let trafficLightInset: CGFloat = 80
+    /// Chừa chỗ cho ba nút đỏ vàng xanh của cửa sổ: nút xanh hết ở ~72 điểm, cách 20 điểm như mẫu.
+    static let trafficLightInset: CGFloat = 92
 }
 
 /// Cỡ chữ của `docs/ui-rules.md`: 11, 12, 12.5 chữ nhỏ; 13 chữ thân; 15 tiêu đề khối; 16 tiêu đề cột; 26 tiêu đề nguồn.

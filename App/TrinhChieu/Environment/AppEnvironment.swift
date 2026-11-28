@@ -218,17 +218,9 @@ enum WorkspaceMode: String, CaseIterable, Sendable {
         engine?.setAudioOutputDevice(uniqueID)
     }
 
-    func setAppearance(_ appearance: AppearancePreference) {
-        settings.value.appearance = appearance
-        applyAppearance()
-    }
-
+    /// Hệ thống chỉ có giao diện tối (Phuoc chốt 2026-11-28), không theo chế độ sáng của macOS.
     private func applyAppearance() {
-        switch settings.value.appearance {
-        case .dark: NSApp.appearance = NSAppearance(named: .darkAqua)
-        case .light: NSApp.appearance = NSAppearance(named: .aqua)
-        case .system: NSApp.appearance = nil
-        }
+        NSApp.appearance = NSAppearance(named: .darkAqua)
     }
 
     /// Đầu ra chính đang gắn và đang có nội dung: thoát lúc này sẽ làm mất hình.

@@ -113,6 +113,8 @@ struct MainWindowView: View {
         let mode = WorkspaceMode(rawValue: modeRaw) ?? .live
         VStack(spacing: 0) {
             MainToolbar(mode: modeBinding, showsRightRail: $showsRightRail)
+                // Nền các cột tràn lên vùng an toàn trên cùng: thanh công cụ phải vẽ sau để không bị đè.
+                .zIndex(1)
             WarningBanner()
             Group {
                 switch mode {

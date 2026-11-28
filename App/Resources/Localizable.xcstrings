@@ -211,16 +211,6 @@
         }
       }
     },
-    "Appearance": {
-      "localizations": {
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Giao diện"
-          }
-        }
-      }
-    },
     "Assign the main output and the stage display.": {
       "localizations": {
         "vi": {
@@ -671,16 +661,6 @@
         }
       }
     },
-    "Dark": {
-      "localizations": {
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tối"
-          }
-        }
-      }
-    },
     "Default": {
       "localizations": {
         "vi": {
@@ -1057,16 +1037,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Loại trong thư viện"
-          }
-        }
-      }
-    },
-    "Light": {
-      "localizations": {
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sáng"
           }
         }
       }

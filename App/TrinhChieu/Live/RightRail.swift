@@ -185,6 +185,7 @@ private struct OutputNode: View {
         let display = environment.outputs.attached[role]
         VStack(alignment: .leading, spacing: 1) {
             Text(verbatim: role.localizedName).font(.system(size: 12, weight: .semibold)).lineLimit(1)
+                .minimumScaleFactor(0.85)
                 .padding(.trailing, 12)
             Text(verbatim: display?.name ?? String(localized: "No screen"))
                 .font(Typography.small).foregroundStyle(Palette.text3).lineLimit(1).truncationMode(.middle)
