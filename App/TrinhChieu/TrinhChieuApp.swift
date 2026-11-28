@@ -10,6 +10,8 @@ struct TrinhChieuApp: App {
         Window(Text("Main window"), id: "main") {
             RootView()
                 .environment(environment)
+                // Nền của thanh công cụ rỗng (giữ chỗ cho ba nút cửa sổ) không được che thanh tự vẽ.
+                .toolbarBackgroundVisibility(.hidden, for: .windowToolbar)
                 .onAppear { delegate.environment = environment }
         }
         .windowStyle(.hiddenTitleBar)
