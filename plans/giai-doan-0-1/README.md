@@ -90,5 +90,5 @@ Quy tắc điều phối:
 | T1.6 | Xong (ảnh chuẩn và số đo tiêu chí 2–6 chuyển T1.11) | #12, #16 |
 | T1.7 | Xong phần code; ảnh chụp cửa sổ cạnh mẫu và thử tay chờ chạy trên Mac | #17 |
 | T1.8 | Xong phần code; số đo tiêu chí 2, ảnh chụp và kịch bản thử (`docs/kich-ban-thu-mvp.md`) chờ chạy trên Mac | #18, (PR này) |
-| T1.9 | PR 1 xong (đoạn và trang, ô soạn lời, thứ tự hát, tạo mới, nhập); PR 2 (khung vẽ, bảng thuộc tính) đang làm | (PR này) |
+| T1.9 | Code xong: PR #23 (đoạn và trang, ô soạn lời, thứ tự hát, tạo mới, nhập), PR 2 (khung vẽ, bảng thuộc tính); chờ chụp hình 3 cỡ và thử tay trên Mac | #23, (PR này) |
 | T1.10, T1.11 | Chưa bắt đầu | |

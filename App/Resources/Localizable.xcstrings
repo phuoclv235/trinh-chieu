@@ -11,6 +11,16 @@
         }
       }
     },
+    "%1$lld properties differ from theme %2$@": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld thuộc tính đang khác mẫu “%2$@”"
+          }
+        }
+      }
+    },
     "%@ (not connected)": {
       "localizations": {
         "vi": {
@@ -141,6 +151,16 @@
         }
       }
     },
+    "Add a rectangle": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thêm hình chữ nhật"
+          }
+        }
+      }
+    },
     "Add a section heading or a note": {
       "localizations": {
         "vi": {
@@ -157,6 +177,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Thêm đoạn vào thứ tự hát"
+          }
+        }
+      }
+    },
+    "Add a text box": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thêm ô chữ"
+          }
+        }
+      }
+    },
+    "Add a video": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thêm video"
+          }
+        }
+      }
+    },
+    "Add an image from Media or drop a file": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thêm ảnh từ Media hoặc kéo tệp vào"
+          }
+        }
+      }
+    },
+    "Add element": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thêm phần tử"
           }
         }
       }
@@ -251,6 +311,66 @@
         }
       }
     },
+    "Align bottom": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Căn dưới"
+          }
+        }
+      }
+    },
+    "Align center": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Căn giữa"
+          }
+        }
+      }
+    },
+    "Align left": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Căn trái"
+          }
+        }
+      }
+    },
+    "Align middle": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Căn giữa theo chiều dọc"
+          }
+        }
+      }
+    },
+    "Align right": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Căn phải"
+          }
+        }
+      }
+    },
+    "Align top": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Căn trên"
+          }
+        }
+      }
+    },
     "Arrangement": {
       "localizations": {
         "vi": {
@@ -287,6 +407,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Âm thanh"
+          }
+        }
+      }
+    },
+    "Audio files cannot be placed on a slide.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tệp âm thanh không đặt được lên trang chiếu."
           }
         }
       }
@@ -347,6 +477,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Xanh lam"
+          }
+        }
+      }
+    },
+    "Bold": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đậm"
+          }
+        }
+      }
+    },
+    "Box behind text": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hộp nền sau chữ"
+          }
+        }
+      }
+    },
+    "Bring forward": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đưa lên trên"
           }
         }
       }
@@ -421,6 +581,16 @@
         }
       }
     },
+    "Center": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tâm"
+          }
+        }
+      }
+    },
     "Change": {
       "localizations": {
         "vi": {
@@ -437,6 +607,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Đổi thời lượng"
+          }
+        }
+      }
+    },
+    "Change element": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sửa phần tử"
           }
         }
       }
@@ -471,6 +651,16 @@
         }
       }
     },
+    "Change slide background": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đổi nền trang"
+          }
+        }
+      }
+    },
     "Change song order": {
       "localizations": {
         "vi": {
@@ -497,6 +687,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Đổi giờ bắt đầu…"
+          }
+        }
+      }
+    },
+    "Change text style": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đổi kiểu chữ"
           }
         }
       }
@@ -541,6 +741,26 @@
         }
       }
     },
+    "Choose a text box on the canvas to change its style.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn một ô chữ trên khung vẽ để đổi kiểu chữ."
+          }
+        }
+      }
+    },
+    "Choose an element on the canvas to change its position and size.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn một phần tử trên khung vẽ để đổi vị trí và cỡ."
+          }
+        }
+      }
+    },
     "Choose an item in the service plan to see its slides here.": {
       "localizations": {
         "vi": {
@@ -557,6 +777,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Chọn thứ tự hát"
+          }
+        }
+      }
+    },
+    "Choose files to place on the slide": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn tệp để đặt lên trang"
+          }
+        }
+      }
+    },
+    "Choose file…": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn tệp…"
           }
         }
       }
@@ -587,6 +827,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Chọn tệp lời bài hát để nhập"
+          }
+        }
+      }
+    },
+    "Choose media": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn media"
           }
         }
       }
@@ -741,6 +991,16 @@
         }
       }
     },
+    "Color": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Màu"
+          }
+        }
+      }
+    },
     "Command palette arrives in a later update": {
       "localizations": {
         "vi": {
@@ -797,6 +1057,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bản quyền"
+          }
+        }
+      }
+    },
+    "Corner radius": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bo góc"
           }
         }
       }
@@ -901,6 +1171,16 @@
         }
       }
     },
+    "Delete element": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xoá phần tử"
+          }
+        }
+      }
+    },
     "Delete section": {
       "localizations": {
         "vi": {
@@ -967,6 +1247,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Xoá thứ tự hát này"
+          }
+        }
+      }
+    },
+    "Detach from theme": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tách khỏi mẫu"
+          }
+        }
+      }
+    },
+    "Differs from theme. Click to reset to theme": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang khác mẫu. Nhấn để về theo mẫu"
           }
         }
       }
@@ -1051,6 +1351,16 @@
         }
       }
     },
+    "Edge": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mép"
+          }
+        }
+      }
+    },
     "Edit here or on the canvas; both stay in sync": {
       "localizations": {
         "vi": {
@@ -1097,6 +1407,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sửa thông tin bộ trình chiếu"
+          }
+        }
+      }
+    },
+    "Edit text": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sửa chữ"
           }
         }
       }
@@ -1161,6 +1481,46 @@
         }
       }
     },
+    "Fill": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Màu nền"
+          }
+        }
+      }
+    },
+    "Fill frame": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phủ kín khung"
+          }
+        }
+      }
+    },
+    "Fit": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cách đặt"
+          }
+        }
+      }
+    },
+    "Fit inside": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vừa trong khung"
+          }
+        }
+      }
+    },
     "Folder \"%@\" is missing. Plug the external drive back in.": {
       "localizations": {
         "vi": {
@@ -1177,6 +1537,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Theo hệ thống"
+          }
+        }
+      }
+    },
+    "Follows the theme slot": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Theo ô của mẫu"
+          }
+        }
+      }
+    },
+    "Follows theme %@": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Theo mẫu “%@”"
+          }
+        }
+      }
+    },
+    "Font": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phông chữ"
+          }
+        }
+      }
+    },
+    "Font size": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cỡ chữ"
           }
         }
       }
@@ -1271,6 +1671,26 @@
         }
       }
     },
+    "Heavy": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rất đậm"
+          }
+        }
+      }
+    },
+    "Height": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cao"
+          }
+        }
+      }
+    },
     "Hide warning": {
       "localizations": {
         "vi": {
@@ -1287,6 +1707,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Giữ nguyên hình đang chiếu"
+          }
+        }
+      }
+    },
+    "Horizontal alignment": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Căn ngang"
           }
         }
       }
@@ -1317,6 +1747,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sách thánh ca"
+          }
+        }
+      }
+    },
+    "Image": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ảnh"
           }
         }
       }
@@ -1471,6 +1911,36 @@
         }
       }
     },
+    "Layer": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lớp"
+          }
+        }
+      }
+    },
+    "Layout": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bố cục"
+          }
+        }
+      }
+    },
+    "Letter spacing": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khoảng chữ"
+          }
+        }
+      }
+    },
     "Library": {
       "localizations": {
         "vi": {
@@ -1521,6 +1991,26 @@
         }
       }
     },
+    "Light": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mảnh"
+          }
+        }
+      }
+    },
+    "Line spacing": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khoảng dòng"
+          }
+        }
+      }
+    },
     "Live": {
       "localizations": {
         "vi": {
@@ -1537,6 +2027,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vị trí"
+          }
+        }
+      }
+    },
+    "Loop": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lặp lại"
           }
         }
       }
@@ -1621,6 +2121,16 @@
         }
       }
     },
+    "Medium": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đậm vừa"
+          }
+        }
+      }
+    },
     "Merge slides": {
       "localizations": {
         "vi": {
@@ -1657,6 +2167,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Xanh rêu"
+          }
+        }
+      }
+    },
+    "Move element": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dời phần tử"
           }
         }
       }
@@ -1727,6 +2247,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tắt tiếng media đang phát"
+          }
+        }
+      }
+    },
+    "Muted": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tắt tiếng"
           }
         }
       }
@@ -2121,6 +2651,16 @@
         }
       }
     },
+    "Opacity": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Độ đục"
+          }
+        }
+      }
+    },
     "Open command palette": {
       "localizations": {
         "vi": {
@@ -2291,6 +2831,16 @@
         }
       }
     },
+    "Property groups": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhóm thuộc tính"
+          }
+        }
+      }
+    },
     "Quit": {
       "localizations": {
         "vi": {
@@ -2367,6 +2917,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Địa chỉ câu, ví dụ Giăng 3:16"
+          }
+        }
+      }
+    },
+    "Regular": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thường"
           }
         }
       }
@@ -2521,6 +3081,16 @@
         }
       }
     },
+    "Reset to theme": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Về theo mẫu"
+          }
+        }
+      }
+    },
     "Rose": {
       "localizations": {
         "vi": {
@@ -2537,6 +3107,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Chạy thật nhưng đầu ra chính không đổi"
+          }
+        }
+      }
+    },
+    "Safe area": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vùng an toàn"
           }
         }
       }
@@ -2681,6 +3261,26 @@
         }
       }
     },
+    "Semibold": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nửa đậm"
+          }
+        }
+      }
+    },
+    "Send backward": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đưa xuống dưới"
+          }
+        }
+      }
+    },
     "Separate with commas": {
       "localizations": {
         "vi": {
@@ -2727,6 +3327,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Cài đặt"
+          }
+        }
+      }
+    },
+    "Shape": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hình"
           }
         }
       }
@@ -2791,6 +3401,16 @@
         }
       }
     },
+    "Shrink text to fit": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Co chữ cho vừa khung"
+          }
+        }
+      }
+    },
     "Signal flow": {
       "localizations": {
         "vi": {
@@ -2837,6 +3457,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Trang %@, %@"
+          }
+        }
+      }
+    },
+    "Slide background": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nền trang"
           }
         }
       }
@@ -2931,6 +3561,16 @@
         }
       }
     },
+    "Split slide at cursor": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tách trang tại con trỏ"
+          }
+        }
+      }
+    },
     "Split slide in half": {
       "localizations": {
         "vi": {
@@ -3001,6 +3641,26 @@
         }
       }
     },
+    "Stretch": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kéo giãn"
+          }
+        }
+      }
+    },
+    "System": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hệ thống"
+          }
+        }
+      }
+    },
     "Tags": {
       "localizations": {
         "vi": {
@@ -3027,6 +3687,56 @@
           "stringUnit": {
             "state": "translated",
             "value": "Chữ"
+          }
+        }
+      }
+    },
+    "Text color": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Màu chữ"
+          }
+        }
+      }
+    },
+    "Text outline": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Viền chữ"
+          }
+        }
+      }
+    },
+    "Text shadow": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bóng chữ"
+          }
+        }
+      }
+    },
+    "The Media library is empty": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thư viện Media đang trống"
+          }
+        }
+      }
+    },
+    "The frame follows the theme slot. Detach it to move or resize it freely.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khung theo ô của mẫu. Tách khỏi mẫu để dời và đổi cỡ tự do."
           }
         }
       }
@@ -3087,6 +3797,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mẫu cho bài hát"
+          }
+        }
+      }
+    },
+    "Theme slot, locked": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ô mẫu, khoá khung"
           }
         }
       }
@@ -3167,6 +3887,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Chương trình chưa có mục nào"
+          }
+        }
+      }
+    },
+    "This slide uses the theme background.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trang này dùng nền của mẫu."
           }
         }
       }
@@ -3281,12 +4011,32 @@
         }
       }
     },
+    "Uppercase": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chữ hoa"
+          }
+        }
+      }
+    },
     "Use this folder": {
       "localizations": {
         "vi": {
           "stringUnit": {
             "state": "translated",
             "value": "Dùng thư mục này"
+          }
+        }
+      }
+    },
+    "Vertical alignment": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Căn dọc"
           }
         }
       }
@@ -3331,12 +4081,52 @@
         }
       }
     },
+    "Weight": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Độ đậm"
+          }
+        }
+      }
+    },
     "Welcome": {
       "localizations": {
         "vi": {
           "stringUnit": {
             "state": "translated",
             "value": "Chào bạn"
+          }
+        }
+      }
+    },
+    "Width": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rộng"
+          }
+        }
+      }
+    },
+    "X": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "X"
+          }
+        }
+      }
+    },
+    "Y": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Y"
           }
         }
       }

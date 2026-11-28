@@ -1,29 +1,71 @@
 import CoreModel
 import SwiftUI
 
-/// Cột phải của trình soạn: các tab thuộc tính (mẫu `design/editor.html`, `.insp`). PR 1 của T1.9 có tab
-/// "Bộ trình chiếu"; các tab Chữ, Bố cục, Nền trang đi cùng khung vẽ ở PR 2.
+/// Cột phải của trình soạn: bốn thẻ thuộc tính (mẫu `design/editor.html`, `.insp`): Chữ, Bố cục, Nền trang, Bộ trình
+/// chiếu. Thẻ Chữ và Bố cục làm việc với phần tử đang chọn trên khung vẽ, thẻ Nền trang với trang đang chọn.
 struct PresentationInspector: View {
     let presentation: Presentation
+    @Environment(AppEnvironment.self) private var environment
 
     var body: some View {
+        @Bindable var editing = environment.presentationEditing
         VStack(spacing: 0) {
-            HStack(spacing: 0) {
-                Text("Presentation")
-                    .font(Typography.controlStrong)
-                    .foregroundStyle(Palette.text)
-                    .padding(.horizontal, 12)
-                    .frame(maxHeight: .infinity)
-                    .overlay(alignment: .bottom) { Rectangle().fill(Palette.accent).frame(height: 2) }
-                Spacer()
-            }
-            .padding(.horizontal, 8)
-            .frame(height: 40)
-            .overlay(alignment: .bottom) { Hairline() }
+            InspectorTabs(selection: $editing.inspectorTab)
             ScrollView {
-                PresentationFields(presentation: presentation)
-                    .padding(16)
+                Group {
+                    switch editing.inspectorTab {
+                    case .text: TextInspector()
+                    case .layout: LayoutInspector()
+                    case .background: BackgroundInspector()
+                    case .presentation: PresentationFields(presentation: presentation)
+                    }
+                }
+                .padding(16)
             }
+        }
+    }
+}
+
+/// Hàng thẻ (`.tabs`): thẻ đang mở chữ đậm, vạch cam đất 2 px ở đáy.
+private struct InspectorTabs: View {
+    @Binding var selection: InspectorTab
+
+    var body: some View {
+        HStack(spacing: 0) {
+            ForEach(InspectorTab.allCases, id: \.self) { tab in
+                let selected = tab == selection
+                Button {
+                    selection = tab
+                } label: {
+                    Text(title(tab))
+                        .font(selected ? Typography.controlStrong : Typography.control)
+                        .foregroundStyle(selected ? Palette.text : Palette.text2)
+                        .lineLimit(1)
+                        .padding(.horizontal, 9)
+                        .frame(maxHeight: .infinity)
+                        .overlay(alignment: .bottom) {
+                            if selected { Rectangle().fill(Palette.accent).frame(height: 2) }
+                        }
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(selected ? .isSelected : [])
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 6)
+        .frame(height: 40)
+        .overlay(alignment: .bottom) { Hairline() }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(Text("Property groups"))
+    }
+
+    private func title(_ tab: InspectorTab) -> LocalizedStringKey {
+        switch tab {
+        case .text: return "Text"
+        case .layout: return "Layout"
+        case .background: return "Slide background"
+        case .presentation: return "Presentation"
         }
     }
 }

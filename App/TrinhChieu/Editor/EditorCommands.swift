@@ -10,8 +10,16 @@ import UniformTypeIdentifiers
 @MainActor @Observable final class PresentationEditing {
     /// Bản soạn; `nil` khi chưa mở bộ nào.
     fileprivate(set) var editor: DocumentEditor<Presentation>?
-    /// Trang đang chọn ở danh sách trái (và trên khung vẽ).
-    var selectedSlideID: UUID?
+    /// Trang đang chọn ở danh sách trái (và trên khung vẽ). Đổi trang thì bỏ chọn phần tử.
+    var selectedSlideID: UUID? {
+        didSet {
+            if selectedSlideID != oldValue { selectedElementID = nil }
+        }
+    }
+    /// Phần tử đang chọn trên khung vẽ.
+    var selectedElementID: UUID?
+    /// Thẻ đang mở ở bảng thuộc tính bên phải.
+    var inspectorTab: InspectorTab = .presentation
     /// Giờ lưu gần nhất, hiện "Đã lưu 9:41" trên thanh công cụ.
     fileprivate(set) var savedAt: Date?
     /// Tăng khi cần đưa con trỏ vào ô soạn lời (bài hát mới).
@@ -39,10 +47,19 @@ import UniformTypeIdentifiers
         pendingLyrics = nil
         editor = nil
         selectedSlideID = nil
+        selectedElementID = nil
         savedAt = nil
         lastSaved = nil
         importReport = nil
     }
+}
+
+/// Các thẻ của bảng thuộc tính (mẫu `design/editor.html`).
+enum InspectorTab: Hashable, CaseIterable {
+    case text
+    case layout
+    case background
+    case presentation
 }
 
 /// Kết quả nhập theo tệp, cho bảng báo cáo.
