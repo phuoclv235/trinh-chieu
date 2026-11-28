@@ -307,7 +307,7 @@ private struct LayoutFields: View {
         switch element {
         case .image(let image):
             InspectorField("Fit") {
-                fitPicker(image.fit) { fit in editImage("fit") { $0.fit = fit } }
+                fitPicker(Binding(get: { image.fit }, set: { fit in editImage("fit") { $0.fit = fit } }))
             }
             InspectorSlider(
                 title: "Opacity", reset: nil,
@@ -317,7 +317,7 @@ private struct LayoutFields: View {
                 range: 0...1, step: 0.05, format: { "\(Int(($0 * 100).rounded())) %" })
         case .video(let video):
             InspectorField("Fit") {
-                fitPicker(video.fit) { fit in editVideo("fit") { $0.fit = fit } }
+                fitPicker(Binding(get: { video.fit }, set: { fit in editVideo("fit") { $0.fit = fit } }))
             }
             InspectorGroup {
                 InspectorSwitch(
@@ -352,8 +352,8 @@ private struct LayoutFields: View {
         }
     }
 
-    private func fitPicker(_ fit: ContentFit, set: @escaping (ContentFit) -> Void) -> some View {
-        Picker("Fit", selection: Binding(get: { fit }, set: set)) {
+    private func fitPicker(_ fit: Binding<ContentFit>) -> some View {
+        Picker("Fit", selection: fit) {
             Text("Fit inside").tag(ContentFit.fit)
             Text("Fill frame").tag(ContentFit.fill)
             Text("Stretch").tag(ContentFit.stretch)
