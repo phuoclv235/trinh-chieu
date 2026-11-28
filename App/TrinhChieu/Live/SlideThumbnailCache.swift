@@ -1,6 +1,7 @@
 import CoreGraphics
 import CoreModel
 import Foundation
+import Observation
 import RenderEngine
 import os
 
@@ -9,7 +10,7 @@ import os
 /// Mỗi lần chỉ dựng một ảnh, độ ưu tiên thấp, để máy còn sức cho đầu ra, Zoom và trình duyệt chạy cùng buổi nhóm.
 /// Ảnh lưu đệm theo ``ThumbnailKey`` (mã trang, băm nội dung, mã mẫu); đệm giữ tối đa ``capacity`` ảnh, bỏ ảnh dùng
 /// lâu nhất trước.
-@MainActor final class SlideThumbnailCache {
+@MainActor @Observable final class SlideThumbnailCache {
     /// Khoảng 230 KB mỗi ảnh: 240 ảnh chừng 55 MB.
     static let capacity = 240
 
@@ -18,20 +19,23 @@ import os
         let scene: RenderScene
     }
 
-    private var images: [ThumbnailKey: CGImage] = [:]
+    @ObservationIgnored private var images: [ThumbnailKey: CGImage] = [:]
     /// Thứ tự dùng, cũ trước mới sau.
-    private var recency: [ThumbnailKey] = []
-    private var queue: [Job] = []
-    private var queued: Set<ThumbnailKey> = []
-    private var failed: Set<ThumbnailKey> = []
-    private var worker: Task<Void, Never>?
+    @ObservationIgnored private var recency: [ThumbnailKey] = []
+    @ObservationIgnored private var queue: [Job] = []
+    @ObservationIgnored private var queued: Set<ThumbnailKey> = []
+    @ObservationIgnored private var failed: Set<ThumbnailKey> = []
+    @ObservationIgnored private var worker: Task<Void, Never>?
     private let mediaLocator: any MediaLocator
     /// Bộ dựng cảnh riêng (bộ dựng nhớ lần phát video nền, không dùng chung với `ShowController`).
     private let resolver = SceneResolver()
     private let logger = Logger(subsystem: "app.trinhchieu.TrinhChieu", category: "Thumbnails")
 
     /// Gọi khi một ảnh dựng xong, để lưới gán ảnh cho thẻ đang hiện.
-    var onRendered: ((ThumbnailKey) -> Void)?
+    @ObservationIgnored var onRendered: ((ThumbnailKey) -> Void)?
+
+    /// Tăng mỗi khi có ảnh mới dựng xong: danh sách trang của trình soạn đọc số này để gán ảnh.
+    private(set) var renderedCount = 0
 
     init(mediaLocator: any MediaLocator) {
         self.mediaLocator = mediaLocator
@@ -128,7 +132,30 @@ import os
             }
             recency.removeFirst(evicted.count)
         }
+        renderedCount &+= 1
         onRendered?(key)
+    }
+
+    /// Dựng một trang ở cỡ lớn cho khung vẽ của trình soạn (không lưu đệm). `nil` khi dựng lỗi.
+    func renderLarge(
+        _ slide: Slide, at index: Int, in sequence: SlideSequence, provider: any ShowContentProvider, size: PixelSize
+    ) async -> CGImage? {
+        let scene = Self.scene(
+            for: slide, at: index, in: sequence, theme: provider.theme(sequence.themeID), provider: provider,
+            resolver: resolver)
+        let locator = mediaLocator
+        return await Self.renderImage(scene, size: size, locator: locator)?.image
+    }
+
+    nonisolated private static func renderImage(
+        _ scene: RenderScene, size: PixelSize, locator: any MediaLocator
+    ) async -> RenderedImage? {
+        do {
+            let image = try await RenderEngine.renderOffscreen(scene, size: size, at: 0.5, mediaLocator: locator)
+            return RenderedImage(image: image)
+        } catch {
+            return nil
+        }
     }
 
     nonisolated private static func render(_ scene: RenderScene, locator: any MediaLocator) async -> RenderedImage? {

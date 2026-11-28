@@ -52,6 +52,8 @@ enum WorkspaceMode: String, CaseIterable, Sendable {
     let thumbnails: SlideThumbnailCache
     /// Chương trình buổi nhóm đang mở ở chế độ Trực tiếp.
     let planEditing = PlanEditing()
+    /// Bộ trình chiếu đang mở ở chế độ Soạn thảo (T1.9).
+    let presentationEditing = PresentationEditing()
 
     @ObservationIgnored private let mediaLocator: LibraryMediaLocator
     @ObservationIgnored private var sink: AppSceneSink?
@@ -112,6 +114,7 @@ enum WorkspaceMode: String, CaseIterable, Sendable {
                 show?.send(.contentDidChange(ids: change.documentIDs))
                 self?.contentRevision &+= 1
                 self?.syncActivePlan()
+                self?.syncEditingPresentation()
             }
             library = store
             self.bible = bible
@@ -149,6 +152,7 @@ enum WorkspaceMode: String, CaseIterable, Sendable {
         openedTranslations = [:]
         editingPresentationID = nil
         planEditing.reset()
+        presentationEditing.reset()
         thumbnails.removeAll()
         mediaLocator.update(from: nil)
     }

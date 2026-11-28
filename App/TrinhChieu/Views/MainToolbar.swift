@@ -11,26 +11,11 @@ struct MainToolbar: View {
     var body: some View {
         HStack(spacing: 8) {
             ModeSwitcher(mode: $mode)
-            Spacer(minLength: 12)
-            PaletteLauncher()
-                .frame(minWidth: 220, maxWidth: 440)
-            Spacer(minLength: 12)
-            HStack(spacing: 8) {
-                FrameMeter()
-                RehearsalToggle()
-                FreezeToggle()
-                IconButton(
-                    systemImage: "sidebar.right",
-                    label: "Show or hide right column",
-                    shortcutHint: "⌥⌘0",
-                    isOn: showsRightRail && mode == .live
-                ) {
-                    showsRightRail.toggle()
-                }
-                .keyboardShortcut("0", modifiers: [.command, .option])
-                .disabled(mode != .live)
+            if mode == .editor {
+                EditorToolbarItems(mode: $mode)
+            } else {
+                liveItems
             }
-            .fixedSize()
         }
         .padding(.leading, Metrics.trafficLightInset)
         .padding(.trailing, 12)
@@ -42,6 +27,29 @@ struct MainToolbar: View {
             }
         }
         .overlay(alignment: .bottom) { Hairline() }
+    }
+
+    @ViewBuilder private var liveItems: some View {
+        Spacer(minLength: 12)
+        PaletteLauncher()
+            .frame(minWidth: 220, maxWidth: 440)
+        Spacer(minLength: 12)
+        HStack(spacing: 8) {
+            FrameMeter()
+            RehearsalToggle()
+            FreezeToggle()
+            IconButton(
+                systemImage: "sidebar.right",
+                label: "Show or hide right column",
+                shortcutHint: "⌥⌘0",
+                isOn: showsRightRail && mode == .live
+            ) {
+                showsRightRail.toggle()
+            }
+            .keyboardShortcut("0", modifiers: [.command, .option])
+            .disabled(mode != .live)
+        }
+        .fixedSize()
     }
 }
 
