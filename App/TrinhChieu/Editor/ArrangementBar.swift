@@ -36,6 +36,8 @@ struct ArrangementBar: View {
     let presentation: Presentation
     @Environment(AppEnvironment.self) private var environment
     @State private var naming: ArrangementNaming?
+    /// Dải chip đang cuộn còn chip khuất ở mép phải.
+    @State private var moreChipsRight = true
 
     var body: some View {
         let occurrences = presentation.orderedGroupOccurrences
@@ -48,12 +50,20 @@ struct ArrangementBar: View {
             ViewThatFits(in: .horizontal) {
                 chips(occurrences)
                 ScrollView(.horizontal, showsIndicators: false) { chips(occurrences) }
+                    .onScrollGeometryChange(for: Bool.self) { geometry in
+                        geometry.contentOffset.x + geometry.containerSize.width < geometry.contentSize.width - 1
+                    } action: { _, more in
+                        moreChipsRight = more
+                    }
                     .mask(alignment: .trailing) {
-                        // Mép phải mờ dần: báo còn chip phía sau, cuộn ngang để xem.
+                        // Mép phải mờ dần khi còn chip phía sau; cuộn tới cuối thì hết mờ.
                         HStack(spacing: 0) {
                             Rectangle()
-                            LinearGradient(colors: [.black, .clear], startPoint: .leading, endPoint: .trailing)
-                                .frame(width: 20)
+                            LinearGradient(
+                                colors: [.black, moreChipsRight ? .clear : .black], startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                            .frame(width: 20)
                         }
                     }
             }

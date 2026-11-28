@@ -39,6 +39,12 @@ struct EditorStage: View {
             .frame(width: size.width, height: size.height)
             .overlay(Rectangle().strokeBorder(Palette.lineStrong, lineWidth: 1).allowsHitTesting(false))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .onChange(of: editing.selectedSlideID) {
+                // Đổi trang giữa lúc kéo hay sửa: bỏ khung tạm và việc giấu chữ của trang cũ.
+                draft = nil
+                editingTextID = nil
+            }
+            .onChange(of: editing.selectedElementID) { draft = nil }
             .task(id: RenderKey(slide: selected, theme: theme, width: Int(size.width))) {
                 await render(selected, width: size.width, canvas: canvas, live: draft != nil)
             }
@@ -108,7 +114,8 @@ struct EditorStage: View {
             try? await Task.sleep(for: .milliseconds(50))
             guard !Task.isCancelled else { return }
         }
-        guard let provider = environment.editorContent(), let index = provider.sequence.index(ofSlide: slide.id)
+        guard let provider = environment.editorContent(preview: slide),
+            let index = provider.sequence.index(ofSlide: slide.id)
         else {
             if renders.accept(ticket) { image = nil }
             return
