@@ -102,7 +102,8 @@ extension AppEnvironment {
     /// Xử lý một phím của chế độ Trực tiếp. Trả `true` khi phím có nghĩa ở đây (kể cả khi lệnh bị bỏ qua vì đã
     /// hết trang), để phím không đi tiếp xuống giao diện.
     func perform(_ key: LiveKey) -> Bool {
-        guard show != nil else { return false }
+        // Bảng lệnh đang mở: phím thuộc về Bảng lệnh, không điều khiển trình chiếu phía sau.
+        guard show != nil, !isCommandPalettePresented else { return false }
         switch key {
         case .next: advance()
         case .previous: send(.previous)

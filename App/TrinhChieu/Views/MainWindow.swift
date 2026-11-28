@@ -106,6 +106,7 @@ private struct LibraryProblemView: View {
 struct MainWindowView: View {
     @Environment(AppEnvironment.self) private var environment
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.openSettings) private var openSettings
     @SceneStorage("main.mode") private var modeRaw = WorkspaceMode.live.rawValue
     @SceneStorage("main.rightRail") private var showsRightRail = true
 
@@ -151,6 +152,20 @@ struct MainWindowView: View {
             }
         }
         .animation(Motion.standard(reduceMotion: reduceMotion), value: showsWelcome)
+        .overlay {
+            if environment.isCommandPalettePresented {
+                CommandPalette(host: paletteHost)
+            }
+        }
+        .animation(Motion.standard(reduceMotion: reduceMotion), value: environment.isCommandPalettePresented)
+        .background {
+            // `⌘K` mở Bảng lệnh ở cả hai chế độ.
+            Button("Open command palette") { environment.openCommandPalette() }
+                .keyboardShortcut("k", modifiers: .command)
+                .opacity(0)
+                .allowsHitTesting(false)
+                .accessibilityHidden(true)
+        }
         .onChange(of: environment.outputs.missing) { _, _ in
             environment.warnings.pruneDismissed(outputs: environment.outputs)
         }
@@ -161,6 +176,12 @@ struct MainWindowView: View {
             get: { WorkspaceMode(rawValue: modeRaw) ?? .live },
             set: { modeRaw = $0.rawValue }
         )
+    }
+
+    private var paletteHost: PaletteHost {
+        PaletteHost(
+            setMode: { modeRaw = $0.rawValue },
+            openSettings: { openSettings() })
     }
 
     private var showsWelcome: Bool {

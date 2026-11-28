@@ -20,6 +20,9 @@ struct LocalizationTests {
             "Freeze": "Đóng băng",
             "Showing on screen. Quit the system?": "Đang chiếu. Thoát Hệ thống?",
             "Stay": "Ở lại",
+            "Clear text": "Xoá chữ",
+            "Show numbers on screens": "Hiện số trên từng màn",
+            "Add to service plan": "Thêm vào chương trình",
         ]
         for (key, value) in expected {
             #expect(bundle.localizedString(forKey: key, value: nil, table: nil) == value)

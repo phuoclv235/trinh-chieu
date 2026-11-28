@@ -46,7 +46,8 @@ let package = Package(
         .target(
             name: "LibraryStore",
             dependencies: [
-                "CoreModel", "Scripture", "LibraryIndex", .product(name: "ZIPFoundation", package: "ZIPFoundation"),
+                "CoreModel", "Scripture", "LibraryIndex", "VietText",
+                .product(name: "ZIPFoundation", package: "ZIPFoundation"),
             ],
             resources: [.copy("Resources/default-themes")],
             swiftSettings: commonSettings

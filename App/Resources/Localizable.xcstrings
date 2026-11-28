@@ -291,6 +291,16 @@
         }
       }
     },
+    "Add to service plan": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thêm vào chương trình"
+          }
+        }
+      }
+    },
     "Add translation…": {
       "localizations": {
         "vi": {
@@ -781,6 +791,16 @@
         }
       }
     },
+    "Choose book": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn sách"
+          }
+        }
+      }
+    },
     "Choose files to place on the slide": {
       "localizations": {
         "vi": {
@@ -1001,12 +1021,22 @@
         }
       }
     },
-    "Command palette arrives in a later update": {
+    "Command palette": {
       "localizations": {
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bảng lệnh có trong bản cập nhật kế tiếp"
+            "value": "Bảng lệnh"
+          }
+        }
+      }
+    },
+    "Commands": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lệnh"
           }
         }
       }
@@ -1441,6 +1471,16 @@
         }
       }
     },
+    "Editor mode": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chế độ Soạn thảo"
+          }
+        }
+      }
+    },
     "Empty": {
       "localizations": {
         "vi": {
@@ -1781,12 +1821,32 @@
         }
       }
     },
+    "Import a Bible translation in Settings to show verses.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhập bản dịch Kinh Thánh trong Cài đặt để hiện câu."
+          }
+        }
+      }
+    },
     "Import a translation file in Settings, Library, to look up verses here.": {
       "localizations": {
         "vi": {
           "stringUnit": {
             "state": "translated",
             "value": "Bạn nhập tệp bản dịch ở Cài đặt, mục Thư viện, để tra câu ở đây."
+          }
+        }
+      }
+    },
+    "Import files": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhập tệp"
           }
         }
       }
@@ -2017,6 +2077,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Trực tiếp"
+          }
+        }
+      }
+    },
+    "Live mode": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chế độ Trực tiếp"
           }
         }
       }
@@ -2661,6 +2731,16 @@
         }
       }
     },
+    "Open Settings": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mở Cài đặt"
+          }
+        }
+      }
+    },
     "Open command palette": {
       "localizations": {
         "vi": {
@@ -2697,6 +2777,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Thứ tự gốc"
+          }
+        }
+      }
+    },
+    "Other presentations": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bộ trình chiếu khác"
           }
         }
       }
@@ -2887,6 +2977,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Đang dựng lại… trong lúc này tìm kiếm vẫn dùng được."
+          }
+        }
+      }
+    },
+    "Recent": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dùng gần đây"
           }
         }
       }
@@ -3101,6 +3201,16 @@
         }
       }
     },
+    "Run": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chạy"
+          }
+        }
+      }
+    },
     "Run the show while the main output stays unchanged": {
       "localizations": {
         "vi": {
@@ -3261,6 +3371,16 @@
         }
       }
     },
+    "Select item": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn mục"
+          }
+        }
+      }
+    },
     "Semibold": {
       "localizations": {
         "vi": {
@@ -3297,6 +3417,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Chương trình buổi nhóm"
+          }
+        }
+      }
+    },
+    "Service plan items": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mục trong chương trình"
           }
         }
       }
@@ -3341,6 +3471,16 @@
         }
       }
     },
+    "Show as background": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lên màn làm nền"
+          }
+        }
+      }
+    },
     "Show file in Finder": {
       "localizations": {
         "vi": {
@@ -3361,12 +3501,32 @@
         }
       }
     },
+    "Show numbers on screens": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hiện số trên từng màn"
+          }
+        }
+      }
+    },
     "Show or hide right column": {
       "localizations": {
         "vi": {
           "stringUnit": {
             "state": "translated",
             "value": "Ẩn hoặc hiện cột phải"
+          }
+        }
+      }
+    },
+    "Show slides": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xem các trang"
           }
         }
       }
@@ -3951,6 +4111,26 @@
         }
       }
     },
+    "Turn Freeze on or off": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bật hoặc tắt Đóng băng"
+          }
+        }
+      }
+    },
+    "Turn Rehearsal on or off": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bật hoặc tắt Tập dượt"
+          }
+        }
+      }
+    },
     "Type": {
       "localizations": {
         "vi": {
@@ -3977,6 +4157,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Gõ địa chỉ câu như Giăng 3:16 để xem các câu. Có cùng bản cập nhật chương trình buổi nhóm."
+          }
+        }
+      }
+    },
+    "Type the chapter and verse next": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gõ thêm chương và câu"
+          }
+        }
+      }
+    },
+    "Type to search or run a command": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gõ để tìm hoặc chạy lệnh"
           }
         }
       }
@@ -4167,6 +4367,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "đang chứa cửa sổ Hệ thống"
+          }
+        }
+      }
+    },
+    "select": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "chọn"
           }
         }
       }
