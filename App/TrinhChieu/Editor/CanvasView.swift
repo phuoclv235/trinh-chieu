@@ -650,6 +650,15 @@ final class EditorCanvasView: NSView, NSTextViewDelegate {
         editorUndo
     }
 
+    /// Lịch sử hoàn tác của ô sửa chữ tại chỗ khi ô gõ đang nhận phím trong cửa sổ chính; `nil` khi không sửa.
+    /// Nút Hoàn tác giữ phím tắt ⌘Z nên phải hỏi ở đây, không thì ⌘Z rơi vào lịch sử bộ trình chiếu.
+    static var activeTextUndoManager: UndoManager? {
+        guard let view = NSApp.keyWindow?.firstResponder as? NSTextView,
+            let canvas = view.delegate as? EditorCanvasView, canvas.editor === view
+        else { return nil }
+        return canvas.editorUndo
+    }
+
     func textView(_ textView: NSTextView, doCommandBy selector: Selector) -> Bool {
         if selector == #selector(NSResponder.cancelOperation(_:)) {
             endTextEditing(commit: true)
