@@ -98,6 +98,8 @@ struct EditorStage: View {
     /// xong; vẫn nhận ảnh nếu nó mới hơn ảnh đang hiện, để chữ chạy theo chuột thay vì đứng yên tới lúc thả.
     private func render(_ slide: Slide?, width: CGFloat, canvas: PixelSize, live: Bool) async {
         guard let slide, width > 0 else {
+            // Huỷ hiệu lực các lượt dựng còn dở (kể cả lượt kéo), để ảnh trang cũ không quay lại.
+            _ = renders.accept(renders.next())
             image = nil
             return
         }
@@ -108,7 +110,7 @@ struct EditorStage: View {
         }
         guard let provider = environment.editorContent(), let index = provider.sequence.index(ofSlide: slide.id)
         else {
-            image = nil
+            if renders.accept(ticket) { image = nil }
             return
         }
         // Dựng ở độ phân giải màn Retina của khung, tối đa bằng khung vẽ của mẫu.
