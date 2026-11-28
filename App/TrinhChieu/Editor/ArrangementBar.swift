@@ -161,7 +161,9 @@ private struct ArrangementChip: View {
                     $0.moveInActiveArrangement(from: from, to: target)
                 }
                 return true
-            } isTargeted: { isTargeted = $0 }
+            } isTargeted: {
+                isTargeted = $0
+            }
             .contextMenu {
                 Button("Remove from arrangement") {
                     environment.editPresentation(String(localized: "Remove from arrangement")) {

@@ -240,7 +240,9 @@ private struct GroupSection: View {
             case .slide:
                 return dropSlide(items, at: 0)
             }
-        } isTargeted: { isTargeted = $0 }
+        } isTargeted: {
+            isTargeted = $0
+        }
         .contextMenu { GroupMenu(group: group, onRelabel: onRelabel) }
         .accessibilityAddTraits(.isHeader)
     }

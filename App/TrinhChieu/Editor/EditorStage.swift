@@ -25,9 +25,8 @@ struct EditorStage: View {
                 }
                 Rectangle()
                     .strokeBorder(Color.white.opacity(0.22), style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
-                    .padding(EdgeInsets(
-                        top: size.height * 0.05, leading: size.width * 0.05, bottom: size.height * 0.05,
-                        trailing: size.width * 0.05))
+                    .padding(.horizontal, size.width * 0.05)
+                    .padding(.vertical, size.height * 0.05)
                     .accessibilityHidden(true)
                 if selected == nil {
                     Text("Choose a slide on the left")

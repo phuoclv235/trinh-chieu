@@ -220,7 +220,7 @@ public enum LyricsText {
     }
 
     /// Mỗi dòng bỏ khoảng trắng đầu cuối, bỏ dòng trống.
-    static func cleanLines(_ text: String) -> [String] {
+    public static func cleanLines(_ text: String) -> [String] {
         text.components(separatedBy: "\n")
             .map { $0.trimmingCharacters(in: .whitespaces) }
             .filter { !$0.isEmpty }

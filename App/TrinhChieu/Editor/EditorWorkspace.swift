@@ -51,7 +51,9 @@ struct EditorWorkspace: View {
             guard !files.isEmpty else { return false }
             Task { await environment.importIntoEditor(files) }
             return true
-        } isTargeted: { isDropTargeted = $0 }
+        } isTargeted: {
+            isDropTargeted = $0
+        }
         .sheet(item: $editing.importReport) { report in
             ImportReportSheet(report: report)
         }
