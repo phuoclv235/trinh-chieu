@@ -52,34 +52,8 @@ public enum TextRenderer {
         let fonts = FontSource(family: style.fontFamily, weight: style.fontWeight)
         let maxLines = block.maxLines.map { max(1, $0) }
 
-        var fontScale = 1.0
-        var layout = TextLayout(
-            string: string,
-            style: style,
-            fonts: fonts,
-            scale: scale,
-            fontScale: 1,
-            width: available.width
-        )
-        if !layout.fits(height: available.height, maxLines: maxLines), block.autoFit.mode == .shrink {
-            let minScale = min(1, max(0.05, block.autoFit.minScale))
-            var step = 1
-            while true {
-                let candidate = 1 - Double(step) * shrinkStep
-                guard candidate >= minScale - 1e-9 else { break }
-                fontScale = candidate
-                layout = TextLayout(
-                    string: string,
-                    style: style,
-                    fonts: fonts,
-                    scale: scale,
-                    fontScale: candidate,
-                    width: available.width
-                )
-                if layout.fits(height: available.height, maxLines: maxLines) { break }
-                step += 1
-            }
-        }
+        let (layout, fontScale) = fittedLayout(
+            string: string, block: block, fonts: fonts, scale: scale, available: available, maxLines: maxLines)
         let fits = layout.fits(height: available.height, maxLines: maxLines)
         let visible = fits ? layout.lines.count : layout.visibleLineCount(height: available.height, maxLines: maxLines)
 
@@ -106,6 +80,62 @@ public enum TextRenderer {
             truncated: !fits,
             usedFallbackFont: fonts.usedFallback
         )
+    }
+}
+
+extension TextRenderer {
+    /// Bố cục ở cỡ chữ gốc; tràn khung và `autoFit` là co thì giảm dần từng `shrinkStep` tới khi vừa
+    /// hoặc chạm `minScale`.
+    static func fittedLayout(
+        string: String, block: TextBlock, fonts: FontSource, scale: CGFloat, available: CGSize, maxLines: Int?
+    ) -> (TextLayout, Double) {
+        var fontScale = 1.0
+        var layout = TextLayout(
+            string: string, style: block.style, fonts: fonts, scale: scale, fontScale: 1, width: available.width)
+        if !layout.fits(height: available.height, maxLines: maxLines), block.autoFit.mode == .shrink {
+            let minScale = min(1, max(0.05, block.autoFit.minScale))
+            var step = 1
+            while true {
+                let candidate = 1 - Double(step) * shrinkStep
+                guard candidate >= minScale - 1e-9 else { break }
+                fontScale = candidate
+                layout = TextLayout(
+                    string: string, style: block.style, fonts: fonts, scale: scale, fontScale: candidate,
+                    width: available.width)
+                if layout.fits(height: available.height, maxLines: maxLines) { break }
+                step += 1
+            }
+        }
+        return (layout, fontScale)
+    }
+
+    /// Phông và nhịp dòng mà `render` dùng cho khối chữ trong khung `frameSize`: để ô sửa chữ tại chỗ của
+    /// trình soạn trùng cỡ, khoảng dòng và vị trí với chữ đã dựng.
+    public static func metrics(_ block: TextBlock, frameSize: CGSize, scale: CGFloat) -> TextMetrics {
+        let available = CGSize(width: max(1, frameSize.width.rounded()), height: max(1, frameSize.height.rounded()))
+        let fonts = FontSource(family: block.style.fontFamily, weight: block.style.fontWeight)
+        let (layout, fontScale) = fittedLayout(
+            string: block.string.precomposedStringWithCanonicalMapping, block: block, fonts: fonts, scale: scale,
+            available: available, maxLines: block.maxLines.map { max(1, $0) })
+        return TextMetrics(
+            font: layout.font as NSFont, fontScale: fontScale, ascent: layout.ascent, descent: layout.descent,
+            lineAdvance: layout.lineAdvance, letterSpacing: layout.letterSpacing)
+    }
+}
+
+/// Số đo chữ của một khối đã co (xem `TextRenderer.metrics`). Đường cơ sở dòng đầu cách đỉnh khối `ascent`,
+/// các dòng sau cách nhau `lineAdvance`; khối cao `ascent + (n - 1) * lineAdvance + descent`.
+public struct TextMetrics {
+    public let font: NSFont
+    public let fontScale: Double
+    public let ascent: CGFloat
+    public let descent: CGFloat
+    public let lineAdvance: CGFloat
+    public let letterSpacing: CGFloat
+
+    /// Chiều cao khối `lines` dòng.
+    public func blockHeight(lines: Int) -> CGFloat {
+        lines > 0 ? ascent + CGFloat(lines - 1) * lineAdvance + descent : 0
     }
 }
 

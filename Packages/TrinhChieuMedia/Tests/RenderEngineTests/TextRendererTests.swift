@@ -59,6 +59,20 @@ struct TextRendererTests {
         #expect(result.lineCount == 8)
     }
 
+    @Test("Số đo cho ô sửa chữ: cùng tỉ lệ co và cỡ chữ với lần dựng, khoảng dòng theo lineHeight")
+    func metricsMatchRender() {
+        let long = Array(repeating: Self.verse, count: 2).joined(separator: "\n")
+        let block = Self.block(long, autoFit: AutoFit(mode: .shrink, minScale: 0.5))
+        let result = TextRenderer.render(block, frameSize: Self.frame, scale: 1)
+        let metrics = TextRenderer.metrics(block, frameSize: Self.frame, scale: 1)
+        #expect(metrics.fontScale == result.fontScale)
+        let size = CGFloat(block.style.fontSize) * CGFloat(result.fontScale)
+        #expect(abs(metrics.font.pointSize - size) < 0.01)
+        let natural = metrics.ascent + metrics.descent + CTFontGetLeading(metrics.font as CTFont)
+        #expect(abs(metrics.lineAdvance - natural * CGFloat(block.style.lineHeight)) < 0.01)
+        #expect(metrics.blockHeight(lines: 8) <= Self.frame.height + 0.5)
+    }
+
     @Test("Co tới minScale vẫn tràn: cắt dòng cuối bằng dấu ba chấm và báo cắt")
     func truncatesWhenStillOverflowing() {
         let long = Array(repeating: Self.verse, count: 6).joined(separator: "\n")

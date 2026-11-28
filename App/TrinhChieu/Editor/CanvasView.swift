@@ -1,5 +1,6 @@
 import AppKit
 import CoreModel
+import RenderEngine
 import SwiftUI
 
 /// Khung vẽ của trình soạn (đặc tả T1.9 mục 2): ảnh dựng của trang ở dưới, lớp điều khiển AppKit ở trên vẽ khung
@@ -13,6 +14,8 @@ struct CanvasView: NSViewRepresentable {
         /// Khung đang kéo (chưa lưu), để dựng thử.
         var previewFrame: (UUID, PixelRect?) -> Void
         var commitText: (UUID, String) -> Void
+        /// Bắt đầu (id) hoặc thôi (nil) sửa chữ tại chỗ: ảnh dựng giấu chữ của phần tử đang sửa để khỏi lộ bóng.
+        var editingText: (UUID?) -> Void
         /// Tách trang tại dòng con trỏ khi đang sửa chữ chính.
         var splitAtLine: (Int) -> Void
         var delete: (UUID) -> Void
@@ -69,6 +72,9 @@ final class EditorCanvasView: NSView, NSTextViewDelegate {
     private var editingVerticalAlignment: CoreModel.VerticalAlignment = .middle
     /// Khung phần tử đang sửa (toạ độ khung nhìn); ô gõ cao vừa chữ, đặt trong khung này theo căn dọc.
     private var editingFrame: NSRect = .zero
+    /// Kiểu chữ và số đo (theo bộ dựng chữ) của ô đang sửa.
+    private var editingStyle: CoreModel.TextStyle?
+    private var editingMetrics: TextMetrics?
 
     private static let handleSize: CGFloat = 9
 
@@ -449,7 +455,8 @@ final class EditorCanvasView: NSView, NSTextViewDelegate {
 
     // MARK: - Sửa chữ tại chỗ
 
-    /// Phủ một `NSTextView` đúng vị trí phần tử, phông và cỡ quy đổi theo tỉ lệ khung vẽ.
+    /// Phủ một `NSTextView` đúng vị trí phần tử. Phông, cỡ (kể cả khi co chữ), khoảng dòng, giãn chữ và màu lấy từ
+    /// `TextRenderer.metrics` để chữ đang gõ trùng chữ đã dựng; ảnh dựng giấu chữ gốc trong lúc sửa.
     func beginTextEditing(_ id: UUID) {
         guard editor == nil, case .text(let text)? = element(id), let rect = frame(of: id) else { return }
         let base = text.slot.map { theme.slots[$0] } ?? theme.slots.body
@@ -457,15 +464,13 @@ final class EditorCanvasView: NSView, NSTextViewDelegate {
         let view = NSTextView(frame: viewRect(rect))
         view.isVerticallyResizable = false
         view.textContainer?.heightTracksTextView = false
+        view.textContainer?.widthTracksTextView = false
+        view.textContainer?.lineFragmentPadding = 0
         view.textContainer?.containerSize = NSSize(width: view.frame.width, height: .greatestFiniteMagnitude)
         view.isRichText = false
         view.allowsUndo = true
-        view.drawsBackground = true
-        view.backgroundColor = NSColor.black.withAlphaComponent(0.55)
-        view.textColor = .white
+        view.drawsBackground = false
         view.insertionPointColor = NSColor(Palette.accent)
-        view.font = Self.font(style, scale: scale)
-        view.alignment = Self.alignment(style.alignment)
         view.string = text.text
         view.delegate = self
         view.isAutomaticQuoteSubstitutionEnabled = false
@@ -475,36 +480,90 @@ final class EditorCanvasView: NSView, NSTextViewDelegate {
         addSubview(view)
         editor = view
         editingID = id
+        editingStyle = style
+        editingMetrics = nil
         editingVerticalAlignment = style.verticalAlignment
         editingFrame = viewRect(rect)
-        alignEditor()
+        applyEditorMetrics()
         window?.makeFirstResponder(view)
         view.selectAll(nil)
         startClickMonitor()
+        callbacks?.editingText(id)
         needsDisplay = true
     }
 
-    /// Ô gõ cao vừa chữ, đặt trong khung phần tử theo căn dọc của kiểu chữ, để chữ đang gõ trùng chỗ chữ trên trang.
-    private func alignEditor() {
-        guard let editor, let layout = editor.layoutManager, let container = editor.textContainer else { return }
-        layout.ensureLayout(for: container)
-        let lineHeight = editor.font.map { layout.defaultLineHeight(for: $0) } ?? 20
-        let height = max(layout.usedRect(for: container).height, lineHeight).rounded(.up)
-        let free = max(0, editingFrame.height - height)
-        let top: CGFloat
-        switch editingVerticalAlignment {
-        case .top: top = 0
-        case .middle: top = (free / 2).rounded()
-        case .bottom: top = free
+    /// Đo lại khối chữ như bộ dựng (co chữ đổi theo độ dài) và áp phông, nhịp dòng, màu cho ô gõ.
+    private func applyEditorMetrics() {
+        guard let editor, let style = editingStyle else { return }
+        let block = TextBlock(
+            string: editor.string.isEmpty ? " " : editor.string, style: ResolvedTextStyle(style),
+            autoFit: style.autoFit, maxLines: style.maxLines)
+        let metrics = TextRenderer.metrics(block, frameSize: editingFrame.size, scale: scale)
+        if let current = editingMetrics, current.fontScale == metrics.fontScale {
+            alignEditor()
+            return
         }
-        let frame = NSRect(x: editingFrame.minX, y: editingFrame.minY + top, width: editingFrame.width, height: height)
+        editingMetrics = metrics
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.alignment = Self.alignment(style.alignment)
+        paragraph.minimumLineHeight = metrics.lineAdvance
+        paragraph.maximumLineHeight = metrics.lineAdvance
+        var attributes: [NSAttributedString.Key: Any] = [
+            .font: metrics.font,
+            .foregroundColor: Self.color(style.color),
+            .paragraphStyle: paragraph,
+        ]
+        if metrics.letterSpacing != 0 {
+            attributes[.kern] = metrics.letterSpacing
+        }
+        editor.typingAttributes = attributes
+        if let storage = editor.textStorage, storage.length > 0 {
+            storage.setAttributes(attributes, range: NSRange(location: 0, length: storage.length))
+        }
+        alignEditor()
+    }
+
+    /// Ô gõ cao vừa chữ. Đường cơ sở dòng đầu đặt đúng chỗ bộ dựng đặt nó: khối chữ căn dọc trong khung phần tử,
+    /// dòng đầu cách đỉnh khối một `ascent`.
+    private func alignEditor() {
+        guard let editor, let metrics = editingMetrics, let layout = editor.layoutManager,
+            let container = editor.textContainer
+        else { return }
+        layout.ensureLayout(for: container)
+        var lines = 0
+        layout.enumerateLineFragments(forGlyphRange: layout.glyphRange(for: container)) { _, _, _, _, _ in
+            lines += 1
+        }
+        if layout.extraLineFragmentTextContainer != nil {
+            lines += 1
+        }
+        lines = max(1, lines)
+        let firstBaseline: CGFloat
+        if layout.numberOfGlyphs > 0 {
+            let fragment = layout.lineFragmentRect(forGlyphAt: 0, effectiveRange: nil)
+            firstBaseline = fragment.minY + layout.location(forGlyphAt: 0).y
+        } else {
+            firstBaseline = metrics.lineAdvance - metrics.descent
+        }
+        let free = editingFrame.height - metrics.blockHeight(lines: lines)
+        let offset: CGFloat
+        switch editingVerticalAlignment {
+        case .top: offset = 0
+        case .middle: offset = free / 2
+        case .bottom: offset = free
+        }
+        let baseline = editingFrame.minY + offset + metrics.ascent
+        let height = max(layout.usedRect(for: container).height, metrics.lineAdvance).rounded(.up)
+        let frame = NSRect(
+            x: editingFrame.minX, y: baseline - firstBaseline, width: editingFrame.width, height: height)
         if editor.frame != frame {
             editor.frame = frame
         }
+        needsDisplay = true
     }
 
     func textDidChange(_ notification: Notification) {
-        alignEditor()
+        applyEditorMetrics()
     }
 
     private func startClickMonitor() {
@@ -543,14 +602,25 @@ final class EditorCanvasView: NSView, NSTextViewDelegate {
         stopClickMonitor()
         self.editor = nil
         self.editingID = nil
+        editingStyle = nil
+        editingMetrics = nil
         editor.removeFromSuperview()
+        let changed: Bool
         if commit, case .text(let original)? = element(editingID), original.text != text {
-            if deferred {
-                let send = callbacks?.commitText
-                DispatchQueue.main.async { send?(editingID, text) }
-            } else {
-                callbacks?.commitText(editingID, text)
+            changed = true
+        } else {
+            changed = false
+        }
+        if deferred {
+            let send = callbacks?.commitText
+            let finish = callbacks?.editingText
+            DispatchQueue.main.async {
+                if changed { send?(editingID, text) }
+                finish?(nil)
             }
+        } else {
+            if changed { callbacks?.commitText(editingID, text) }
+            callbacks?.editingText(nil)
         }
         window?.makeFirstResponder(self)
         needsDisplay = true
@@ -585,16 +655,10 @@ final class EditorCanvasView: NSView, NSTextViewDelegate {
         endTextEditing(commit: true)
     }
 
-    private static func font(_ style: TextStyle, scale: CGFloat) -> NSFont {
-        let size = max(6, CGFloat(style.fontSize) * scale)
-        let weight = NSFont.Weight(rawValue: CGFloat(style.fontWeight - 400) / 500)
-        if style.fontFamily != "system",
-            let font = NSFontManager.shared.font(
-                withFamily: style.fontFamily, traits: [], weight: max(1, min(14, style.fontWeight / 70)), size: size)
-        {
-            return font
-        }
-        return NSFont.systemFont(ofSize: size, weight: weight)
+    private static func color(_ color: RGBA) -> NSColor {
+        NSColor(
+            srgbRed: CGFloat(color.red) / 255, green: CGFloat(color.green) / 255, blue: CGFloat(color.blue) / 255,
+            alpha: CGFloat(color.alpha) / 255)
     }
 
     private static func alignment(_ alignment: CoreModel.TextAlignment) -> NSTextAlignment {
