@@ -27,9 +27,7 @@ struct WindowConfigurator: NSViewRepresentable {
             window.titleVisibility = .hidden
             window.styleMask.insert(.fullSizeContentView)
             if window.toolbar == nil {
-                let toolbar = NSToolbar(identifier: "app.trinhchieu.main")
-                toolbar.showsBaselineSeparator = false
-                window.toolbar = toolbar
+                window.toolbar = NSToolbar(identifier: "app.trinhchieu.main")
             }
             window.toolbarStyle = .unified
             window.tabbingMode = .disallowed
