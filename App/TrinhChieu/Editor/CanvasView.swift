@@ -75,6 +75,9 @@ final class EditorCanvasView: NSView, NSTextViewDelegate {
     /// Kiểu chữ và số đo (theo bộ dựng chữ) của ô đang sửa.
     private var editingStyle: CoreModel.TextStyle?
     private var editingMetrics: TextMetrics?
+    /// Lịch sử hoàn tác riêng của ô gõ. Ô gõ không ghi vào lịch sử của cửa sổ: nó bị huỷ khi thôi sửa, các bước
+    /// còn lại sẽ trỏ vào đối tượng đã giải phóng và ⌘Z làm sập ứng dụng.
+    private var editorUndo: UndoManager?
 
     private static let handleSize: CGFloat = 9
 
@@ -118,6 +121,13 @@ final class EditorCanvasView: NSView, NSTextViewDelegate {
         }
         if selectedID != selected {
             selectedID = selected
+            // Bỏ chọn (Esc) hay chọn phần tử khác giữa lúc kéo: thôi kéo, không giữ khung tạm.
+            if drag != nil {
+                cancelDrag()
+            }
+        }
+        if slideChanged, drag != nil {
+            cancelDrag()
         }
         if let draftFrame, drag == nil,
             slideChanged || slide?.displayFrame(of: draftFrame.id, theme: theme) == draftFrame.rect
@@ -125,6 +135,13 @@ final class EditorCanvasView: NSView, NSTextViewDelegate {
             self.draftFrame = nil
         }
         needsDisplay = true
+    }
+
+    /// Thôi thao tác chuột đang dở mà không lưu: bỏ khung tạm, đường gióng.
+    private func cancelDrag() {
+        drag = nil
+        draftFrame = nil
+        guides = []
     }
 
     // MARK: - Toạ độ
@@ -482,6 +499,7 @@ final class EditorCanvasView: NSView, NSTextViewDelegate {
         editingID = id
         editingStyle = style
         editingMetrics = nil
+        editorUndo = UndoManager()
         editingVerticalAlignment = style.verticalAlignment
         editingFrame = viewRect(rect)
         applyEditorMetrics()
@@ -604,6 +622,8 @@ final class EditorCanvasView: NSView, NSTextViewDelegate {
         self.editingID = nil
         editingStyle = nil
         editingMetrics = nil
+        editorUndo?.removeAllActions()
+        editorUndo = nil
         editor.removeFromSuperview()
         let changed: Bool
         if commit, case .text(let original)? = element(editingID), original.text != text {
@@ -624,6 +644,10 @@ final class EditorCanvasView: NSView, NSTextViewDelegate {
         }
         window?.makeFirstResponder(self)
         needsDisplay = true
+    }
+
+    func undoManager(for view: NSTextView) -> UndoManager? {
+        editorUndo
     }
 
     func textView(_ textView: NSTextView, doCommandBy selector: Selector) -> Bool {

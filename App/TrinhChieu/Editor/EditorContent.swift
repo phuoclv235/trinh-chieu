@@ -41,8 +41,13 @@ import Foundation
 
 extension AppEnvironment {
     /// Nguồn nội dung của bộ đang soạn; `nil` khi chưa mở bộ nào.
-    func editorContent() -> EditorContentProvider? {
-        guard let content, let presentation = editingPresentation else { return nil }
+    /// `preview`: trang dựng thử (khung đang kéo, chữ đang sửa được giấu) thay cho trang cùng mã trong bản soạn.
+    /// Bộ phân giải cảnh đọc trang qua nguồn nội dung theo mã, nên trang dựng thử phải nằm trong nguồn.
+    func editorContent(preview: Slide? = nil) -> EditorContentProvider? {
+        guard let content, var presentation = editingPresentation else { return nil }
+        if let preview {
+            presentation.updateSlide(preview.id) { $0 = preview }
+        }
         return EditorContentProvider(base: content, presentation: presentation)
     }
 
