@@ -67,7 +67,7 @@ private struct TextFields: View {
                         accessibilityTitle: Text("Horizontal alignment"))
                 }
                 InspectorField("Vertical alignment", reset: reset(\.verticalAlignment)) {
-                    IconChoice<VerticalAlignment>(
+                    IconChoice<CoreModel.VerticalAlignment>(
                         options: [
                             .init(value: .top, systemImage: "align.vertical.top", label: "Align top"),
                             .init(value: .middle, systemImage: "align.vertical.center", label: "Align middle"),
