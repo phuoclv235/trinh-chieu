@@ -63,6 +63,10 @@ final class EditorCanvasView: NSView, NSTextViewDelegate {
     private var guides: [CanvasGuide] = []
     private var editor: NSTextView?
     private var editingID: UUID?
+    /// Theo dõi nhấp chuột khi đang sửa chữ: nhấp ra ngoài khung vẽ (vùng xám, bảng bên) thì kết thúc sửa.
+    private var clickMonitor: Any?
+    /// Căn dọc của ô đang sửa, để ô gõ nằm đúng chỗ chữ hiện trên trang.
+    private var editingVerticalAlignment: CoreModel.VerticalAlignment = .middle
 
     private static let handleSize: CGFloat = 9
 
@@ -81,6 +85,14 @@ final class EditorCanvasView: NSView, NSTextViewDelegate {
     }
 
     override var isFlipped: Bool { true }
+
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        // Rời cửa sổ (đổi chế độ) khi đang sửa chữ: lưu chữ và gỡ bộ theo dõi nhấp chuột.
+        if window == nil {
+            endTextEditing(commit: true)
+        }
+    }
     override var acceptsFirstResponder: Bool { true }
 
     func configure(slide: Slide?, theme: Theme, image: CGImage?, selected: UUID?, callbacks: CanvasView.Callbacks) {
@@ -347,9 +359,12 @@ final class EditorCanvasView: NSView, NSTextViewDelegate {
         }
     }
 
-    /// 6 điểm ảnh khung vẽ; giữ `⌘` khi kéo thì tắt hút.
+    /// 6 điểm trên màn (khung vẽ thu nhỏ nên 6 điểm ảnh khung vẽ chỉ còn vài điểm), không dưới 6 điểm ảnh khung vẽ;
+    /// giữ `⌘` khi kéo thì tắt hút.
     private func snapThreshold(_ event: NSEvent) -> Double {
-        event.modifierFlags.contains(.command) ? 0 : CanvasSnapping.defaultThreshold
+        guard !event.modifierFlags.contains(.command) else { return 0 }
+        let threshold = CanvasSnapping.defaultThreshold
+        return scale > 0 ? max(threshold, threshold / Double(scale)) : threshold
     }
 
     override func menu(for event: NSEvent) -> NSMenu? {
@@ -455,9 +470,61 @@ final class EditorCanvasView: NSView, NSTextViewDelegate {
         addSubview(view)
         editor = view
         editingID = id
+        editingVerticalAlignment = style.verticalAlignment
+        alignEditor()
         window?.makeFirstResponder(view)
         view.selectAll(nil)
+        startClickMonitor()
         needsDisplay = true
+    }
+
+    /// Đẩy chữ trong ô gõ theo căn dọc của kiểu chữ (ô gõ cao bằng khung phần tử).
+    private func alignEditor() {
+        guard let editor, let layout = editor.layoutManager, let container = editor.textContainer else { return }
+        layout.ensureLayout(for: container)
+        let used = layout.usedRect(for: container).height
+        let free = max(0, editor.frame.height - used)
+        let top: CGFloat
+        switch editingVerticalAlignment {
+        case .top: top = 0
+        case .middle: top = free / 2
+        case .bottom: top = free
+        }
+        if editor.textContainerInset.height != top {
+            editor.textContainerInset = NSSize(width: 0, height: top)
+        }
+    }
+
+    func textDidChange(_ notification: Notification) {
+        alignEditor()
+    }
+
+    private func startClickMonitor() {
+        stopClickMonitor()
+        let mask: NSEvent.EventTypeMask = [.leftMouseDown, .rightMouseDown]
+        clickMonitor = NSEvent.addLocalMonitorForEvents(matching: mask) { [weak self] event in
+            let location = event.locationInWindow
+            let windowNumber = event.windowNumber
+            MainActor.assumeIsolated {
+                self?.handleClickWhileEditing(at: location, windowNumber: windowNumber)
+            }
+            return event
+        }
+    }
+
+    private func stopClickMonitor() {
+        if let clickMonitor {
+            NSEvent.removeMonitor(clickMonitor)
+        }
+        clickMonitor = nil
+    }
+
+    /// Nhấp trong khung vẽ đã có `mouseDown` lo; nhấp ra ngoài khung vẽ thì lưu chữ và thôi sửa.
+    private func handleClickWhileEditing(at location: NSPoint, windowNumber: Int) {
+        guard editor != nil, let window, window.windowNumber == windowNumber else { return }
+        if !bounds.contains(convert(location, from: nil)) {
+            endTextEditing(commit: true)
+        }
     }
 
     /// Xong sửa chữ: `commit` thì gửi chữ mới. `deferred` khi đang trong lượt cập nhật của SwiftUI: gửi ở vòng chạy
@@ -465,6 +532,7 @@ final class EditorCanvasView: NSView, NSTextViewDelegate {
     func endTextEditing(commit: Bool, deferred: Bool = false) {
         guard let editor, let editingID else { return }
         let text = editor.string
+        stopClickMonitor()
         self.editor = nil
         self.editingID = nil
         editor.removeFromSuperview()

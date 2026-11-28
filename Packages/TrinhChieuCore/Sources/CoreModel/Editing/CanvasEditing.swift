@@ -247,6 +247,25 @@ extension Element {
 }
 
 extension TextStyleOverride {
+    /// Phần đè chỉ gồm các trường của `style` khác `base`: `base.applying(result) == style`.
+    public init(differences style: TextStyle, from base: TextStyle) {
+        self.init()
+        set(\.fontFamily, style.fontFamily, base: base, basePath: \.fontFamily)
+        set(\.fontWeight, style.fontWeight, base: base, basePath: \.fontWeight)
+        set(\.fontSize, style.fontSize, base: base, basePath: \.fontSize)
+        set(\.color, style.color, base: base, basePath: \.color)
+        set(\.alignment, style.alignment, base: base, basePath: \.alignment)
+        set(\.verticalAlignment, style.verticalAlignment, base: base, basePath: \.verticalAlignment)
+        set(\.lineHeight, style.lineHeight, base: base, basePath: \.lineHeight)
+        set(\.letterSpacing, style.letterSpacing, base: base, basePath: \.letterSpacing)
+        set(\.transform, style.transform, base: base, basePath: \.transform)
+        set(\.stroke, style.stroke, base: base, basePath: \.stroke)
+        set(\.shadow, style.shadow, base: base, basePath: \.shadow)
+        set(\.box, style.box, base: base, basePath: \.box)
+        set(\.autoFit, style.autoFit, base: base, basePath: \.autoFit)
+        if style.maxLines != base.maxLines { maxLines = style.maxLines }
+    }
+
     /// Phần đè ghi đủ mọi trường của `style` (khi tách phần tử khỏi mẫu).
     public init(full style: TextStyle) {
         self.init(
@@ -285,7 +304,10 @@ extension Slide {
         let base = theme.slots[slot]
         let style = text.style.map { base.style.applying($0) } ?? base.style
         text.frame = base.frame
-        text.style = TextStyleOverride(full: style)
+        // Phần tử tự do lấy kiểu gốc từ ô lời chính: chỉ ghi các trường khác ô đó, để chữ trông y như trước mà bảng
+        // thuộc tính không báo phần đè thừa.
+        let override = TextStyleOverride(differences: style, from: theme.slots.body.style)
+        text.style = override.isEmpty ? nil : override
         text.slot = nil
         elements[index] = .text(text)
     }

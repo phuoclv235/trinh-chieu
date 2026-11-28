@@ -766,10 +766,13 @@ private struct ColorField: View {
     private func commit() {
         var hex = draft.trimmingCharacters(in: .whitespaces)
         if !hex.hasPrefix("#") { hex = "#" + hex }
-        if let parsed = try? RGBA(hex: hex) {
-            if parsed != color { color = parsed }
+        guard let parsed = try? RGBA(hex: hex) else {
+            draft = Self.text(color)
+            return
         }
-        draft = Self.text(color)
+        if parsed != color { color = parsed }
+        // `color` ở đây vẫn là giá trị cũ của ràng buộc: hiện mã vừa gõ, đã chuẩn hoá.
+        draft = Self.text(parsed)
     }
 
     /// `#RRGGBB`, thêm `AA` khi không đặc.
