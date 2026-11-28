@@ -67,7 +67,7 @@ public struct ParsedLyrics: Sendable, Hashable {
             let slides = texts.map { Slide(elements: [.text(TextElement(slot: .body, text: $0))]) }
             return SlideGroup(label: section.label, slides: slides)
         }
-        let arrangement = Arrangement(name: "Mặc định", groupIDs: order.map { groups[$0].id })
+        let arrangement = Arrangement(name: Arrangement.defaultName, groupIDs: order.map { groups[$0].id })
         let song = SongInfo(number: number, authors: authors, copyright: copyright, key: key)
         let trimmedTitle = title?.trimmingCharacters(in: .whitespaces) ?? ""
         return Presentation(
@@ -169,13 +169,11 @@ public enum LyricsText {
         return base
     }
 
-    /// Chữ của một trang: các phần tử chữ nối bằng `\n`, mỗi dòng bỏ khoảng trắng đầu cuối, bỏ dòng trống.
+    /// Chữ lời của một trang: chữ chính (`Slide.primaryText`: phần tử ô `body`, không có thì phần tử chữ đầu tiên),
+    /// mỗi dòng bỏ khoảng trắng đầu cuối, bỏ dòng trống. Phần tử chữ khác (tiêu đề, ghi nguồn) không thuộc lời, để ô
+    /// soạn lời và ``LyricsMerge`` chỉ đọc và sửa đúng một phần tử.
     public static func slideText(_ slide: Slide) -> String {
-        let texts = slide.elements.compactMap { element -> String? in
-            if case .text(let text) = element { return text.text }
-            return nil
-        }
-        return cleanLines(texts.joined(separator: "\n")).joined(separator: "\n")
+        cleanLines(slide.primaryText ?? "").joined(separator: "\n")
     }
 
     // MARK: - Nhận dạng nhãn
