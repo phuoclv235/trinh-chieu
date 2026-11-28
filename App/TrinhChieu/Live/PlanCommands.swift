@@ -136,9 +136,12 @@ extension AppEnvironment {
             let next = items.isEmpty ? nil : items[min(position, items.count - 1)]
             planEditing.selectedItemID = next?.id
             // Lưới giữa đang xem mục vừa bỏ: chuyển sang mục kế, không để báo "Không tìm thấy nội dung".
+            // Mục kế là tiêu đề phần hay ghi chú thì tìm mục chiếu được gần nhất, xuống trước rồi lên.
             if let planID, show?.state.selected == .planItem(planID: planID, itemID: id) {
-                if let next, next.isLiveable {
-                    selectPlanItem(next)
+                let after = items[min(position, items.count)...].first(where: \.isLiveable)
+                let before = items[..<min(position, items.count)].last(where: \.isLiveable)
+                if let target = after ?? before {
+                    selectPlanItem(target)
                 }
             }
         }
