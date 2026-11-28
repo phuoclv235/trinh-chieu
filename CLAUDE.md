@@ -23,7 +23,7 @@ Tối đa 2 chuỗi code song song (xem `plans/giai-doan-0-1/README.md`).
 
 ## 3. Điều chỉnh quy chuẩn chung cho ứng dụng máy Mac (đã được Phuoc duyệt 2026-11-26)
 
-- **Cỡ kiểm giao diện ứng dụng Mac:** cửa sổ 1280, 1512, 1920 px, sáng và tối. Bộ 390 / 820 / 1280 px chỉ áp cho remote web và trang tương tác (giai đoạn 4, 5).
+- **Cỡ kiểm giao diện ứng dụng Mac:** cửa sổ 1280, 1512, 1920 px, chỉ giao diện tối (Phuoc bỏ giao diện sáng 2026-11-28). Bộ 390 / 820 / 1280 px chỉ áp cho remote web và trang tương tác (giai đoạn 4, 5).
 - **Deploy = phát hành bản build đã ký và notarize.** Vẫn chỉ chạy khi Phuoc gõ "Deploy". Không có container hay cơ sở dữ liệu production.
 - **Sao lưu:** mọi thay đổi định dạng tệp phải có bước chuyển đổi tự động (migration) và giữ bản sao tệp cũ (`.bak`) trước khi ghi đè.
 

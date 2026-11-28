@@ -11,13 +11,6 @@ struct OutputAssignment: Codable, Equatable, Hashable, Sendable {
     var displayName: String
 }
 
-/// Chế độ sáng tối của giao diện điều khiển. Mặc định tối (`docs/ui-rules.md`).
-enum AppearancePreference: String, Codable, CaseIterable, Sendable {
-    case dark
-    case light
-    case system
-}
-
 /// Toàn bộ cài đặt của ứng dụng, lưu một khoá `app.settings.v1` trong `UserDefaults`.
 ///
 /// Đọc khoan dung: trường thiếu (cài đặt từ bản cũ) lấy giá trị mặc định, nên thêm trường mới không làm mất cài đặt cũ.
@@ -31,21 +24,18 @@ struct AppSettings: Codable, Equatable, Sendable {
     var defaultTranslation: String?
     /// Hết trang thì sang mục kế (`ShowSettings.advanceToNextItem`).
     var advanceToNextItem: Bool
-    var appearance: AppearancePreference
     /// Bạn đã đóng màn chào.
     var welcomeDismissed: Bool
 
     init(
         libraryPath: String? = nil, outputAssignments: [OutputAssignment] = [], audioOutputDeviceID: String? = nil,
-        defaultTranslation: String? = nil, advanceToNextItem: Bool = true, appearance: AppearancePreference = .dark,
-        welcomeDismissed: Bool = false
+        defaultTranslation: String? = nil, advanceToNextItem: Bool = true, welcomeDismissed: Bool = false
     ) {
         self.libraryPath = libraryPath
         self.outputAssignments = outputAssignments
         self.audioOutputDeviceID = audioOutputDeviceID
         self.defaultTranslation = defaultTranslation
         self.advanceToNextItem = advanceToNextItem
-        self.appearance = appearance
         self.welcomeDismissed = welcomeDismissed
     }
 
@@ -61,7 +51,6 @@ struct AppSettings: Codable, Equatable, Sendable {
         audioOutputDeviceID = field(.audioOutputDeviceID, defaults.audioOutputDeviceID)
         defaultTranslation = field(.defaultTranslation, defaults.defaultTranslation)
         advanceToNextItem = field(.advanceToNextItem, defaults.advanceToNextItem)
-        appearance = field(.appearance, defaults.appearance)
         welcomeDismissed = field(.welcomeDismissed, defaults.welcomeDismissed)
     }
 

@@ -27,7 +27,7 @@ struct AppSettingsTests {
     func roundTrip() throws {
         var settings = AppSettings(
             libraryPath: "/Volumes/NAS/TrinhChieu", audioOutputDeviceID: "BuiltInSpeakerDevice",
-            defaultTranslation: "tt1925", advanceToNextItem: false, appearance: .light, welcomeDismissed: true)
+            defaultTranslation: "tt1925", advanceToNextItem: false, welcomeDismissed: true)
         settings.assign(.program, toDisplay: "37D8832A-2D66-02CA-B9F7-8F30A301B230", name: "LED")
         let data = try JSONEncoder().encode(settings)
         #expect(try JSONDecoder().decode(AppSettings.self, from: data) == settings)
@@ -35,11 +35,11 @@ struct AppSettingsTests {
 
     @Test("Cài đặt thiếu trường (bản cũ) lấy giá trị mặc định, không mất phần đã có")
     func decodesOlderSettings() throws {
-        let json = #"{"libraryPath":"/tmp/thu-vien","outputAssignments":[]}"#
+        // Bản cũ còn trường "appearance" (đã bỏ, chỉ còn giao diện tối): vẫn đọc được, trường đó bị bỏ qua.
+        let json = #"{"libraryPath":"/tmp/thu-vien","outputAssignments":[],"appearance":"light"}"#
         let settings = try JSONDecoder().decode(AppSettings.self, from: Data(json.utf8))
         #expect(settings.libraryPath == "/tmp/thu-vien")
         #expect(settings.advanceToNextItem)
-        #expect(settings.appearance == .dark)
         #expect(!settings.welcomeDismissed)
     }
 
@@ -51,7 +51,6 @@ struct AppSettingsTests {
         let settings = try JSONDecoder().decode(AppSettings.self, from: Data(json.utf8))
         #expect(settings.libraryPath == "/tmp/thu-vien")
         #expect(settings.advanceToNextItem)
-        #expect(settings.appearance == .dark)
         #expect(settings.role(forDisplay: "A") == .program)
     }
 

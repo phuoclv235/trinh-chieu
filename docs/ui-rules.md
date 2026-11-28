@@ -14,7 +14,7 @@ Chốt theo mẫu T0.3, hướng **Bàn trộn** (Phuoc tạm chọn 2026-11-27,
 | Xoá | `--danger-fill` | #C93A3A | #C22F2F |
 
 - Một màu một nghĩa. Không dùng cam đất cho trang trí hay nút không liên quan tới trạng thái "đang hoạt động", trừ nút chính duy nhất của một màn.
-- Mặc định chế độ tối; bản sáng phải đầy đủ.
+- Chỉ có giao diện tối (Phuoc chốt 2026-11-28): không có tuỳ chọn sáng, không theo chế độ sáng của macOS.
 - Nền than chì ngả xanh đêm, bốn tầng: `--bg-stage` (lưới, khung vẽ) < `--bg-window` < `--bg-panel` < `--bg-raised`.
 - Không quầng tím, gradient hào nhoáng, kính mờ, biểu tượng hoạt hình. Chỉ nền mẫu trình bày trên trang chiếu được có ánh ấm.
 
@@ -45,4 +45,4 @@ Chốt theo mẫu T0.3, hướng **Bàn trộn** (Phuoc tạm chọn 2026-11-27,
 
 ## Kiểm bắt buộc cho mọi màn
 
-Cửa sổ 1280, 1512, 1920 px, sáng và tối; không tràn ngang; chữ bị cắt phải có chú giải; tương phản chữ đạt WCAG AA (`node design/tools/contrast.cjs`).
+Cửa sổ 1280, 1512, 1920 px, giao diện tối; không tràn ngang; chữ bị cắt phải có chú giải; tương phản chữ đạt WCAG AA (`node design/tools/contrast.cjs`).
