@@ -98,6 +98,26 @@ extension AppEnvironment {
         isCommandPalettePresented = true
     }
 
+    /// Làm ấm Bảng lệnh khi thư viện vừa mở: nạp bảng tên sách, chuỗi đã dịch của lệnh, bộ gộp dấu và chạy thử một
+    /// lần xếp hạng, để lần `⌘K` đầu tiên sau khi khởi động không chậm hơn các lần sau (đo trên Mac: 60 ms so với
+    /// trung vị 36 ms).
+    func warmUpCommandPalette() {
+        Task { @MainActor [weak self] in
+            await Task.yield()
+            guard let self else { return }
+            let ranker = PaletteRanker()
+            let commands = AppEnvironment.paletteCommands()
+            for sample in ["", "gi 3 16", "gi", "123", "xoa chu"] {
+                let parse = sample.isEmpty ? nil : ranker.parser.parse(sample)
+                _ = ranker.rank(
+                    query: sample, scriptureParse: parse, scripture: paletteScriptureContext(for: parse), hits: [],
+                    commands: commands, planItems: [], recents: settings.value.paletteRecents,
+                    commandUsage: settings.value.paletteCommandUsage)
+            }
+            _ = await library?.search("chua", kinds: [.presentation, .media])
+        }
+    }
+
     // MARK: - Thực hiện
 
     /// `Enter` (`secondary == false`) hoặc `⌘Enter` trên một dòng (bảng hành động của đặc tả T1.10).

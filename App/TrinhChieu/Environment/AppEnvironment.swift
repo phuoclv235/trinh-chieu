@@ -132,6 +132,7 @@ enum WorkspaceMode: String, CaseIterable, Sendable {
             // Giao cảnh đầu tiên (nền đen của mẫu) để đầu ra vừa gắn có hình ngay.
             show.tick()
             phase = .ready
+            warmUpCommandPalette()
             outputs.start(engine: engine) { [weak self] in self?.settings.value.outputAssignments ?? [] }
             logger.info("Đã mở thư viện \(url.path, privacy: .private)")
         } catch {
