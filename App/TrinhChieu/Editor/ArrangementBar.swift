@@ -48,6 +48,14 @@ struct ArrangementBar: View {
             ViewThatFits(in: .horizontal) {
                 chips(occurrences)
                 ScrollView(.horizontal, showsIndicators: false) { chips(occurrences) }
+                    .mask(alignment: .trailing) {
+                        // Mép phải mờ dần: báo còn chip phía sau, cuộn ngang để xem.
+                        HStack(spacing: 0) {
+                            Rectangle()
+                            LinearGradient(colors: [.black, .clear], startPoint: .leading, endPoint: .trailing)
+                                .frame(width: 20)
+                        }
+                    }
             }
             Menu {
                 ForEach(presentation.groups) { group in
