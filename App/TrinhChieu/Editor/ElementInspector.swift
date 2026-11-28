@@ -352,7 +352,7 @@ private struct LayoutFields: View {
         }
     }
 
-    private func fitPicker(_ fit: ContentFit, set: @escaping (ContentFit) -> Void) -> some View {
+    private func fitPicker(_ fit: ContentFit, set: @escaping @MainActor @Sendable (ContentFit) -> Void) -> some View {
         Picker("Fit", selection: Binding(get: { fit }, set: set)) {
             Text("Fit inside").tag(ContentFit.fit)
             Text("Fill frame").tag(ContentFit.fill)
