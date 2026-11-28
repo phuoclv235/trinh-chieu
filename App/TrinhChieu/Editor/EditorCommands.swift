@@ -174,6 +174,11 @@ extension AppEnvironment {
     }
 
     func undoEditing() {
+        // Đang sửa chữ tại chỗ trên khung vẽ: ⌘Z (phím tắt của nút Hoàn tác) hoàn tác chữ vừa gõ trong ô gõ.
+        if let undo = EditorCanvasView.activeTextUndoManager {
+            undo.undo()
+            return
+        }
         flushLyrics()
         presentationEditing.editor?.undo()
         presentationEditing.lyricsRevision &+= 1
@@ -181,6 +186,10 @@ extension AppEnvironment {
     }
 
     func redoEditing() {
+        if let undo = EditorCanvasView.activeTextUndoManager {
+            undo.redo()
+            return
+        }
         flushLyrics()
         presentationEditing.editor?.redo()
         presentationEditing.lyricsRevision &+= 1
