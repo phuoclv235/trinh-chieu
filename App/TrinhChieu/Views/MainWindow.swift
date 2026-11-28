@@ -109,6 +109,8 @@ struct MainWindowView: View {
     @Environment(\.openSettings) private var openSettings
     @SceneStorage("main.mode") private var modeRaw = WorkspaceMode.live.rawValue
     @SceneStorage("main.rightRail") private var showsRightRail = true
+    /// Đang dựng thử Bảng lệnh (trong suốt) để làm ấm.
+    @State private var warmsUpPalette = false
 
     var body: some View {
         let mode = WorkspaceMode(rawValue: modeRaw) ?? .live
@@ -155,7 +157,20 @@ struct MainWindowView: View {
         .overlay {
             if environment.isCommandPalettePresented {
                 CommandPalette(host: paletteHost)
+            } else if warmsUpPalette {
+                CommandPalette(host: paletteHost, isWarmUp: true)
+                    .opacity(0.001)
+                    .allowsHitTesting(false)
+                    .accessibilityHidden(true)
             }
+        }
+        .task {
+            // Làm ấm Bảng lệnh sau khi cửa sổ đã vẽ xong: dựng thử một lần rồi bỏ.
+            try? await Task.sleep(for: .milliseconds(800))
+            guard !environment.isCommandPalettePresented else { return }
+            warmsUpPalette = true
+            try? await Task.sleep(for: .milliseconds(400))
+            warmsUpPalette = false
         }
         .animation(Motion.standard(reduceMotion: reduceMotion), value: environment.isCommandPalettePresented)
         .background {

@@ -13,6 +13,9 @@ import os
 /// cho tới khi có kết quả mới (không nháy), `Enter` bấm khi đang tìm thì chạy ngay khi tìm xong.
 struct CommandPalette: View {
     let host: PaletteHost
+    /// Dựng thử một lần, trong suốt, sau khi khởi động: nạp sẵn lớp AppKit, phông, biểu tượng và bố cục SwiftUI để
+    /// lần `⌘K` đầu tiên không chậm hơn các lần sau (đo trên Mac: lần đầu 63 ms, các lần sau 30 đến 50 ms).
+    var isWarmUp = false
     @Environment(AppEnvironment.self) private var environment
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var query = ""
@@ -77,7 +80,8 @@ struct CommandPalette: View {
                 placeholder: String(localized: "Search songs, Bible verses, commands…"),
                 onMove: { move($0) },
                 onSubmit: { submit(secondary: $0) },
-                onCancel: { close() }
+                onCancel: { close() },
+                isActive: !isWarmUp
             )
             .frame(maxWidth: .infinity)
             .onChange(of: query) { _, _ in refresh() }
@@ -180,6 +184,10 @@ struct CommandPalette: View {
     // MARK: - Tìm
 
     private func appeared() {
+        if isWarmUp {
+            sections = rank("gi 3 16", hits: []) + rank("", hits: [])
+            return
+        }
         planItems = environment.palettePlanItems()
         refresh()
         guard let requested = environment.commandPaletteRequestedAt else { return }
