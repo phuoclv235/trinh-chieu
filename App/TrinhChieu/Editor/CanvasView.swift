@@ -360,22 +360,26 @@ final class EditorCanvasView: NSView, NSTextViewDelegate {
             callbacks?.select(hit)
         }
         let menu = NSMenu()
-        menu.addItem(item(String(localized: "Bring forward"), key: "]") { [weak self] in
+        let forward = item(String(localized: "Bring forward"), key: "]") { [weak self] in
             self?.callbacks?.bringForward(hit)
-        })
-        menu.addItem(item(String(localized: "Send backward"), key: "[") { [weak self] in
+        }
+        let backward = item(String(localized: "Send backward"), key: "[") { [weak self] in
             self?.callbacks?.sendBackward(hit)
-        })
+        }
+        menu.addItem(forward)
+        menu.addItem(backward)
         if element.isLockedToTheme {
-            menu.addItem(.separator())
-            menu.addItem(item(String(localized: "Detach from theme"), key: "") { [weak self] in
+            let detach = item(String(localized: "Detach from theme"), key: "") { [weak self] in
                 self?.callbacks?.detach(hit)
-            })
+            }
+            menu.addItem(.separator())
+            menu.addItem(detach)
+        }
+        let delete = item(String(localized: "Delete element"), key: "") { [weak self] in
+            self?.callbacks?.delete(hit)
         }
         menu.addItem(.separator())
-        menu.addItem(item(String(localized: "Delete element"), key: "") { [weak self] in
-            self?.callbacks?.delete(hit)
-        })
+        menu.addItem(delete)
         return menu
     }
 

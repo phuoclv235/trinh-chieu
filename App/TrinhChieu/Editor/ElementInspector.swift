@@ -394,7 +394,7 @@ private struct LayoutFields: View {
     ) -> some View {
         let frame = element.frame
         let id = element.id
-        return NumberField(
+        let field = NumberField(
             title: title, unit: nil,
             value: Binding(
                 get: { (environment.editingSlide?.displayFrame(of: id, theme: theme) ?? frame)[keyPath: path] },
@@ -404,7 +404,7 @@ private struct LayoutFields: View {
                     environment.setElementFrame(id, rect, coalescingKey: "frame.\(key).\(id.uuidString)")
                 }),
             range: minimum...100_000)
-        .disabled(element.isLockedToTheme)
+        return field.disabled(element.isLockedToTheme)
     }
 }
 
