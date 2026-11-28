@@ -129,10 +129,18 @@ extension AppEnvironment {
 
     func removePlanItem(_ id: UUID) {
         guard let position = activePlan?.items.firstIndex(where: { $0.id == id }) else { return }
+        let planID = activePlan?.id
         editPlan(String(localized: "Remove item")) { $0.items.remove(at: position) }
         if planEditing.selectedItemID == id {
             let items = activePlan?.items ?? []
-            planEditing.selectedItemID = items.isEmpty ? nil : items[min(position, items.count - 1)].id
+            let next = items.isEmpty ? nil : items[min(position, items.count - 1)]
+            planEditing.selectedItemID = next?.id
+            // Lưới giữa đang xem mục vừa bỏ: chuyển sang mục kế, không để báo "Không tìm thấy nội dung".
+            if let planID, show?.state.selected == .planItem(planID: planID, itemID: id) {
+                if let next, next.isLiveable {
+                    selectPlanItem(next)
+                }
+            }
         }
     }
 

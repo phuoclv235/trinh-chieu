@@ -188,8 +188,15 @@ struct CommandPalette: View {
             sections = rank("gi 3 16", hits: []) + rank("", hits: [])
             return
         }
-        planItems = environment.palettePlanItems()
         refresh()
+        // Mục chương trình chỉ cần khi đã gõ chữ, và lần đầu phải dựng chuỗi trang của từng mục: tính sau khung đầu
+        // tiên để không làm chậm lúc mở (đo trên Mac: lần mở đầu 51 ms, ngưỡng 50 ms).
+        DispatchQueue.main.async {
+            planItems = environment.palettePlanItems()
+            if !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                refresh()
+            }
+        }
         guard let requested = environment.commandPaletteRequestedAt else { return }
         environment.commandPaletteRequestedAt = nil
         // Đo tới vòng chạy kế tiếp: lúc đó khung đầu tiên của Bảng lệnh đã được vẽ.
