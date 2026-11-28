@@ -66,7 +66,8 @@ struct PresentationSlideEditTests {
     func duplicate() throws {
         var presentation = sample()
         let original = presentation.groups[1].slides[0]
-        let id = try #require(presentation.duplicateSlide(original.id))
+        let duplicated = presentation.duplicateSlide(original.id)
+        let id = try #require(duplicated)
         #expect(presentation.groups[1].slides.map(\.id) == [original.id, id])
         #expect(presentation.groups[1].slides[1].primaryText == original.primaryText)
     }
@@ -89,22 +90,27 @@ struct PresentationSlideEditTests {
         #expect(Presentation.defaultSplitLine(lineCount: 6) == 4)
         #expect(Presentation.defaultSplitLine(lineCount: 3) == 2)
         #expect(Presentation.defaultSplitLine(lineCount: 1) == nil)
-        let tail = try #require(presentation.splitSlide(id, atLine: 2))
+        let split = presentation.splitSlide(id, atLine: 2)
+        let tail = try #require(split)
         #expect(presentation.groups[1].slides.map(\.id) == [id, tail])
         #expect(presentation.groups[1].slides.map(\.primaryText) == ["E\nF", "G\nH"])
-        #expect(presentation.splitSlide(id, atLine: 0) == nil)
-        #expect(presentation.splitSlide(id, atLine: 2) == nil)
+        let atStart = presentation.splitSlide(id, atLine: 0)
+        let pastEnd = presentation.splitSlide(id, atLine: 2)
+        #expect(atStart == nil)
+        #expect(pastEnd == nil)
     }
 
     @Test("Gộp với trang sau trong cùng đoạn; trang cuối đoạn thì không gộp")
     func mergeWithNext() {
         var presentation = sample()
         let first = presentation.groups[0].slides[0].id
-        #expect(presentation.mergeSlideWithNext(first))
+        let merged = presentation.mergeSlideWithNext(first)
+        #expect(merged)
         #expect(presentation.groups[0].slides.count == 1)
         #expect(presentation.groups[0].slides[0].id == first)
         #expect(presentation.groups[0].slides[0].primaryText == "A\nB\nC\nD")
-        #expect(presentation.mergeSlideWithNext(first) == false)
+        let mergedAgain = presentation.mergeSlideWithNext(first)
+        #expect(mergedAgain == false)
     }
 
     @Test("Xoá trang cuối cùng của đoạn thì xoá đoạn và gỡ khỏi thứ tự hát")
