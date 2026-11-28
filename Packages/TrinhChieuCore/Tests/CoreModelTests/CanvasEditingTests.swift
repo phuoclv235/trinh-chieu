@@ -65,6 +65,11 @@ struct CanvasSnappingTests {
         #expect(fromTopLeft == PixelRect(x: -100, y: 0, width: 600, height: 300))
         let tiny = CanvasSnapping.resized(start, handle: .left, dx: 1000, dy: 0, keepAspect: false)
         #expect(tiny.width == 8)
+        let wide = PixelRect(x: 0, y: 0, width: 400, height: 100)
+        let shrunk = CanvasSnapping.resized(wide, handle: .bottomRight, dx: -1000, dy: 0, keepAspect: true)
+        #expect(shrunk.width >= 8)
+        #expect(shrunk.height >= 8)
+        #expect(abs(shrunk.width / shrunk.height - 4) < 0.001)
     }
 }
 

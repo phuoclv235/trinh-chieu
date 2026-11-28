@@ -85,15 +85,16 @@ final class EditorCanvasView: NSView, NSTextViewDelegate {
 
     func configure(slide: Slide?, theme: Theme, image: CGImage?, selected: UUID?, callbacks: CanvasView.Callbacks) {
         let slideChanged = self.slide?.id != slide?.id
+        // Đổi trang khi đang sửa chữ: lưu chữ vào trang cũ trước khi nhận trang mới.
+        if slideChanged {
+            endTextEditing(commit: true, deferred: true)
+        }
         self.slide = slide
         self.theme = theme
         self.callbacks = callbacks
         if self.image !== image {
             self.image = image
             picture = image.map { NSImage(cgImage: $0, size: NSSize(width: $0.width, height: $0.height)) }
-        }
-        if slideChanged {
-            endTextEditing(commit: true)
         }
         if selectedID != selected {
             selectedID = selected
@@ -455,15 +456,21 @@ final class EditorCanvasView: NSView, NSTextViewDelegate {
         needsDisplay = true
     }
 
-    /// Xong sửa chữ: `commit` thì gửi chữ mới.
-    func endTextEditing(commit: Bool) {
+    /// Xong sửa chữ: `commit` thì gửi chữ mới. `deferred` khi đang trong lượt cập nhật của SwiftUI: gửi ở vòng chạy
+    /// sau để không sửa trạng thái giữa lượt vẽ.
+    func endTextEditing(commit: Bool, deferred: Bool = false) {
         guard let editor, let editingID else { return }
         let text = editor.string
         self.editor = nil
         self.editingID = nil
         editor.removeFromSuperview()
         if commit, case .text(let original)? = element(editingID), original.text != text {
-            callbacks?.commitText(editingID, text)
+            if deferred {
+                let send = callbacks?.commitText
+                DispatchQueue.main.async { send?(editingID, text) }
+            } else {
+                callbacks?.commitText(editingID, text)
+            }
         }
         window?.makeFirstResponder(self)
         needsDisplay = true

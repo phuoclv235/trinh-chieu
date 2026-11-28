@@ -183,6 +183,11 @@ public enum CanvasSnapping {
         } else {
             rect.width = rect.height * ratio
         }
+        // Cạnh ngắn hơn cũng không nhỏ hơn `minSize`.
+        let shortest = max(min(rect.width, rect.height), .leastNonzeroMagnitude)
+        let grow = max(1, minSize / shortest)
+        rect.width *= grow
+        rect.height *= grow
         // Neo theo góc hoặc cạnh đối diện; cạnh không kéo thì giữ tâm.
         if handle.contains(.left) {
             rect.x = start.x + start.width - rect.width

@@ -52,13 +52,18 @@ extension AppEnvironment {
         editSlide(String(localized: "Move element"), coalescingKey: coalescingKey) { $0.setFrame(frame, of: elementID) }
     }
 
+    /// Sửa chữ của phần tử, trên trang đang chứa nó (có thể không còn là trang đang chọn khi vừa đổi trang).
     func setElementText(_ elementID: UUID, _ text: String) {
-        editSlide(String(localized: "Edit text")) { slide in
-            guard let index = slide.elementIndex(elementID), case .text(var element) = slide.elements[index] else {
-                return
+        let slides = editingPresentation?.groups.flatMap(\.slides) ?? []
+        guard let slideID = slides.first(where: { $0.elementIndex(elementID) != nil })?.id else { return }
+        editPresentation(String(localized: "Edit text")) { presentation in
+            presentation.updateSlide(slideID) { slide in
+                guard let index = slide.elementIndex(elementID), case .text(var element) = slide.elements[index] else {
+                    return
+                }
+                element.text = text
+                slide.elements[index] = .text(element)
             }
-            element.text = text
-            slide.elements[index] = .text(element)
         }
     }
 
@@ -94,8 +99,10 @@ extension AppEnvironment {
     }
 
     /// Thêm phần tử vào trang đang chọn, giữa khung vẽ (hoặc tại `point`), rồi chọn nó.
-    func addElement(_ kind: NewElementKind, at point: PixelPoint? = nil) {
-        guard editingSlide != nil else { return }
+    /// `slideID` khi phải thêm vào một trang đã biết trước (thả tệp: trang có thể đổi trong lúc chờ nhập).
+    func addElement(_ kind: NewElementKind, at point: PixelPoint? = nil, onSlide slideID: UUID? = nil) {
+        guard let slideID = slideID ?? presentationEditing.selectedSlideID, editingPresentation?.slide(slideID) != nil
+        else { return }
         let canvas = editingTheme?.canvasSize ?? .fullHD
         let element: Element
         switch kind {
@@ -114,20 +121,24 @@ extension AppEnvironment {
             let frame = Self.frame(size: mediaSize(id, canvas: canvas), canvas: canvas, at: point)
             element = .video(VideoElement(frame: frame, mediaID: id, loop: true, muted: true))
         }
-        editSlide(String(localized: "Add element")) { $0.elements.append(element) }
-        presentationEditing.selectedElementID = element.id
+        editPresentation(String(localized: "Add element")) { presentation in
+            presentation.updateSlide(slideID) { $0.elements.append(element) }
+        }
+        if presentationEditing.selectedSlideID == slideID {
+            presentationEditing.selectedElementID = element.id
+        }
     }
 
     /// Nhập tệp ảnh hoặc video (kéo vào khung vẽ, "Chọn tệp…") rồi thêm thành phần tử.
     func addMediaElements(from urls: [URL], at point: PixelPoint?) async {
-        guard let library else { return }
+        guard let library, let slideID = presentationEditing.selectedSlideID else { return }
         var failures: [EditorImportReport.Row] = []
         for url in urls {
             do {
                 let info = try await library.importMedia(from: url)
                 switch info.kind {
-                case .image: addElement(.image(info.id), at: point)
-                case .video: addElement(.video(info.id), at: point)
+                case .image: addElement(.image(info.id), at: point, onSlide: slideID)
+                case .video: addElement(.video(info.id), at: point, onSlide: slideID)
                 case .audio:
                     let message = String(localized: "Audio files cannot be placed on a slide.")
                     failures.append(.init(filename: url.lastPathComponent, status: .failure, message: message))
