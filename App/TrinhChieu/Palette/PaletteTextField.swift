@@ -14,6 +14,8 @@ struct PaletteTextField: NSViewRepresentable {
     /// `true` là `⌘Enter`.
     let onSubmit: @MainActor (Bool) -> Void
     let onCancel: @MainActor () -> Void
+    /// `false` khi dựng thử để làm ấm: không lấy con trỏ, không nghe phím.
+    var isActive = true
 
     func makeCoordinator() -> Coordinator {
         Coordinator(text: $text)
@@ -21,6 +23,7 @@ struct PaletteTextField: NSViewRepresentable {
 
     func makeNSView(context: Context) -> PaletteNSTextField {
         let field = PaletteNSTextField()
+        field.isActive = isActive
         field.delegate = context.coordinator
         field.isBordered = false
         field.drawsBackground = false
@@ -81,6 +84,7 @@ final class PaletteNSTextField: NSTextField {
     var onMove: (@MainActor (Int) -> Void)?
     var onSubmit: (@MainActor (Bool) -> Void)?
     var onCancel: (@MainActor () -> Void)?
+    var isActive = true
     private var monitor: Any?
 
     enum KeyCode {
@@ -94,7 +98,7 @@ final class PaletteNSTextField: NSTextField {
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
         stopMonitoring()
-        guard let window else { return }
+        guard let window, isActive else { return }
         focus(in: window)
         // Lần vẽ đầu SwiftUI có thể đặt lại first responder: lấy lại sau vòng chạy kế tiếp.
         DispatchQueue.main.async { [weak self] in
