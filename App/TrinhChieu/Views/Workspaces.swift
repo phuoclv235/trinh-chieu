@@ -45,16 +45,3 @@ struct LiveWorkspace: View {
         .onChange(of: environment.show?.state.live) { _, _ in environment.noteLiveChange() }
     }
 }
-
-/// Chế độ Soạn thảo: khung chờ trình soạn (T1.9).
-struct EditorWorkspace: View {
-    var body: some View {
-        EmptyStateView(
-            systemImage: "square.and.pencil",
-            title: "Nothing to edit yet",
-            message: "Choose a presentation in the library to edit its slides and lyrics."
-        )
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Palette.bgStage)
-    }
-}

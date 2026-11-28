@@ -61,6 +61,8 @@ Bên trong `App/TrinhChieu` (T1.7):
 | `Status` | `FrameHealth` (chỉ báo khung hình), `WarningCenter` (thanh cảnh báo) |
 | `Design` | Màu, cỡ chữ, bo góc chép từ `design/tokens.css`; thành phần dùng chung (nút, đèn trạng thái, điều khiển phân đoạn) |
 | `Views`, `Settings` | Cửa sổ chính, thanh công cụ, xem trước, màn chào; bốn tab Cài đặt |
+| `Live` | Chế độ Trực tiếp (T1.8): lưới trang, phím, chương trình buổi nhóm, thư viện thu gọn, Kinh Thánh |
+| `Editor` | Chế độ Soạn thảo (T1.9): `PresentationEditing` (bản soạn `DocumentEditor<Presentation>`), danh sách đoạn và trang, ô soạn lời, thanh thứ tự hát, nhập |
 
 Phụ thuộc giữa target (mũi tên là "dùng"):
 
