@@ -135,6 +135,10 @@ final class PaletteNSTextField: NSTextField {
     private func handle(keyCode: UInt16, flags: NSEvent.ModifierFlags, windowNumber: Int) -> Bool {
         guard let window, window.windowNumber == windowNumber, window.attachedSheet == nil else { return false }
         let modifiers = flags.intersection([.command, .option, .control, .shift])
+        // Bộ gõ tiếng Việt đang ghép chữ (chữ có gạch chân): Enter, Esc, mũi tên thuộc về bộ gõ.
+        if hasFocus, let editor = currentEditor() as? NSTextView, editor.hasMarkedText() {
+            return false
+        }
         switch keyCode {
         case KeyCode.escape:
             onCancel?()

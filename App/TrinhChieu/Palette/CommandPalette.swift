@@ -194,6 +194,8 @@ struct CommandPalette: View {
     /// Xếp hạng lại theo chữ đang gõ. Phân tích địa chỉ và lệnh chạy ngay; tìm thư viện chạy nền.
     private func refresh() {
         searchTask?.cancel()
+        // Chữ đã đổi sau khi bấm Enter: bỏ lần Enter chờ, không chạy dòng của truy vấn cũ.
+        pendingSubmit = nil
         let text = query
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty, let library = environment.library else {
