@@ -85,9 +85,12 @@ struct EditorStage: View {
             return
         }
         try? await Task.sleep(for: .milliseconds(50))
-        guard !Task.isCancelled, let provider = environment.editorContent(),
-            let index = provider.sequence.index(ofSlide: slide.id)
-        else { return }
+        guard !Task.isCancelled else { return }
+        guard let provider = environment.editorContent(), let index = provider.sequence.index(ofSlide: slide.id)
+        else {
+            image = nil
+            return
+        }
         // Dựng ở độ phân giải màn Retina của khung, tối đa bằng khung vẽ của mẫu.
         let shown = Double(width)
         let scale = min(2, canvas.width / max(1, shown))
@@ -97,9 +100,8 @@ struct EditorStage: View {
             slide, at: index, in: provider.sequence, provider: provider,
             size: PixelSize(width: pixelWidth, height: pixelHeight))
         guard !Task.isCancelled else { return }
-        if let rendered {
-            image = rendered
-        }
+        // Dựng hỏng thì để khung đen, không giữ ảnh của trang trước.
+        image = rendered
     }
 }
 
