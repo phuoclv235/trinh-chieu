@@ -60,7 +60,7 @@ struct AppSettings: Codable, Equatable, Sendable {
         defaultTranslation = field(.defaultTranslation, defaults.defaultTranslation)
         advanceToNextItem = field(.advanceToNextItem, defaults.advanceToNextItem)
         welcomeDismissed = field(.welcomeDismissed, defaults.welcomeDismissed)
-        paletteRecents = field(.paletteRecents, defaults.paletteRecents)
+        paletteRecents = Array(field(.paletteRecents, defaults.paletteRecents).prefix(PaletteHistory.recentLimit))
         paletteCommandUsage = field(.paletteCommandUsage, defaults.paletteCommandUsage)
     }
 

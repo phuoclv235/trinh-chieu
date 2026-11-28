@@ -170,12 +170,15 @@ extension AppEnvironment {
 
     private func performPlanItem(_ id: UUID, secondary: Bool) -> PaletteOutcome {
         guard let plan = activePlan, let item = plan.items.first(where: { $0.id == id }) else { return .unavailable }
-        selectPlanItem(item)
-        guard secondary else { return .close }
+        guard secondary else {
+            selectPlanItem(item)
+            return .close
+        }
         let source = LiveSource.planItem(planID: plan.id, itemID: id)
         guard let sequence = sequence(for: source), let first = SlideCards.firstEnabled(in: sequence) else {
             return .unavailable
         }
+        selectPlanItem(item)
         send(.goLive(source, slideIndex: first))
         return .close
     }
