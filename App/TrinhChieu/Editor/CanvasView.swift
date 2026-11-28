@@ -67,6 +67,8 @@ final class EditorCanvasView: NSView, NSTextViewDelegate {
     private var clickMonitor: Any?
     /// Căn dọc của ô đang sửa, để ô gõ nằm đúng chỗ chữ hiện trên trang.
     private var editingVerticalAlignment: CoreModel.VerticalAlignment = .middle
+    /// Khung phần tử đang sửa (toạ độ khung nhìn); ô gõ cao vừa chữ, đặt trong khung này theo căn dọc.
+    private var editingFrame: NSRect = .zero
 
     private static let handleSize: CGFloat = 9
 
@@ -453,6 +455,9 @@ final class EditorCanvasView: NSView, NSTextViewDelegate {
         let base = text.slot.map { theme.slots[$0] } ?? theme.slots.body
         let style = text.style.map { base.style.applying($0) } ?? base.style
         let view = NSTextView(frame: viewRect(rect))
+        view.isVerticallyResizable = false
+        view.textContainer?.heightTracksTextView = false
+        view.textContainer?.containerSize = NSSize(width: view.frame.width, height: .greatestFiniteMagnitude)
         view.isRichText = false
         view.allowsUndo = true
         view.drawsBackground = true
@@ -471,6 +476,7 @@ final class EditorCanvasView: NSView, NSTextViewDelegate {
         editor = view
         editingID = id
         editingVerticalAlignment = style.verticalAlignment
+        editingFrame = viewRect(rect)
         alignEditor()
         window?.makeFirstResponder(view)
         view.selectAll(nil)
@@ -478,20 +484,22 @@ final class EditorCanvasView: NSView, NSTextViewDelegate {
         needsDisplay = true
     }
 
-    /// Đẩy chữ trong ô gõ theo căn dọc của kiểu chữ (ô gõ cao bằng khung phần tử).
+    /// Ô gõ cao vừa chữ, đặt trong khung phần tử theo căn dọc của kiểu chữ, để chữ đang gõ trùng chỗ chữ trên trang.
     private func alignEditor() {
         guard let editor, let layout = editor.layoutManager, let container = editor.textContainer else { return }
         layout.ensureLayout(for: container)
-        let used = layout.usedRect(for: container).height
-        let free = max(0, editor.frame.height - used)
+        let lineHeight = editor.font.map { layout.defaultLineHeight(for: $0) } ?? 20
+        let height = max(layout.usedRect(for: container).height, lineHeight).rounded(.up)
+        let free = max(0, editingFrame.height - height)
         let top: CGFloat
         switch editingVerticalAlignment {
         case .top: top = 0
-        case .middle: top = free / 2
+        case .middle: top = (free / 2).rounded()
         case .bottom: top = free
         }
-        if editor.textContainerInset.height != top {
-            editor.textContainerInset = NSSize(width: 0, height: top)
+        let frame = NSRect(x: editingFrame.minX, y: editingFrame.minY + top, width: editingFrame.width, height: height)
+        if editor.frame != frame {
+            editor.frame = frame
         }
     }
 

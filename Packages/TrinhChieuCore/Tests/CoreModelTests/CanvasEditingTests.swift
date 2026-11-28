@@ -91,7 +91,7 @@ struct CanvasElementTests {
         #expect(slide.displayFrame(of: free, theme: theme) == PixelRect(x: 1, y: 2, width: 3, height: 4))
     }
 
-    @Test("Tách khỏi mẫu: bỏ ô, chép khung, chỉ giữ phần đè khác ô lời chính")
+    @Test("Tách khỏi mẫu: bỏ ô, chép khung và kiểu đầy đủ, giữ phần đè")
     func detach() {
         var (slide, slotted, _) = makeSlide()
         let theme = Theme.fallback()
@@ -103,9 +103,9 @@ struct CanvasElementTests {
         #expect(text.slot == nil)
         #expect(text.frame == theme.slots.body.frame)
         #expect(text.style?.fontSize == 90)
-        // Ô lời chính là gốc của phần tử tự do: chỉ còn phần đè khác ô đó, chữ trông y như trước.
-        #expect(text.style == TextStyleOverride(fontSize: 90))
-        #expect(text.resolvedStyle(in: theme) == theme.slots.body.style.applying(TextStyleOverride(fontSize: 90)))
+        #expect(text.style?.fontWeight == theme.slots.body.style.fontWeight)
+        // Chép đủ kiểu nhưng bảng thuộc tính chỉ đếm trường thật sự khác ô gốc.
+        #expect(text.style?.differingCount(from: theme.slots.body.style) == 1)
         slide.setFrame(PixelRect(x: 5, y: 5, width: 50, height: 50), of: slotted)
         #expect(slide.displayFrame(of: slotted, theme: theme) == PixelRect(x: 5, y: 5, width: 50, height: 50))
     }
@@ -151,7 +151,7 @@ struct StyleOverrideTests {
 
 @Suite("Tách khỏi mẫu: ô tiêu đề")
 struct DetachTitleTests {
-    @Test("Tách ô tiêu đề: ghi các trường khác ô lời chính để giữ nguyên hình")
+    @Test("Tách ô tiêu đề: giữ nguyên hình, chỉ đếm trường khác ô lời chính")
     func detachTitleKeepsLook() {
         let theme = Theme.fallback()
         let title = TextElement(slot: .title, text: "Tựa")
@@ -162,7 +162,8 @@ struct DetachTitleTests {
             return
         }
         #expect(text.resolvedStyle(in: theme) == theme.slots.title.style)
+        #expect(text.style == TextStyleOverride(full: theme.slots.title.style))
         let differing = TextStyleOverride(differences: theme.slots.title.style, from: theme.slots.body.style)
-        #expect(text.style == (differing.isEmpty ? nil : differing))
+        #expect(text.style?.differingCount(from: theme.slots.body.style) == differing.overriddenCount)
     }
 }

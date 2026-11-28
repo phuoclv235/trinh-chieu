@@ -266,6 +266,11 @@ extension TextStyleOverride {
         if style.maxLines != base.maxLines { maxLines = style.maxLines }
     }
 
+    /// Số thuộc tính thật sự khác `base` (phần đè trùng giá trị của mẫu, như sau "Tách khỏi mẫu", không tính).
+    public func differingCount(from base: TextStyle) -> Int {
+        TextStyleOverride(differences: base.applying(self), from: base).overriddenCount
+    }
+
     /// Phần đè ghi đủ mọi trường của `style` (khi tách phần tử khỏi mẫu).
     public init(full style: TextStyle) {
         self.init(
@@ -304,10 +309,7 @@ extension Slide {
         let base = theme.slots[slot]
         let style = text.style.map { base.style.applying($0) } ?? base.style
         text.frame = base.frame
-        // Phần tử tự do lấy kiểu gốc từ ô lời chính: chỉ ghi các trường khác ô đó, để chữ trông y như trước mà bảng
-        // thuộc tính không báo phần đè thừa.
-        let override = TextStyleOverride(differences: style, from: theme.slots.body.style)
-        text.style = override.isEmpty ? nil : override
+        text.style = TextStyleOverride(full: style)
         text.slot = nil
         elements[index] = .text(text)
     }
