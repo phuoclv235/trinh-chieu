@@ -41,9 +41,13 @@ struct ArrangementBar: View {
         let occurrences = presentation.orderedGroupOccurrences
         HStack(spacing: 6) {
             Text("Arrangement").font(Typography.caption).foregroundStyle(Palette.text3)
+                .lineLimit(1)
+                .fixedSize()
             arrangementMenu
-            ForEach(occurrences) { occurrence in
-                ArrangementChip(group: occurrence.group, position: occurrence.position, count: occurrences.count)
+            // Cửa sổ hẹp (1280): chip giữ nguyên chữ; không đủ chỗ thì dải chip cuộn ngang thay vì cắt chữ.
+            ViewThatFits(in: .horizontal) {
+                chips(occurrences)
+                ScrollView(.horizontal, showsIndicators: false) { chips(occurrences) }
             }
             Menu {
                 ForEach(presentation.groups) { group in
@@ -79,6 +83,15 @@ struct ArrangementBar: View {
                         $0.renameArrangement(id, to: name)
                     }
                 }
+            }
+        }
+    }
+
+    private func chips(_ occurrences: [GroupOccurrence]) -> some View {
+        HStack(spacing: 6) {
+            ForEach(occurrences) { occurrence in
+                ArrangementChip(group: occurrence.group, position: occurrence.position, count: occurrences.count)
+                    .fixedSize()
             }
         }
     }

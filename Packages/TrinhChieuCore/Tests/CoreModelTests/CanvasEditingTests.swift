@@ -104,6 +104,8 @@ struct CanvasElementTests {
         #expect(text.frame == theme.slots.body.frame)
         #expect(text.style?.fontSize == 90)
         #expect(text.style?.fontWeight == theme.slots.body.style.fontWeight)
+        // Chép đủ kiểu nhưng bảng thuộc tính chỉ đếm trường thật sự khác ô gốc.
+        #expect(text.style?.differingCount(from: theme.slots.body.style) == 1)
         slide.setFrame(PixelRect(x: 5, y: 5, width: 50, height: 50), of: slotted)
         #expect(slide.displayFrame(of: slotted, theme: theme) == PixelRect(x: 5, y: 5, width: 50, height: 50))
     }
@@ -144,5 +146,24 @@ struct StyleOverrideTests {
         let sized = TextElement(slot: .title, text: "B", style: TextStyleOverride(fontSize: 12))
         #expect(sized.resolvedStyle(in: theme).fontSize == 12)
         #expect(sized.displayFrame(in: theme) == theme.slots.title.frame)
+    }
+}
+
+@Suite("Tách khỏi mẫu: ô tiêu đề")
+struct DetachTitleTests {
+    @Test("Tách ô tiêu đề: giữ nguyên hình, chỉ đếm trường khác ô lời chính")
+    func detachTitleKeepsLook() {
+        let theme = Theme.fallback()
+        let title = TextElement(slot: .title, text: "Tựa")
+        var slide = Slide(elements: [.text(title)])
+        slide.detachFromTheme(title.id, theme: theme)
+        guard case .text(let text) = slide.elements[0] else {
+            Issue.record("Mất phần tử chữ")
+            return
+        }
+        #expect(text.resolvedStyle(in: theme) == theme.slots.title.style)
+        #expect(text.style == TextStyleOverride(full: theme.slots.title.style))
+        let differing = TextStyleOverride(differences: theme.slots.title.style, from: theme.slots.body.style)
+        #expect(text.style?.differingCount(from: theme.slots.body.style) == differing.overriddenCount)
     }
 }

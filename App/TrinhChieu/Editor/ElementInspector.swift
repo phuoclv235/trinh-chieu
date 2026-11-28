@@ -31,7 +31,7 @@ private struct TextFields: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            InspectorField("Font", reset: reset(\.fontFamily)) {
+            InspectorField("Font", reset: reset(\.fontFamily, \.fontFamily)) {
                 Picker("Font", selection: value(\.fontFamily, \.fontFamily, key: "fontFamily")) {
                     Text("System").tag("system")
                     ForEach(FontFamilies.all, id: \.self) { family in
@@ -41,7 +41,7 @@ private struct TextFields: View {
                 .labelsHidden()
             }
             HStack(alignment: .top, spacing: 8) {
-                InspectorField("Weight", reset: reset(\.fontWeight)) {
+                InspectorField("Weight", reset: reset(\.fontWeight, \.fontWeight)) {
                     Picker("Weight", selection: value(\.fontWeight, \.fontWeight, key: "fontWeight")) {
                         ForEach(FontWeights.all, id: \.value) { weight in
                             Text(weight.title).tag(weight.value)
@@ -49,14 +49,14 @@ private struct TextFields: View {
                     }
                     .labelsHidden()
                 }
-                InspectorField("Font size", reset: reset(\.fontSize)) {
+                InspectorField("Font size", reset: reset(\.fontSize, \.fontSize)) {
                     NumberField(
                         title: "Font size", unit: "pt",
                         value: value(\.fontSize, \.fontSize, key: "fontSize"), range: 8...400)
                 }
             }
             HStack(alignment: .top, spacing: 8) {
-                InspectorField("Horizontal alignment", reset: reset(\.alignment)) {
+                InspectorField("Horizontal alignment", reset: reset(\.alignment, \.alignment)) {
                     IconChoice<CoreModel.TextAlignment>(
                         options: [
                             .init(value: .left, systemImage: "text.alignleft", label: "Align left"),
@@ -66,7 +66,7 @@ private struct TextFields: View {
                         selection: value(\.alignment, \.alignment, key: "alignment"),
                         accessibilityTitle: Text("Horizontal alignment"))
                 }
-                InspectorField("Vertical alignment", reset: reset(\.verticalAlignment)) {
+                InspectorField("Vertical alignment", reset: reset(\.verticalAlignment, \.verticalAlignment)) {
                     IconChoice<CoreModel.VerticalAlignment>(
                         options: [
                             .init(value: .top, systemImage: "align.vertical.top", label: "Align top"),
@@ -77,39 +77,39 @@ private struct TextFields: View {
                         accessibilityTitle: Text("Vertical alignment"))
                 }
             }
-            InspectorField("Text color", reset: reset(\.color)) {
+            InspectorField("Text color", reset: reset(\.color, \.color)) {
                 ColorField(title: "Text color", color: value(\.color, \.color, key: "color"))
             }
             InspectorSlider(
-                title: "Line spacing", reset: reset(\.lineHeight),
+                title: "Line spacing", reset: reset(\.lineHeight, \.lineHeight),
                 value: value(\.lineHeight, \.lineHeight, key: "lineHeight"), range: 0.8...2.4, step: 0.05,
                 format: { $0.formatted(.number.precision(.fractionLength(2)).locale(Self.locale)) })
             InspectorSlider(
-                title: "Letter spacing", reset: reset(\.letterSpacing),
+                title: "Letter spacing", reset: reset(\.letterSpacing, \.letterSpacing),
                 value: value(\.letterSpacing, \.letterSpacing, key: "letterSpacing"), range: -10...40, step: 1,
                 format: { $0.formatted(.number.precision(.fractionLength(0)).locale(Self.locale)) })
             InspectorGroup {
-                InspectorSwitch(title: "Uppercase", reset: reset(\.transform), isOn: uppercase)
+                InspectorSwitch(title: "Uppercase", reset: reset(\.transform, \.transform), isOn: uppercase)
                 InspectorSwitch(
-                    title: "Text outline", reset: reset(\.stroke),
+                    title: "Text outline", reset: reset(\.stroke, \.stroke),
                     isOn: toggle(
                         \.stroke, \.stroke, key: "stroke", off: .none, on: TextStroke(color: .black, width: 4)))
                 InspectorSwitch(
-                    title: "Text shadow", reset: reset(\.shadow),
+                    title: "Text shadow", reset: reset(\.shadow, \.shadow),
                     isOn: toggle(
                         \.shadow, \.shadow, key: "shadow", off: .none,
                         on: TextShadow(
                             color: RGBA(red: 0, green: 0, blue: 0, alpha: 170), radius: 8,
                             offset: PixelPoint(x: 0, y: 3))))
                 InspectorSwitch(
-                    title: "Box behind text", reset: reset(\.box),
+                    title: "Box behind text", reset: reset(\.box, \.box),
                     isOn: toggle(
                         \.box, \.box, key: "box", off: .none,
                         on: TextBox(
                             color: RGBA(red: 0, green: 0, blue: 0, alpha: 150),
                             padding: CoreModel.EdgeInsets(top: 12, right: 24, bottom: 12, left: 24), cornerRadius: 8)))
                 InspectorSwitch(
-                    title: "Shrink text to fit", reset: reset(\.autoFit),
+                    title: "Shrink text to fit", reset: reset(\.autoFit, \.autoFit),
                     isOn: toggle(
                         \.autoFit, \.autoFit, key: "autoFit", off: .none, on: AutoFit(mode: .shrink, minScale: 0.5)))
             }
@@ -128,7 +128,7 @@ private struct TextFields: View {
                     .buttonStyle(ControlButtonStyle())
                     .frame(maxWidth: .infinity)
             }
-            let count = override.overriddenCount
+            let count = override.differingCount(from: base)
             if count > 0 {
                 Text(
                     verbatim: String(
@@ -175,8 +175,11 @@ private struct TextFields: View {
     }
 
     /// Bỏ phần đè của một trường; `nil` khi trường đang theo mẫu.
-    private func reset<Value>(_ path: WritableKeyPath<TextStyleOverride, Value?>) -> (() -> Void)? {
-        guard override[keyPath: path] != nil else { return nil }
+    private func reset<Value: Equatable>(
+        _ path: WritableKeyPath<TextStyleOverride, Value?>, _ basePath: KeyPath<TextStyle, Value>
+    ) -> (() -> Void)? {
+        // Phần đè trùng giá trị của mẫu (như sau "Tách khỏi mẫu") không tính là khác mẫu.
+        guard let value = override[keyPath: path], value != base[keyPath: basePath] else { return nil }
         return {
             environment.editTextElement(String(localized: "Reset to theme")) { element in
                 var override = element.style ?? TextStyleOverride()
@@ -766,10 +769,13 @@ private struct ColorField: View {
     private func commit() {
         var hex = draft.trimmingCharacters(in: .whitespaces)
         if !hex.hasPrefix("#") { hex = "#" + hex }
-        if let parsed = try? RGBA(hex: hex) {
-            if parsed != color { color = parsed }
+        guard let parsed = try? RGBA(hex: hex) else {
+            draft = Self.text(color)
+            return
         }
-        draft = Self.text(color)
+        if parsed != color { color = parsed }
+        // `color` ở đây vẫn là giá trị cũ của ràng buộc: hiện mã vừa gõ, đã chuẩn hoá.
+        draft = Self.text(parsed)
     }
 
     /// `#RRGGBB`, thêm `AA` khi không đặc.

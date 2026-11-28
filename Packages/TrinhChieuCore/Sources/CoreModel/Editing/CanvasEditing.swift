@@ -247,6 +247,30 @@ extension Element {
 }
 
 extension TextStyleOverride {
+    /// Phần đè chỉ gồm các trường của `style` khác `base`: `base.applying(result) == style`.
+    public init(differences style: TextStyle, from base: TextStyle) {
+        self.init()
+        set(\.fontFamily, style.fontFamily, base: base, basePath: \.fontFamily)
+        set(\.fontWeight, style.fontWeight, base: base, basePath: \.fontWeight)
+        set(\.fontSize, style.fontSize, base: base, basePath: \.fontSize)
+        set(\.color, style.color, base: base, basePath: \.color)
+        set(\.alignment, style.alignment, base: base, basePath: \.alignment)
+        set(\.verticalAlignment, style.verticalAlignment, base: base, basePath: \.verticalAlignment)
+        set(\.lineHeight, style.lineHeight, base: base, basePath: \.lineHeight)
+        set(\.letterSpacing, style.letterSpacing, base: base, basePath: \.letterSpacing)
+        set(\.transform, style.transform, base: base, basePath: \.transform)
+        set(\.stroke, style.stroke, base: base, basePath: \.stroke)
+        set(\.shadow, style.shadow, base: base, basePath: \.shadow)
+        set(\.box, style.box, base: base, basePath: \.box)
+        set(\.autoFit, style.autoFit, base: base, basePath: \.autoFit)
+        if style.maxLines != base.maxLines { maxLines = style.maxLines }
+    }
+
+    /// Số thuộc tính thật sự khác `base` (phần đè trùng giá trị của mẫu, như sau "Tách khỏi mẫu", không tính).
+    public func differingCount(from base: TextStyle) -> Int {
+        TextStyleOverride(differences: base.applying(self), from: base).overriddenCount
+    }
+
     /// Phần đè ghi đủ mọi trường của `style` (khi tách phần tử khỏi mẫu).
     public init(full style: TextStyle) {
         self.init(
