@@ -211,7 +211,7 @@ private struct TextFields: View {
     }
 }
 
-private enum FontWeights {
+@MainActor private enum FontWeights {
     struct Weight {
         let value: Int
         let title: LocalizedStringKey
